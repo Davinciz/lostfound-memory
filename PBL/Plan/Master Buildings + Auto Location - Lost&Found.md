@@ -5,7 +5,7 @@ status: active
 priority: high
 created: 2026-09-29
 updated: 2026-10-13
-summary: Master buildings + pilih lokasi di peta dengan saran gedung terdekat (Haversine lokal Flutter)
+summary: Master buildings + pilih lokasi di peta dengan saran gedung terdekat (Haversine lokal Flutter); jumlah gedung dinetralkan (plan 22 nama vs DB 23 entri, menunggu konfirmasi)
 ---
 
 # Master Buildings + Auto Location Detection - Lost&Found
@@ -21,14 +21,16 @@ summary: Master buildings + pilih lokasi di peta dengan saran gedung terdekat (H
 ## Goal
 
 Implementasi master buildings dengan fitur pilih lokasi di peta:
-1. **Master gedung** — tabel buildings dengan 23 gedung kampus, endpoint GET /api/buildings
+1. **Master gedung** — tabel buildings untuk daftar gedung kampus (jumlah: lihat catatan di §Data Source), endpoint GET /api/buildings
 2. **Peta interaktif** — flutter_map + OpenStreetMap; user taruh pin di peta untuk pilih lokasi
 3. **Saran gedung terdekat** — maks 3 gedung dalam radius ~75m dari pin, dihitung Haversine di Flutter (opsi B), tampil sebagai daftar; user klik untuk pilih
 4. **Detail lokasi opsional** — user bisa tambah detail manual
 
 ---
 
-## Data Source: 23 Campus Buildings
+## Data Source: Daftar Gedung Kampus
+
+> **Catatan jumlah gedung (2026-10-13):** daftar di plan ini berisi **22 nama** (sama pada daftar §Data Source dan array `BuildingSeeder`). Data DB dev dilaporkan **23 entri** (DailyChanges 2026-10-01: `buildings=23`); DailyChanges 2026-10-09 mencatat ada entri DB di luar daftar plan. Sumber data gedung resmi menunggu konfirmasi user. Daftar di bawah tidak diubah.
 
 ```
 Gedung Sekolah A: -7.054278685864139, 110.43470307655164
@@ -577,7 +579,7 @@ class BuildingResource extends Resource
 ## Open Items
 
 1. **Data buildings di DB belum rapi.** Ada entri berkoordinat sekitar -6.97, 110.42 yang salah (tidak cocok dengan koordinat kampus sekitar -7.05, 110.43). User akan bereskan lewat Filament. Daftar gedung di dokumen ini tidak diubah.
-2. **Jumlah gedung di plan 22, ditulis 23.** Dugaan: ada perbedaan antara daftar plan dan data di DB. Dicek dan dicatat sebagai sumber data resmi oleh user.
+2. **Jumlah gedung (22 vs 23).** Hasil hitung: daftar di plan = **22 nama**; array `BuildingSeeder` = **22 entri**; data DB dev dilaporkan **23 entri** (DailyChanges 2026-10-01) dan ada entri di luar daftar plan (DailyChanges 2026-10-09). Sumber data resmi **menunggu konfirmasi user**; daftar gedung tidak diubah.
 
 ---
 
