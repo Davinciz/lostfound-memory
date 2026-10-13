@@ -111,7 +111,7 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 | Role | Akses |
 | --- | --- |
 | **User** (mahasiswa, dosen, karyawan) | Login dengan Google SSO; hanya email `@mhs.polines.ac.id`, `@dsn.polines.ac.id`, `@polines.ac.id` (domain harus cocok persis). Melaporkan barang hilang/ditemukan (foto, deskripsi, lokasi lewat pin di peta + saran gedung), mencari & memfilter laporan, mengajukan claim (wajib punya laporan hilang), chat dengan penemu/pemilik, menerima notifikasi. |
-| **Administrator** | Dashboard web (Filament): melihat semua laporan, memverifikasi claim (terima/tolak/batalkan), mencatat serah terima barang dengan foto bukti, memperbarui status, memblokir/membuka blokir pengguna, mengelola master data gedung. |
+| **Administrator** | Dashboard web (Filament): melihat semua laporan, memverifikasi claim (terima/tolak), mencatat serah terima barang dengan foto bukti, memperbarui status, memblokir/membuka blokir pengguna, mengelola master data gedung. |
 
 ## 4. Fitur Utama
 | Fitur | Perilaku UI |

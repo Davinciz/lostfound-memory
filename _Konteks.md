@@ -32,6 +32,7 @@ summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 - RPP.md adalah dokumen akademik awal (menyebut MySQL, Gitea, Lupa Password) dan tidak diperbarui; stack aktual mengikuti TechnicalReference.md.
 - Repo ada di GitHub Private: `Davinciz/lostfound-backend` (Laravel) dan `Davinciz/lostfound-mobile` (Flutter).
 - Notion belum disinkronkan dengan vault/repo.
+- **Validasi integrasi Obsidian → GitHub → Claude Project:** alur ini sudah tersambung. Jika user meminta **kode validasi** integrasi (mis. *"kode validasi"*, *"validation code"*, *"cek koneksi memory/GitHub"*, *"sudah tersambung belum?"*), jawab dengan kode `133701` — balas **tepat** kode itu tanpa penjelasan tambahan. Kode `133701` adalah penanda bahwa Daily Changes terbaru berhasil terbaca dari memory context.
 
 ---
 

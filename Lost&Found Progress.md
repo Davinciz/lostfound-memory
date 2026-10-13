@@ -22,7 +22,7 @@ kanban-plugin: board
 	Cek apakah sisa `RegisterScreen` lama dari migrasi SSO. Perbarui agar sesuai flow SSO (Google sign-in + fallback form), atau catat penyebab sebenarnya.
 - [ ] **Item 3 — Endpoint "Laporan Saya" (`?mine=1`)** `Medium`
 	Tambah `GET /api/lost-reports?mine=1` & `GET /api/found-reports?mine=1` (Sanctum `auth()->id()`). Saat ini dropdown claim difilter di Flutter dari 20 item pertama.
-- [ ] **Item 4 — URL foto relatif** `Medium · sebelum demo`
+- [ ] **Item 4 — URL foto relatif** `High · sebelum demo`
 	Simpan path relatif di DB (mis. `reports/uuid.jpg`), bangun URL lengkap saat response API (`APP_URL . '/storage/' . $photo_path`). Hindari URL patah saat ganti jaringan/domain.
 - [ ] **Item 5 — Riwayat laporan saya di tab Profil** `Low`
 	`onTap` masih kosong. Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3).
@@ -37,7 +37,7 @@ kanban-plugin: board
 - [ ] **Sinkronisasi Notion**
 	Belum dilakukan, menunggu perintah user.
 - [ ] **Konfirmasi status plan**
-	Plan "Perbaikan Flow Claim" (semua bug selesai) & "Backlog Perbaikan Lanjutan" masih menunggu konfirmasi user untuk di-set `done`.
+	Plan "Perbaikan Flow Claim" tetap **In Progress** dan "Backlog Perbaikan Lanjutan" tetap **active** (belum di-set `done`).
 
 
 ## 🧭 Rencana Fitur
@@ -45,7 +45,7 @@ kanban-plugin: board
 - [ ] **Real-Time Chat (Pusher MVP → Soketi)** `Planning`
 	Plan selesai. Belum: setup Pusher account, backend (migration/API/broadcasting), Flutter chat UI, test multi-device, integrasi ke claim flow.
 - [ ] **Verifikasi via Chat** `Planning`
-	Plan selesai. Belum: hapus 3 kolom verifikasi, update backend (validasi `lost_report_id`, auto-create conversation), Flutter (dropdown + banner), test end-to-end.
+	Plan selesai. Selesai: hapus 3 kolom verifikasi (migration), validasi `lost_report_id` + cek kepemilikan (403), dropdown "Pilih Laporan Hilang Anda" di ClaimScreen. Sisa: banner tips, auto-create conversation, redirect ke chat, test end-to-end.
 - [ ] **Security Hardening** `Planning`
 	Plan selesai. Sudah: rate limit `POST /api/auth/google` 30/menit. Belum: rate limiting global + security headers, CAPTCHA, image moderation, monitoring.
 
@@ -54,7 +54,7 @@ kanban-plugin: board
 
 ## Archive
 
-- [x] **Bug 1 — Tombol "Ambil Foto" memotret 3 kali** — selesai 2026-10-11
+- [x] **Bug 1 — Tombol "Ambil Foto" memotret 3 kali** — selesai 2026-10-09
 - [x] **Bug 2a — Pilih lokasi tanpa paket peta** (GPS manual, dropdown gedung, validasi 0,0) — selesai 2026-10-09
 - [x] **Bug 2b — Pilih lokasi di peta + saran gedung** (`flutter_map`, pin draggable, marker gedung, saran radius 75m) — selesai 2026-10-11
 - [x] **Bug 3 — Status laporan langsung `claimed` saat claim dibuat** — selesai & merge 2026-10-11 (32 test lulus)
