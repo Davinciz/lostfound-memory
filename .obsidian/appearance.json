@@ -1,0 +1,20 @@
+{
+  "cssTheme": "AnuPpuccin",
+  "accentColor": "",
+  "theme": "obsidian",
+  "enabledCssSnippets": [
+    "extended-colorschemes",
+    "custom-background",
+    "custom-rainbow-colors",
+    "floating-search-bar",
+    "floating-status-bar",
+    "minimal-cards"
+  ],
+  "interfaceFontFamily": "Overpass",
+  "monospaceFontFamily": "Cascadia Code",
+  "textFontFamily": "Rubik",
+  "baseFontSizeAction": true,
+  "nativeMenus": false,
+  "showRibbon": true,
+  "showViewHeader": true
+}

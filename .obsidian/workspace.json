@@ -1,0 +1,275 @@
+{
+  "main": {
+    "id": "eeeb70a75a679125",
+    "type": "split",
+    "children": [
+      {
+        "id": "ea943fb01e1f992c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e04b699d74ce6242",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "PBL/DailyChanges/2026-10-06.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2026-10-06"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "bc7522596fdeb3b1",
+    "type": "split",
+    "children": [
+      {
+        "id": "d1533306bccf23f9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "423f8969ae5ee1b4",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "d9d87f1868586136",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "8bc98788012a4452",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "21611cdfe3d4d44f",
+    "type": "split",
+    "children": [
+      {
+        "id": "25fd05019b8a10cf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8790e14afe18ceaf",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
+            }
+          },
+          {
+            "id": "4ec035db0fc56839",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          },
+          {
+            "id": "7b9cff0a1799867c",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "PBL/DailyChanges/2026-10-06.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "8375e32af3e851c2",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "PBL/DailyChanges/2026-10-06.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "597409f7ed82b671",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "0dc5cb91a52481d8",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "c4a69a0de2802d51",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "db4086e9b05ef42c",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          },
+          {
+            "id": "6f90cabc3630a12e",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "PBL/DailyChanges/2026-10-06.md",
+                "followCursor": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 284.83331298828125
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "templater-obsidian:Templater": true,
+      "obsidian-git:Open Git source control": false,
+      "switcher:Open quick switcher": false,
+      "canvas:Create new canvas": true,
+      "daily-notes:Open today's daily note": true,
+      "templates:Insert template": true,
+      "command-palette:Open command palette": true,
+      "bases:Create new base": true,
+      "obsidian-kanban:Create new board": false,
+      "graph:Open graph view": false,
+      "workspaces:Manage workspace layouts": false
+    }
+  },
+  "active": "6f90cabc3630a12e",
+  "lastOpenFiles": [
+    "PBL/Plan/Foto Bukti Transfer - Lost&Found.md",
+    "PBL/DailyChanges/2026-10-11.md",
+    "PBL/DailyChanges/2026-10-12.md",
+    "2026-10-13.md",
+    "Untitled 1.canvas",
+    "Untitled.canvas",
+    "PBL/DailyChanges/2026-10-10.md",
+    "PBL/DailyChanges/2026-10-09.md",
+    "PBL/DailyChanges/2026-10-06.md",
+    "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
+    "PBL/Documents/Design.md",
+    "PBL/DailyChanges/2026-10-05.md",
+    "PBL/Plan/Master Buildings + Auto Location - Lost&Found.md",
+    "PBL/Plan/Verifikasi via Chat - Lost&Found.md",
+    "_Base/Index.base",
+    "Untitled.md",
+    "IDEA.md",
+    "PBL/Plan/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
+    "PBL/Plan/Real-Time Chat - Lost&Found.md",
+    "PBL/Plan/Security Hardening - Lost&Found.md",
+    "PBL/Plan/Backlog Perbaikan Lanjutan - Lost&Found.md",
+    "_Konteks.md",
+    "PBL/Documents/PRD.md",
+    "PBL/Documents/ERD.md",
+    "PBL/DailyChanges/2026-10-02.md",
+    "PBL/DailyChanges/2026-10-01.md",
+    "PBL/DailyChanges/2026-09-30.md",
+    "PBL/DailyChanges/2026-10-08.md",
+    "2026-10-10.md",
+    "PBL/Attachments/ERD-lostfound.png",
+    "PBL.rar",
+    "PBL/Documents/Unconfirmed 607876.crdownload",
+    "PBL/Documents/Unconfirmed 5036.crdownload",
+    "PBL/Documents/RPP_LnF_Kelompok4_IK2B.docx.crswap",
+    "PBL/Documents/RPP_LnF_Kelompok4_IK2B.docx",
+    "PBL/Attachments/ERD_lostfound.jpg",
+    "DailyChanges",
+    "PBL/Documents/campus-lostfound-schema.dbml",
+    "PBL/Documents/Unconfirmed 594758.crdownload",
+    "PBL/ERD_lostfound.jpg"
+  ]
+}

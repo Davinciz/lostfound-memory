@@ -1,0 +1,13 @@
+views:
+  - type: table
+    name: Index
+    order:
+      - file.name
+      - priority
+    sort:
+      - property: file.path
+        direction: ASC
+  - type: table
+    name: Konteks Aktif
+  - type: table
+    name: Harian

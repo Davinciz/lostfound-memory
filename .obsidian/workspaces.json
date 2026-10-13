@@ -1,0 +1,248 @@
+{
+  "workspaces": {
+    "Lost&Found": {
+      "main": {
+        "id": "eeeb70a75a679125",
+        "type": "split",
+        "children": [
+          {
+            "id": "ea943fb01e1f992c",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "e04b699d74ce6242",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "PBL/DailyChanges/2026-10-12.md",
+                    "mode": "source",
+                    "source": false
+                  },
+                  "icon": "lucide-file",
+                  "title": "2026-10-12"
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical"
+      },
+      "left": {
+        "id": "bc7522596fdeb3b1",
+        "type": "split",
+        "children": [
+          {
+            "id": "d1533306bccf23f9",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "423f8969ae5ee1b4",
+                "type": "leaf",
+                "state": {
+                  "type": "file-explorer",
+                  "state": {
+                    "sortOrder": "alphabetical",
+                    "autoReveal": false,
+                    "showSearch": false,
+                    "searchQuery": ""
+                  },
+                  "icon": "lucide-folder-closed",
+                  "title": "Files"
+                }
+              },
+              {
+                "id": "d9d87f1868586136",
+                "type": "leaf",
+                "state": {
+                  "type": "search",
+                  "state": {
+                    "query": "",
+                    "matchingCase": false,
+                    "explainSearch": false,
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical"
+                  },
+                  "icon": "lucide-search",
+                  "title": "Search"
+                }
+              },
+              {
+                "id": "8bc98788012a4452",
+                "type": "leaf",
+                "state": {
+                  "type": "bookmarks",
+                  "state": {
+                    "showSearch": false,
+                    "searchQuery": ""
+                  },
+                  "icon": "lucide-bookmark",
+                  "title": "Bookmarks"
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 300
+      },
+      "right": {
+        "id": "21611cdfe3d4d44f",
+        "type": "split",
+        "children": [
+          {
+            "id": "25fd05019b8a10cf",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "067dee8747f769d8",
+                "type": "leaf",
+                "state": {
+                  "type": "backlink",
+                  "state": {
+                    "file": "PBL/ERD_lostfound.jpg",
+                    "collapseAll": false,
+                    "extraContext": false,
+                    "sortOrder": "alphabetical",
+                    "showSearch": false,
+                    "searchQuery": "",
+                    "backlinkCollapsed": false,
+                    "unlinkedCollapsed": true
+                  },
+                  "icon": "links-coming-in",
+                  "title": "Backlinks"
+                }
+              },
+              {
+                "id": "7fc9c2eabd3c8944",
+                "type": "leaf",
+                "state": {
+                  "type": "outgoing-link",
+                  "state": {
+                    "file": "PBL/ERD_lostfound.jpg",
+                    "linksCollapsed": false,
+                    "unlinkedCollapsed": true
+                  },
+                  "icon": "links-going-out",
+                  "title": "Outgoing links"
+                }
+              },
+              {
+                "id": "ed3cb42618a7486d",
+                "type": "leaf",
+                "state": {
+                  "type": "tag",
+                  "state": {
+                    "sortOrder": "frequency",
+                    "useHierarchy": true,
+                    "showSearch": false,
+                    "searchQuery": ""
+                  },
+                  "icon": "lucide-tags",
+                  "title": "Tags"
+                }
+              },
+              {
+                "id": "6d0ad35ef7f48d4f",
+                "type": "leaf",
+                "state": {
+                  "type": "all-properties",
+                  "state": {
+                    "sortOrder": "frequency",
+                    "showSearch": false,
+                    "searchQuery": ""
+                  },
+                  "icon": "lucide-archive",
+                  "title": "All properties"
+                }
+              },
+              {
+                "id": "6f90cabc3630a12e",
+                "type": "leaf",
+                "state": {
+                  "type": "outline",
+                  "state": {
+                    "file": "PBL/DailyChanges/2026-10-12.md",
+                    "followCursor": false,
+                    "showSearch": false,
+                    "searchQuery": ""
+                  },
+                  "icon": "lucide-list",
+                  "title": "Outline"
+                }
+              },
+              {
+                "id": "8790e14afe18ceaf",
+                "type": "leaf",
+                "state": {
+                  "type": "calendar",
+                  "state": {},
+                  "icon": "calendar-with-checkmark",
+                  "title": "Calendar"
+                }
+              },
+              {
+                "id": "8a089962a8598b31",
+                "type": "leaf",
+                "state": {
+                  "type": "graph",
+                  "state": {},
+                  "icon": "lucide-git-fork",
+                  "title": "Graph view"
+                }
+              },
+              {
+                "id": "4ec035db0fc56839",
+                "type": "leaf",
+                "state": {
+                  "type": "git-view",
+                  "state": {},
+                  "icon": "git-pull-request",
+                  "title": "Source Control"
+                }
+              }
+            ],
+            "currentTab": 5
+          },
+          {
+            "id": "c4a69a0de2802d51",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "db4086e9b05ef42c",
+                "type": "leaf",
+                "state": {
+                  "type": "graph",
+                  "state": {},
+                  "icon": "lucide-git-fork",
+                  "title": "Graph view"
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "horizontal",
+        "width": 284.83331298828125
+      },
+      "left-ribbon": {
+        "hiddenItems": {
+          "templater-obsidian:Templater": false,
+          "obsidian-git:Open Git source control": false,
+          "switcher:Open quick switcher": false,
+          "canvas:Create new canvas": false,
+          "daily-notes:Open today's daily note": false,
+          "templates:Insert template": false,
+          "command-palette:Open command palette": false,
+          "bases:Create new base": false,
+          "obsidian-kanban:Create new board": false,
+          "graph:Open graph view": false,
+          "workspaces:Manage workspace layouts": false
+        }
+      },
+      "active": "e04b699d74ce6242",
+      "mtime": "2026-10-13T00:52:33+07:00"
+    }
+  },
+  "active": "Lost&Found"
+}

@@ -1,0 +1,172 @@
+// Lost & Found Database Schema
+// Skema PostgreSQL; struktur Google SSO diterapkan 2026-10-10 (user melaporkan migration selesai).
+// Docs: https://dbml.dbdiagram.io/docs
+//
+// Catatan:
+// - Semua id memakai tipe uuid asli PostgreSQL
+// - Nilai status disimpan HURUF KECIL dan dijaga check constraint di database
+// - Tabel bawaan Laravel (cache, jobs, sessions, personal_access_tokens, dll.) tidak dimasukkan
+// - NIM opsional; mahasiswa dapat memperoleh NIM otomatis dari email bila pola cocok. Role aplikasi: user | admin.
+// - Google SSO diterapkan: email 3 domain Polines; password nullable untuk user SSO dan tetap dipakai admin.
+
+Table users {
+  id uuid [primary key]
+  nim varchar [unique, note: 'Opsional; otomatis dari email mahasiswa bila pola cocok']
+  name varchar [not null]
+  email varchar [unique]
+  email_verified_at timestamp
+  password varchar [note: 'Nullable untuk user SSO; dipakai admin Filament']
+  role varchar [not null, default: 'user', note: 'user | admin']
+  fcm_token varchar [note: 'Firebase Cloud Messaging token for push notifications']
+  profile_image_url varchar
+  whatsapp varchar
+  wa_visible boolean [default: false, note: 'WhatsApp visibility control']
+  blocked boolean [default: false, note: 'Akun diblokir (Security Hardening)']
+  blocked_reason varchar [note: 'Alasan blokir']
+  remember_token varchar
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    nim
+    role
+  }
+}
+
+Table buildings {
+  id uuid [primary key]
+  name varchar [not null]
+  code varchar [note: 'Contoh: GSA, GKT, LTM']
+  type varchar [default: 'gedung', note: 'gedung | lab | bengkel | parkiran | fasilitas']
+  latitude decimal(10,8) [not null]
+  longitude decimal(11,8) [not null]
+  description text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    type
+    (latitude, longitude) [name: 'idx_buildings_coords']
+  }
+}
+
+Table lost_reports {
+  id uuid [primary key]
+  code varchar [unique, note: 'Kode laporan mudah dibaca, mis. LST-261001-A3F9']
+  reporter_id uuid [not null, note: 'User who reported lost item']
+  building_id uuid [note: 'Nullable. Gedung dari dropdown atau auto-detect GPS']
+  title varchar [not null]
+  description text [not null]
+  category varchar [not null, note: 'buku | elektronik | jaket_kemeja | dompet | aksesoris | alat_tulis | lainnya']
+  lost_date date [not null]
+  latitude decimal(10,8) [not null]
+  longitude decimal(11,8) [not null]
+  location_name varchar [note: 'Detail lokasi manual, mis. lantai 2 ruang 201']
+  photo_urls json [not null, note: 'Array of photo URLs from Laravel Storage']
+  status varchar [default: 'pending', note: 'pending | claimed | returned | closed (huruf kecil)']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    category
+    status
+  }
+}
+
+Table found_reports {
+  id uuid [primary key]
+  code varchar [unique, note: 'Kode laporan mudah dibaca, mis. FND-261001-B7K2']
+  reporter_id uuid [not null, note: 'User who found the item']
+  building_id uuid [note: 'Nullable. Gedung dari dropdown atau auto-detect GPS']
+  title varchar [not null]
+  description text [not null]
+  category varchar [not null, note: 'buku | elektronik | jaket_kemeja | dompet | aksesoris | alat_tulis | lainnya']
+  found_date timestamp [not null]
+  latitude decimal(10,8) [not null]
+  longitude decimal(11,8) [not null]
+  location_name varchar [note: 'Detail lokasi manual, mis. lantai 2 ruang 201']
+  photo_urls json [not null, note: 'Array of photo URLs from Laravel Storage']
+  status varchar [default: 'pending', note: 'pending | claimed | returned | closed (huruf kecil)']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    category
+    status
+  }
+}
+
+Table claims {
+  id uuid [primary key]
+  lost_report_id uuid [not null]
+  found_report_id uuid [not null]
+  claimant_id uuid [not null, note: 'User who submits the claim']
+  status varchar [default: 'pending', note: 'pending | accepted | returned | rejected | withdrawn (huruf kecil)']
+  reason text [not null, note: 'Why the claimant believes this is their item']
+  admin_note text [note: 'Admin review notes']
+  proof_of_transfer_photo_url varchar(500) [note: 'Foto bukti serah terima']
+  transferred_at timestamp [note: 'Waktu barang diserahkan']
+  transferred_by uuid [note: 'Admin/penemu yang menyerahkan barang']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    status
+  }
+}
+
+Table conversations {
+  id uuid [primary key]
+  lost_report_id uuid [note: 'Nullable']
+  found_report_id uuid [note: 'Nullable']
+  claim_id uuid [note: 'Nullable. Terisi jika chat dibuat dari claim']
+  user1_id uuid [not null, note: 'Mis. claimant / pemilik barang']
+  user2_id uuid [not null, note: 'Mis. penemu barang']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    claim_id
+    user1_id
+    user2_id
+  }
+}
+
+Table messages {
+  id uuid [primary key]
+  conversation_id uuid [not null]
+  sender_id uuid [not null]
+  message text [not null]
+  read_at timestamp [note: 'Null = belum dibaca']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    conversation_id
+    sender_id
+    created_at
+  }
+}
+
+// Relationships (semua sudah terverifikasi ada di database)
+Ref user_lost_reports: lost_reports.reporter_id > users.id [delete: cascade]
+Ref user_found_reports: found_reports.reporter_id > users.id [delete: cascade]
+Ref user_claims: claims.claimant_id > users.id [delete: cascade]
+Ref claim_lost_report: claims.lost_report_id > lost_reports.id [delete: cascade]
+Ref claim_found_report: claims.found_report_id > found_reports.id [delete: cascade]
+
+// Master Buildings
+Ref building_lost_reports: lost_reports.building_id > buildings.id [delete: set null]
+Ref building_found_reports: found_reports.building_id > buildings.id [delete: set null]
+
+// Foto Bukti Transfer
+Ref claim_transferred_by: claims.transferred_by > users.id [delete: set null]
+
+// Real-Time Chat
+Ref conversation_user1: conversations.user1_id > users.id [delete: cascade]
+Ref conversation_user2: conversations.user2_id > users.id [delete: cascade]
+Ref conversation_claim: conversations.claim_id > claims.id [delete: set null]
+Ref conversation_lost_report: conversations.lost_report_id > lost_reports.id [delete: set null]
+Ref conversation_found_report: conversations.found_report_id > found_reports.id [delete: set null]
+Ref message_conversation: messages.conversation_id > conversations.id [delete: cascade]
+Ref message_sender: messages.sender_id > users.id [delete: cascade]
