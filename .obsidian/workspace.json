@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "PBL/Documents/TechnicalReference.md",
+                "file": "PBL/DailyChanges/2026-10-13.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TechnicalReference"
+              "title": "2026-10-13"
             }
           }
         ]
@@ -230,14 +230,15 @@
   },
   "active": "e04b699d74ce6242",
   "lastOpenFiles": [
+    "PBL/DailyChanges/2026-10-12.md",
     "PBL/DailyChanges/2026-10-13.md",
+    "Lost&Found Progress.md",
+    "PBL/DailyChanges/2026-10-11.md",
     "PBL/Documents/TechnicalReference.md",
     "_Base/Index.base",
-    "PBL/DailyChanges/2026-10-12.md",
     "PBL/DailyChanges/2026-10-05.md",
     "PBL/DailyChanges/2026-09-30.md",
     "PBL/DailyChanges/2026-09-28.md",
-    "Lost&Found Progress.md",
     "IDEA.md",
     "PBL/Documents/ERD.md",
     "PBL/DailyChanges/2026-10-01.md",
@@ -245,7 +246,6 @@
     "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
     "PBL/DailyChanges/2026-10-06.md",
     "PBL/Plan/Foto Bukti Transfer - Lost&Found.md",
-    "PBL/DailyChanges/2026-10-11.md",
     "2026-10-13.md",
     "Untitled 1.canvas",
     "Untitled.canvas",
