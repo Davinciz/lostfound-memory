@@ -1,4 +1,5 @@
 // Lost & Found Database Schema
+// updated: 2026-10-13 (catatan building_id & location_name diselaraskan dengan flow peta + saran gedung)
 // Skema PostgreSQL; struktur Google SSO diterapkan 2026-10-10 (user melaporkan migration selesai).
 // Docs: https://dbml.dbdiagram.io/docs
 //
@@ -54,14 +55,14 @@ Table lost_reports {
   id uuid [primary key]
   code varchar [unique, note: 'Kode laporan mudah dibaca, mis. LST-261001-A3F9']
   reporter_id uuid [not null, note: 'User who reported lost item']
-  building_id uuid [note: 'Nullable. Gedung dari dropdown atau auto-detect GPS']
+  building_id uuid [note: 'Nullable. Dipilih user dari daftar saran gedung atau tap marker; bukan auto-detect; tidak menimpa koordinat']
   title varchar [not null]
   description text [not null]
   category varchar [not null, note: 'buku | elektronik | jaket_kemeja | dompet | aksesoris | alat_tulis | lainnya']
   lost_date date [not null]
-  latitude decimal(10,8) [not null]
-  longitude decimal(11,8) [not null]
-  location_name varchar [note: 'Detail lokasi manual, mis. lantai 2 ruang 201']
+  latitude decimal(10,8) [not null, note: 'Titik pin yang dipilih user di peta']
+  longitude decimal(11,8) [not null, note: 'Titik pin yang dipilih user di peta']
+  location_name varchar [note: 'Aturan: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)"']
   photo_urls json [not null, note: 'Array of photo URLs from Laravel Storage']
   status varchar [default: 'pending', note: 'pending | claimed | returned | closed (huruf kecil)']
   created_at timestamp [not null, default: `now()`]
@@ -77,14 +78,14 @@ Table found_reports {
   id uuid [primary key]
   code varchar [unique, note: 'Kode laporan mudah dibaca, mis. FND-261001-B7K2']
   reporter_id uuid [not null, note: 'User who found the item']
-  building_id uuid [note: 'Nullable. Gedung dari dropdown atau auto-detect GPS']
+  building_id uuid [note: 'Nullable. Dipilih user dari daftar saran gedung atau tap marker; bukan auto-detect; tidak menimpa koordinat']
   title varchar [not null]
   description text [not null]
   category varchar [not null, note: 'buku | elektronik | jaket_kemeja | dompet | aksesoris | alat_tulis | lainnya']
   found_date timestamp [not null]
-  latitude decimal(10,8) [not null]
-  longitude decimal(11,8) [not null]
-  location_name varchar [note: 'Detail lokasi manual, mis. lantai 2 ruang 201']
+  latitude decimal(10,8) [not null, note: 'Titik pin yang dipilih user di peta']
+  longitude decimal(11,8) [not null, note: 'Titik pin yang dipilih user di peta']
+  location_name varchar [note: 'Aturan: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)"']
   photo_urls json [not null, note: 'Array of photo URLs from Laravel Storage']
   status varchar [default: 'pending', note: 'pending | claimed | returned | closed (huruf kecil)']
   created_at timestamp [not null, default: `now()`]

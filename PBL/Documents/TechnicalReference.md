@@ -2,7 +2,7 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-11
+updated: 2026-10-13
 summary: Referensi teknis Flutter-Laravel dengan Google SSO aktif, stack terpasang, skema PostgreSQL, dan Filament.
 ---
 
@@ -16,6 +16,7 @@ Mobile App (Flutter) ◄──HTTPS──► Laravel API (api.php) ◄──► 
      ▼                                              ▼
 Firebase Cloud Messaging                         Firebase Admin SDK (server-side)
 ```
+> Chat real-time: Pusher (MVP) → Soketi — RENCANA, belum diimplementasi.
 ### 8.2 Komponen & Pemilihan Teknologi (Final)
 <table header-row="true">
 <tr>
@@ -34,9 +35,9 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 <td>Peta interaktif untuk pilih lokasi (pin), marker gedung, tombol "Lokasi saya" menggeser peta ke GPS</td>
 </tr>
 <tr>
-<td>**Camera**</td>
-<td>`camera` package (Flutter)</td>
-<td>Akses kamera native dengan preview, didukung iOS & Android</td>
+<td>**Camera & Galeri**</td>
+<td>`image_picker` (kamera + galeri)</td>
+<td>Kamera 1 foto per tap + galeri multi-pilih. Package `camera` kemungkinan tidak terpakai, jangan dihapus tanpa pengecekan.</td>
 </tr>
 <tr>
 <td>**Push Notification**</td>
@@ -74,6 +75,11 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 <td>Mengirim notifikasi FCM dari Laravel</td>
 </tr>
 <tr>
+<td>**Chat real-time**</td>
+<td>Pusher (MVP) → Soketi</td>
+<td>RENCANA, belum diimplementasi</td>
+</tr>
+<tr>
 <td>**Deployment**</td>
 <td>Backend: Railway/Render/AWS; Mobile: Flutter build (APK/IPA)</td>
 <td></td>
@@ -83,7 +89,7 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 ```javascript
 1. Pengguna login pertama → Flutter app minta FCM token → dikirim ke /api/users/me/fcm-token (Laravel)
 2. Laravel backend menyimpan FCM token di tabel users (kolom fcm_token)
-3. Event trigger di Laravel (claim baru, matching ditemukan, claim diproses):
+3. Event trigger di Laravel (pesan chat baru, claim diterima/ditolak, barang diserahkan):
    a. Hitung daftar penerima notifikasi
    b. Kirim via Firebase Admin SDK (kreait/firebase-php)
    c. FCM mengirim ke perangkat pengguna
@@ -103,8 +109,8 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 - ~~**Flow lama:** request permission → getCurrentPosition → tampilkan peta + pin → allow manual adjust → fallback daftar area kampus jika denied~~ — DICORET (2026-10-11).
 ---
 ## 10. Fitur Kamera — Detail Teknis
-- **Permissions:** iOS `NSCameraUsageDescription` \| Android `CAMERA` + storage permission
-- **Flow:** "Ambil Foto" → camera view → preview → retake/add (maks 3) → compress (max 2MB) → upload saat submit
+- **Permissions:** iOS `NSCameraUsageDescription` + `NSPhotoLibraryUsageDescription` \| Android `CAMERA`. Android 13+ memakai Photo Picker, jadi tidak perlu izin storage.
+- **Flow:** bottom sheet pilihan **Kamera / Galeri** → kamera: 1 foto per tap; galeri: multi-pilih sampai sisa slot (total maks 3, min 1) → preview → kompres (resize 1920px, JPEG kualitas 85) → upload ke `POST /api/photos/upload` (jpg/jpeg/png/webp, maks 2 MB) sebelum create report.
 ---
 ## 11. Fitur Push Notification — Detail Teknis
 - **Setup:** Firebase project → daftarkan iOS+Android → `google-services.json` / `GoogleService-Info.plist` → server: `kreait/laravel-firebase` + service account key
@@ -115,7 +121,7 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 - **Overview:** kartu metrik, tabel laporan terbaru, tabel claim pending
 - **Laporan Admin:** filter status/kategori/tanggal/lokasi; kolom ID, pembuat, judul, kategori, lokasi, tanggal, status, aksi
 - **Claim Admin:** filter status; tabel ID, pemilik, barang hilang, barang ditemukan, tanggal, status, aksi; detail view foto side-by-side + peta + alasan + catatan admin
-- **Aksi:** Terima (→ `accepted` + laporan jadi `claimed` + notifikasi), Tolak (→ `rejected` + alasan + notifikasi), Batalkan (→ `withdrawn` + notifikasi). Setelah admin terima, serah terima fisik → upload foto bukti via markTransferred → `returned`.
+- **Aksi:** Terima (→ `accepted` + laporan jadi `claimed` + notifikasi), Tolak (→ `rejected` + alasan + notifikasi). Setelah admin terima, serah terima fisik → upload foto bukti via markTransferred → `returned`.
 ---
 ## 13. Non-Functional Requirements
 - **Performance:** feed \< 2 detik (3G), upload foto max 2MB (compressed), API response \< 500ms
@@ -149,11 +155,11 @@ https://api.domain.com/storage/reports/uuid-1.jpg
 ```
 ---
 ## 14. Milestone & Roadmap
-**Phase 1: MVP (4-6 minggu)** — Google SSO mobile + admin Filament ✓, CRUD laporan ✓ (kamera+GPS), feed ✓, search dasar ✓, FCM setup ✓, dashboard admin dasar ✓, Laravel Storage ✓
-**Phase 2: Claim System (3-4 minggu)** — Fitur claim ✓ (partial), matching sederhana, dashboard claim admin ✓, notifikasi event claim (in progress)
+**Phase 1: MVP (4-6 minggu)** — Google SSO mobile + admin Filament ✓, CRUD laporan ✓ (kamera/galeri + pin peta), feed ✓, search dasar ✓, FCM setup ✓, dashboard admin dasar ✓, Laravel Storage ✓
+**Phase 2: Claim System (3-4 minggu)** — Fitur claim ✓ (partial), chat verifikasi (in progress), dashboard claim admin ✓, notifikasi event claim (in progress)
 **Phase 3: Polish (2-3 minggu)** — Peta detail, notifikasi smart (deep link), offline cache, export CSV, testing
 
-**Status terkini (2026-10-10):**
+**Status terkini (2026-10-12):**
 - ✅ Google SSO backend dan Flutter selesai, merge ke `main`; login mahasiswa teruji di HP fisik. Open items: consent screen In production, konfirmasi pola email/panjang NIM, serta verifikasi domain lain bila belum.
 - ✅ Database schema finalized (7 tabel, status lowercase, FK constraints)
 - ✅ Status `returned` ditambahkan ke claims enum; alur: accepted → returned via markTransferred
@@ -161,8 +167,10 @@ https://api.domain.com/storage/reports/uuid-1.jpg
 - ✅ Flutter mobile app: auth, create report (lost/found), upload 3 photos
 - ✅ Backend API: LostReport, FoundReport, Claim CRUD; markTransferred endpoint
 - ✅ Filament admin: LostReportResource, FoundReportResource, ClaimResource (View, Actions Terima/Tolak/Serahkan Barang), BuildingResource, UserResource
-- ✅ Testing: 21/21 test passed (PHPUnit + Feature tests)
-- 🔄 In progress: Real-time chat, buildings master data (tabel + gedung + GET /api/buildings sudah selesai; flow lokasi diubah ke peta + saran gedung lokal Flutter 2026-10-11, LocationService + POST /location/suggest dicoret)
+- ✅ Testing: backend 67 test lulus, Flutter `geo_utils` 46 test (laporan agent, log 2026-10-11)
+- ✅ Buildings master data selesai: tabel + seeder, `GET /api/buildings`, Filament, flow peta ter-merge 2026-10-11. Sisa: pembersihan data buildings via Filament.
+- 🔄 Real-time chat: tabel `conversations`/`messages` sudah ada di DB; Model, API, Pusher, UI belum.
+- ✅ Repo dipindah ke GitHub Private (Davinciz/lostfound-backend, Davinciz/lostfound-mobile); key Firebase dirotasi 2026-10-12 (tanpa detail key).
 ---
 ## 15. Dependencies & Prasyarat
 ### 15.1 Stack Teknologi (Final)
@@ -222,6 +230,9 @@ https://api.domain.com/storage/reports/uuid-1.jpg
 <td>Unit test backend + widget test mobile</td>
 </tr>
 </table>
+
+**Versi terpasang (dilaporkan user, 2026-10-13):** Laravel **v13.32.0**, Filament **3.3.55**. Kompatibilitas keduanya diverifikasi di Open Items (§17).
+
 ### 15.2 Akun & Layanan yang Dibutuhkan
 - [x] **Firebase project** — untuk FCM push notification + konfigurasi mobile app
 	- Download `google-services.json` (Android) dan `GoogleService-Info.plist` (iOS)
@@ -246,18 +257,18 @@ DB_DATABASE=...
 DB_USERNAME=...
 DB_PASSWORD=...
 
-FCM_CREDENTIALS=... (path ke service account key JSON, atau JSON string)
+FIREBASE_CREDENTIALS=... (path ke service account key JSON, atau JSON string; sesuai `config/firebase.php`)
 GOOGLE_CLIENT_ID=... (OAuth Web client ID; simpan hanya di environment, jangan di dokumen nilai aktual)
 
 APP_URL=https://api.domain.com
-
-Throttle POST /api/auth/google: 30 permintaan/menit per IP.
 	```
+
+Catatan: Throttle `POST /api/auth/google` — 30 permintaan/menit per IP.
 ### 15.3 Struktur Repository
 Project memakai dua repository terpisah, bukan monorepo:
 
-- **Flutter mobile:** `C:\Project\mobile-lostfound`
-- **Laravel API + Filament admin:** `D:\PBL\lostfound`
+- **Flutter mobile:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
+- **Laravel API + Filament admin:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
 - Dokumentasi proyek disimpan di vault Obsidian, `PBL/Documents/`.
 
 Struktur direktori internal mengikuti struktur standar Flutter dan Laravel masing-masing repository.
@@ -266,13 +277,14 @@ Filament akan digunakan untuk dashboard admin dengan fitur:
 - **Dashboard Page** — ringkasan metrik (total laporan hari ini, claim pending, chart tren 7 hari)
 - **LostReportResource** — CRUD laporan hilang dengan tabel, filter, status update
 - **FoundReportResource** — CRUD laporan ditemukan dengan tabel, filter, status update
-- **ClaimResource** — tabel claim pending dengan aksi terima/tolak/batalkan (menggunakan Filament Actions)
+- **ClaimResource** — tabel claim pending dengan aksi terima/tolak (menggunakan Filament Actions)
 - **UserResource** — manage user (admin only)
+- **BuildingResource** — master data gedung kampus (detail aksi lihat §15.8)
 **Filament Tabel Kolom yang Disarankan:**
 *LostReportResource:*
 - ID, Judul, Kategori, Lokasi, Lat/Long, Status, Pembuat (relation ke User), Foto (preview), Tanggal dibuat, Aksi (lihat detail)
 *ClaimResource:*
-- ID, Pemilik (User), Barang Hilang (LostReport relation), Barang Temuan (FoundReport relation), Alasan Claim, Status, Tanggal Claim, Aksi (Terima/Tolak/Batalkan)
+- ID, Pemilik (User), Barang Hilang (LostReport relation), Barang Temuan (FoundReport relation), Alasan Claim, Status, Tanggal Claim, Aksi (Terima/Tolak)
 ### 15.5 Integrasi Kampus (optional, future)
 - [x] Google SSO kampus diterapkan 2026-10-10; detail implementasi tercatat di DailyChanges 2026-10-10.
 - [ ] API data kampus (nama area/faculty, jadwal kelas untuk konteks lokasi)
@@ -370,7 +382,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <td>Waktu diperbarui</td>
 </tr>
 </table>
-**Index:** `nim` (unique), `role`, `fcm_token`
+**Index:** `nim` (unique), `role`, `fcm_token` *(index `fcm_token` tidak ada di `ERD.md`/`schema.dbml` — verifikasi ke migration aktual)*
 ---
 #### 2. `lost_reports`
 <table header-row="true">
@@ -614,7 +626,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 
 **Catatan:** Verifikasi kepemilikan dilakukan via real-time chat antara penemu dan pengklaim (conversation auto-created saat claim dibuat), bukan pertanyaan keamanan. Admin tidak membaca isi chat.
 ---
-#### 2. `buildings`
+#### 5. `buildings`
 
 Master data gedung kampus untuk fitur pilih lokasi di peta dan saran gedung terdekat.
 
@@ -623,7 +635,7 @@ Master data gedung kampus untuk fitur pilih lokasi di peta dan saran gedung terd
 **Index:** type, composite (latitude, longitude)
 
 ---
-#### 3. `conversations`
+#### 6. `conversations`
 
 Ruang chat antara dua user, terkait claim atau laporan.
 
@@ -632,7 +644,7 @@ Ruang chat antara dua user, terkait claim atau laporan.
 **Index:** claim_id, user1_id, user2_id
 
 ---
-#### 4. `messages`
+#### 7. `messages`
 
 Pesan individual dalam conversation.
 
@@ -658,6 +670,7 @@ found_reports 1 ──── N claims   (satu laporan ditemukan bisa diklaim leb
 5. Claim `returned`: barang diserahkan via markTransferred → laporan jadi `returned`
 ---
 ### Migration Skrip (Laravel)
+> **Catatan:** Ilustrasi skema awal, tidak identik dengan migration aktual (kolom `code`, `building_id`, tabel `buildings`/`conversations`/`messages` ada di migration lain). Sumber kebenaran: `ERD.md` dan `schema.dbml`.
 ```php
 // Migration Google SSO diterapkan 2026-10-10: password nullable; role student -> user, default user, check constraint role disesuaikan bila ada; NIM tetap nullable + unique.
 // Implementasi role user menggantikan student dilaporkan selesai dan merge ke main.
@@ -780,11 +793,11 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 4. Admin di Filament dashboard lihat claim pending → review foto + lokasi → terima/tolak claim → notifikasi ke kedua pihak (FCM)
 5. Setelah admin terima, koordinasi serah terima → upload foto bukti → status jadi `returned`
 **Tech Stack Final:**
-- **Mobile:** Flutter (Dart) — `google_sign_in ^7.2.0`, `camera`, `location`, `flutter_map` + `latlong2` (peta OSM), `firebase_messaging`, `dio`/`http`, `url_launcher` (untuk WhatsApp deep-link)
+- **Mobile:** Flutter (Dart) — `google_sign_in ^7.2.0`, `image_picker` (kamera + galeri), `camera` (kemungkinan tidak terpakai), `location`, `flutter_map` + `latlong2` (peta OSM), `firebase_messaging`, `dio`/`http`, `url_launcher` (untuk WhatsApp deep-link)
 - **Backend + Admin:** Laravel (PHP) — REST API (`api.php`) + Filament admin (`web.php`)
 - **Database:** PostgreSQL
 - **Push Notification:** FCM via `kreait/laravel-firebase` (backend) + `firebase_messaging` (Flutter)
-- **WhatsApp Integration:** Deep-link via `url_launcher` (Flutter), opsional: WhatsApp Business API via `kreait/laravel-firebase` atau Meta API
+- **WhatsApp Integration:** Deep-link via `url_launcher` (Flutter); opsional: Meta WhatsApp Business API (opsional, belum direncanakan).
 - **Storage:** Laravel Storage (disk public)
 **Model Data Utama:**
 - `User` — role `user` untuk mahasiswa/dosen/karyawan, `admin` untuk administrator. Mobile login Google SSO pada domain `mhs.polines.ac.id`, `dsn.polines.ac.id`, `polines.ac.id`; NIM opsional; password nullable untuk user SSO dan tetap dipakai admin; punya `fcm_token`, `email_verified_at`, `blocked`
@@ -796,15 +809,23 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - `POST /api/lost-reports` — buat laporan hilang (file upload foto + GPS data)
 - `POST /api/found-reports` — buat laporan ditemukan
 - `POST /api/claims` — ajukan claim (dengan alasan)
-- `PATCH /api/claims/{id}` — admin proses claim (terima/tolak) — perlu admin role
+- `PATCH /api/claims/{id}` — admin proses claim (terima/tolak) — perlu admin role *(verifikasi ke routes aktual; kemungkinan tidak sinkron)*
+- `GET /api/buildings` — daftar master gedung untuk marker peta + saran gedung
+- `POST /api/photos/upload` — upload foto (jpg/jpeg/png/webp, maks 2 MB)
+- `POST /api/photos/delete` — hapus foto
+- `PATCH /api/claims/{claim}/mark-transferred` — tandai barang diserahkan (admin atau penemu)
 - `GET /api/admin/*` — endpoint admin
 **Point Penting yang Perlu Diingat:**
 - Auth mobile: Google SSO, domain persis `mhs.polines.ac.id`, `dsn.polines.ac.id`, `polines.ac.id` setelah lowercase + trim; subdomain ditolak. Validasi backend wajib. Role `user | admin`; NIM opsional, password nullable untuk user SSO; Sanctum token 7 hari. Admin Filament tetap memakai password.
 - GPS: pilih lokasi lewat titik (pin) di peta (`flutter_map` + OSM), saran gedung terdekat sebagai daftar (Haversine lokal Flutter), tombol "Lokasi saya" hanya menggeser peta ke posisi GPS
-- Kamera: min 1 foto, maks 3 foto, kompresi max 2MB per foto sebelum upload
+- Kamera: min 1 foto, maks 3 foto; opsi kamera (1 foto/tap) atau galeri (multi-pilih); kompresi maks 2 MB per foto, lalu upload ke `POST /api/photos/upload` sebelum create report
 - FCM: token harus disimpan di database saat login pertama, bukan saat install app
 - WhatsApp: nomor WhatsApp hanya ditampilkan jika user mengizinkan (wa_visible=true). Deep-link WhatsApp digunakan untuk chat langsung.
 - Admin: hanya role `admin` yang bisa akses endpoint admin dan Filament dashboard; admin tidak baca isi chat
 - Filament: digunakan khusus untuk admin dashboard web, bukan replacement untuk mobile app
 - Google OAuth client Web digunakan sebagai audience ID token; client Android memerlukan SHA-1 tiap mesin developer. Jangan simpan credential di dokumen.
 ---
+
+## 17. Open Items
+
+- **Verifikasi kompatibilitas Filament 3.3.x dengan Laravel 13** — cek `composer.json` dan `composer.lock` (belum dikerjakan; jangan simpulkan hasil sebelum diperiksa).

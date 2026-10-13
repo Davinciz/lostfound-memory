@@ -2,19 +2,19 @@
 type: plan
 project: lost-found
 status: active
-priority: medium (sementara, menunggu user)
+priority: medium
 created: 2026-10-11
-updated: 2026-10-12
-summary: Backlog perbaikan lanjutan dari plan Perbaikan Flow Claim — validasi foto, error register screen, endpoint laporan saya, URL foto relatif, riwayat profil, pembedaan View Filament, pembersihan tooling, rotasi key Firebase
+updated: 2026-10-13
+summary: Backlog perbaikan lanjutan — item 7 (tooling) & 8 (rotasi key Firebase) selesai 2026-10-12; sisa item 1–6 (validasi foto, error register, endpoint laporan saya, URL foto relatif, riwayat profil, View Filament)
 ---
 
 # Backlog Perbaikan Lanjutan - Lost&Found
 
 **Created:** 2026-10-11  
-**Updated:** 2026-10-12  
+**Updated:** 2026-10-13  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Active  
-**Priority:** Medium (sementara, menunggu user)  
+**Priority:** Medium  
 **Sumber:** [[Perbaikan Flow Claim dan Form Laporan - Lost&Found]] (semua bug selesai 2026-10-11, backlog dipindah ke sini)
 
 ---
@@ -27,20 +27,18 @@ Menyelesaikan backlog yang tersisa setelah semua bug utama (1, 2a, 2b, 3) selesa
 
 ## Item Prioritization
 
-**Usulan prioritas dari plan asal; menunggu konfirmasi user:**
+**Prioritas final (ditetapkan user 2026-10-13):**
 
-| Item | Prioritas usulan | Alasan |
+| Item | Prioritas final | Alasan |
 |------|------------------|--------|
-| Pembersihan file tooling agent di `main` Laravel | **High** (sebelum push) | File `.agents/`, `.claude/`, `.mcp.json`, `opencode.json`, `boost.json`, perubahan `composer.*` ikut ter-merge lewat `git add -A` |
-| Rotasi key `firebase-service-account.json` + `git filter-repo` | **High** (sebelum repo Public) | Key terekspos di history git |
-| Validasi field wajib sebelum upload foto + rollback foto yatim | **Medium** | Foto yatim muncul saat validasi gagal setelah upload |
-| Error `register_screen.dart:43` | **Medium** | Dilaporkan agent sebagai "pre-existing", perlu dicek |
-| Endpoint "laporan saya" (`?mine=1`) | **Medium** | Dropdown claim saat ini difilter di Flutter dari 20 item pertama |
-| URL foto relatif | **Medium** (sebelum demo) | Hindari ubah DB tiap ganti jaringan |
-| Pembedaan halaman View Lost vs Found di Filament | **Medium** | Prompt sudah dikirim, hasil belum dikonfirmasi |
-| Riwayat laporan saya di tab Profil | **Low** | `onTap` masih kosong |
-
-**Pertanyaan ke user:** Apakah prioritas di atas disetujui, atau ada yang perlu diubah? Apakah plan ini secara keseluruhan **High**, **Medium**, atau **Low**?
+| Pembersihan file tooling agent di `main` Laravel | ✅ Selesai (2026-10-12) | File `.agents/`, `.claude/`, `.mcp.json`, `opencode.json`, `boost.json`, perubahan `composer.*` ikut ter-merge lewat `git add -A` |
+| Rotasi key `firebase-service-account.json` + `git filter-repo` | ✅ Selesai (2026-10-12) | Key terekspos di history git |
+| Item 1 — Validasi field wajib sebelum upload foto + rollback foto yatim | **Medium** | Foto yatim muncul saat validasi gagal setelah upload |
+| Item 2 — Error `register_screen.dart:43` | **Medium** | Dilaporkan agent sebagai "pre-existing", perlu dicek |
+| Item 3 — Endpoint "laporan saya" (`?mine=1`) | **Medium** | Dropdown claim saat ini difilter di Flutter dari 20 item pertama |
+| Item 4 — URL foto relatif | **High** (sebelum demo) | Hindari ubah DB tiap ganti jaringan |
+| Item 5 — Riwayat laporan saya di tab Profil | **Low** | `onTap` masih kosong |
+| Item 6 — Pembedaan halaman View Lost vs Found di Filament | **Medium** | Prompt sudah dikirim, hasil belum dikonfirmasi |
 
 ---
 
@@ -65,7 +63,7 @@ Blokir aksi Terima (endpoint 422 dan Filament disabled) bila `lostReport.status`
 ## Item 1 — Validasi Field Wajib Sebelum Upload Foto + Rollback Foto Yatim
 
 **Status:** ⬜ Belum dikerjakan  
-**Prioritas usulan:** Medium  
+**Prioritas:** Medium  
 **Sumber:** DailyChanges 2026-10-09 temuan 1
 
 ### Masalah
@@ -80,7 +78,7 @@ Foto di-upload ke Laravel Storage sebelum validasi field wajib selesai. Bila val
 ## Item 2 — Error `register_screen.dart:43`
 
 **Status:** ⬜ Belum dikerjakan  
-**Prioritas usulan:** Medium  
+**Prioritas:** Medium  
 **Sumber:** Laporan Coding Agent (dilabeli "pre-existing")
 
 ### Masalah
@@ -96,7 +94,7 @@ Error analyze di `register_screen.dart` baris 43. Dilaporkan agent sebagai "pre-
 ## Item 3 — Endpoint "Laporan Saya" (`?mine=1`)
 
 **Status:** ⬜ Belum dikerjakan  
-**Prioritas usulan:** Medium  
+**Prioritas:** Medium  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
 ### Masalah
@@ -110,7 +108,7 @@ Tambahkan endpoint `GET /api/lost-reports?mine=1` dan `GET /api/found-reports?mi
 ## Item 4 — URL Foto Relatif
 
 **Status:** ⬜ Belum dikerjakan  
-**Prioritas usulan:** Medium (sebelum demo)  
+**Prioritas:** High (sebelum demo)  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
 ### Masalah
@@ -124,7 +122,7 @@ Simpan path relatif di DB (mis. `reports/uuid.jpg`). Bangun URL lengkap saat res
 ## Item 5 — Riwayat Laporan Saya di Tab Profil
 
 **Status:** ⬜ Belum dikerjakan  
-**Prioritas usulan:** Low  
+**Prioritas:** Low  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
 ### Masalah
@@ -138,7 +136,7 @@ Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3 bila s
 ## Item 6 — Pembedaan Halaman View Lost vs Found di Filament
 
 **Status:** ⬜ Belum dikerjakan (prompt sudah dikirim, hasil belum dikonfirmasi)  
-**Prioritas usulan:** Medium  
+**Prioritas:** Medium  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
 ### Masalah
@@ -187,12 +185,22 @@ Key `firebase-service-account.json` terekspos di history git.
 
 ---
 
+## Open items dari DailyChanges 2026-10-10
+
+**Catatan (belum dikerjakan; bukan item bernomor):**
+
+- **Consent screen Google OAuth masih berstatus Testing** — ubah ke **In production** sebelum dipakai umum.
+- **Konfirmasi pola email dan panjang NIM mahasiswa** — 8 digit masih asumsi.
+- **Uji login akun dosen/karyawan/Gmail** — pastikan ditolak bila belum (verifikasi allowlist domain).
+
+---
+
 ## Related Files
 
 - **Plan asal:** [[Perbaikan Flow Claim dan Form Laporan - Lost&Found]]
-- **Laravel:** `D:\PBL\lostfound`
-- **Flutter:** `C:\Project\mobile-lostfound`
-- **DailyChanges:** [[DailyChanges 2026-10-09]], [[DailyChanges 2026-10-10]], [[DailyChanges 2026-10-11]]
+- **Laravel:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Flutter:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
+- **DailyChanges:** [[2026-10-09]], [[2026-10-10]], [[2026-10-11]], [[2026-10-12]]
 
 ---
 

@@ -32,8 +32,8 @@ kanban-plugin: board
 
 - [ ] **Item 6 — Pembedaan halaman View Lost vs Found di Filament** `Medium`
 	Prompt sudah dikirim, hasil belum dikonfirmasi. View Lost Report & View Found Report kemungkinan belum dibedakan.
-- [ ] **Design.md §8 — "Repository & monitoring: Gitea" → GitHub?**
-	Baris 332. Belum diubah, menunggu keputusan user.
+- [x] **Design.md §8 — "Repository & monitoring: Gitea" → GitHub**
+	Baris 332 sudah diperbarui 2026-10-13: "Repository: GitHub (Private). Issue/Milestone Gitea tidak ikut dimigrasi; monitoring: belum ditentukan." 
 - [ ] **Sinkronisasi Notion**
 	Belum dilakukan, menunggu perintah user.
 - [ ] **Konfirmasi status plan**

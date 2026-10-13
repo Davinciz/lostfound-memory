@@ -2,13 +2,16 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-11
+updated: 2026-10-13
 summary: ERD 7 tabel Lost&Found; skema Google SSO diterapkan, NIM opsional, dan password nullable untuk user.
 ---
 
 # ERD Lost & Found
 
-![ERD Lost & Found](ERD-lostfound.png)
+![ERD Lost & Found](../Attachments/ERD-lostfound.png)
+
+> [!warning] Gambar mungkin belum diperbarui
+> Gambar ERD mungkin belum mencerminkan 7 tabel dan skema SSO terbaru; deskripsi teks di bawah yang berlaku sampai gambar diperbarui.
 
 ## Deskripsi Tabel & Relasi
 

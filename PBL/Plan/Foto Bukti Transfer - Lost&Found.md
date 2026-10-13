@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-09
+updated: 2026-10-13
 summary: Upload foto bukti serah terima setelah admin terima claim untuk dokumentasi dan mencegah dispute
 ---
 
@@ -11,7 +11,7 @@ summary: Upload foto bukti serah terima setelah admin terima claim untuk dokumen
 
 **Tanggal:** 2026-09-30  
 **Project:** [[PBL]] Lost&Found  
-**Status:** Done (implemented 2026-10-05)  
+**Status:** In Progress  
 **Priority:** Medium  
 
 ---
@@ -23,7 +23,7 @@ summary: Upload foto bukti serah terima setelah admin terima claim untuk dokumen
 ✅ **Flutter:** Model claim dengan field `proofOfTransferPhotoUrl`, `transferredAt`, `transferredBy`  
 ✅ **Testing:** 21/21 test lulus (6 test ClaimTransferTest)  
 
-**Pending:** UI detail claim di Flutter untuk menampilkan foto bukti (display only, upload via Filament sudah jalan).
+**Sisa pekerjaan (In Progress, 2026-10-13):** 1) UI detail claim di Flutter untuk menampilkan foto bukti (display only). 2) Upload foto bukti oleh penemu — `ClaimPolicy` sudah mengizinkan finder, tetapi UI Flutter belum ada (lihat Next Steps 5).
 
 ---
 
@@ -382,7 +382,8 @@ if (claim.proofOfTransferPhotoUrl != null) {
 ### 1. Photo Storage
 - Upload ke Laravel Storage disk `public`, folder `claims/proof`
 - URL: `http://api.domain.com/storage/claims/proof/uuid.jpg`
-- Accessible by: claimant, finder, admin (via authorization check di API)
+- Akses: foto disimpan di disk `public`, jadi URL foto bisa dibuka siapa pun yang tahu URL (UUID sulit ditebak, tapi ini **bukan** kontrol akses). Klaim "accessible by claimant, finder, admin" hanya berlaku lewat authorization check di API, bukan proteksi file.
+- URL foto absolut akan terdampak **Backlog Item 4** (URL foto relatif) — lihat [[Backlog Perbaikan Lanjutan - Lost&Found]].
 
 ### 2. Authorization
 - Endpoint `/mark-transferred` hanya admin atau finder (verified via Policy: `foundReport.reporter_id == auth()->id()`)
@@ -470,18 +471,19 @@ Oleh: Admin Kampus
 ## Next Steps
 
 1. ✅ Plan selesai
-2. ⬜ Decision: Admin-driven only atau allow finder upload?
-3. ⬜ Implement backend API `/mark-transferred`
-4. ⬜ Implement Filament admin action
+2. ✅ Decision: admin + penemu boleh upload — terimplementasi di ClaimPolicy (lihat "Implementation Status" 2026-10-05)
+3. ✅ Implement backend API `/mark-transferred` (2026-10-05)
+4. ✅ Implement Filament admin action "Serahkan Barang" (2026-10-05)
 5. ⬜ (Optional) Implement Flutter finder upload
-6. ⬜ Test end-to-end dengan real photo
-7. ⬜ Monitor upload rate + dispute rate
+6. ⬜ UI detail claim di Flutter untuk menampilkan foto bukti (display only)
+7. ⬜ Test end-to-end dengan real photo
+8. ⬜ Monitor upload rate + dispute rate
 
 ---
 
 ## Related Files
 
-- **Project root:** `D:\PBL\lostfound`
+- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Verifikasi via Chat:** [[Verifikasi via Chat - Lost&Found]]

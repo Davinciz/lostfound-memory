@@ -4,15 +4,17 @@ project: lost-found
 status: active
 priority: high
 created: 2026-09-29
-updated: 2026-10-11
+updated: 2026-10-13
 summary: Master buildings + pilih lokasi di peta dengan saran gedung terdekat (Haversine lokal Flutter)
 ---
 
 # Master Buildings + Auto Location Detection - Lost&Found
 
 **Created:** 2026-09-29  
-**Updated:** 2026-10-11 (merge ke main dikonfirmasi user; sisa: data buildings via Filament)  
-**Status:** Active
+**Project:** [[PBL]] Lost&Found  
+**Updated:** 2026-10-13 (merge ke main dikonfirmasi user; sisa: data buildings via Filament)  
+**Status:** Active  
+**Priority:** High
 
 ---
 
@@ -314,7 +316,7 @@ class BuildingService {
 > Implementasi: `lib/utils/geo_utils.dart` — Haversine, 3 gedung terdekat radius 75 m, builder `location_name`. Test: `test/geo_utils_test.dart` (46 test lulus). Dites di HP fisik. Lihat DailyChanges 2026-10-11.
 
 ```dart
-// lib/utils/haversine.dart
+// lib/utils/geo_utils.dart
 double haversineDistance(double lat1, double lon1, double lat2, double lon2) {
   const earthRadius = 6371000; // meter
   final dLat = _toRad(lat2 - lat1);
@@ -550,8 +552,8 @@ class BuildingResource extends Resource
 
 - **ERD DBML:** `D:\ObsidianVault\PBL\Documents\schema.dbml`
 - **ERD Markdown:** `D:\ObsidianVault\PBL\Documents\ERD.md`
-- **Laravel project:** `D:\PBL\lostfound`
-- **Flutter project:** `C:\Project\mobile-lostfound`
+- **Laravel project:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Flutter project:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
 - **Koordinat PDF:** `C:\Users\ADVAN\AppData\Local\hermes\cache\documents\doc_9eb77469e200_Koordinat_Gedung_-_Sheet1.pdf`
 
 ---

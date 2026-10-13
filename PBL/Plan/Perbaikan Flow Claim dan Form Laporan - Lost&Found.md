@@ -3,14 +3,14 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-11
+updated: 2026-10-13
 summary: Perbaiki status claim, pemilihan foto, dan pemilihan lokasi di peta dengan saran gedung pada form laporan
 ---
 
 # Perbaikan Flow Claim dan Form Laporan - Lost&Found
 
 **Tanggal:** 2026-10-06  
-**Updated:** 2026-10-11 (semua bug selesai & ter-merge ke main; usulan plan done menunggu konfirmasi user)  
+**Updated:** 2026-10-13 (semua bug selesai & ter-merge ke main; usulan plan done menunggu konfirmasi user)  
 **Project:** [[PBL]] Lost&Found  
 **Status:** In Progress  
 **Priority:** High
@@ -88,7 +88,7 @@ Satu kali tap "Ambil Foto" langsung menghasilkan 3 foto. Seharusnya user memotre
 4. Test pada HP fisik: ambil 1 foto, ambil 3 foto bertahap, pilih 2 dari galeri, hapus satu lalu tambah lagi.
 
 ### Dampak dokumen
-PRD 3.F (Kamera) dan Technical Reference bagian 10 saat ini hanya menyebut kamera; tambahkan opsi galeri.
+PRD 3.F (Kamera) dan Technical Reference bagian 10 sudah diperbarui 2026-10-13 (opsi galeri ditambahkan).
 
 ---
 
@@ -123,7 +123,7 @@ Memilih lokasi langsung mengambil lokasi saat ini. User tidak bisa memilih lokas
    - Tap di peta menaruh pin; pin bisa digeser (drag).
    - Tombol "Lokasi saya" → ambil GPS, geser peta ke posisi GPS, **tidak menetapkan pin**.
    - Marker gedung dari `GET /api/buildings` tampil di peta; tap marker = pilih gedung + taruh pin di koordinat gedung.
-2. Implementasi Haversine lokal (`lib/utils/haversine.dart`):
+2. Implementasi Haversine lokal (`lib/utils/geo_utils.dart`):
    - Hitung jarak dari koordinat pin ke tiap gedung.
    - Ambil maks 3 gedung dalam radius 75 m, urut jarak.
 3. Tampilkan daftar saran sebagai **list** (bukan chip/dropdown otomatis):
@@ -158,12 +158,14 @@ Memilih lokasi langsung mengambil lokasi saat ini. User tidak bisa memilih lokas
 | Item | Prioritas usulan | Catatan |
 |------|------------------|---------|
 | Pembedaan halaman View Lost vs Found di Filament | Medium | Prompt sudah dikirim, hasil belum dikonfirmasi |
-| Pastikan file tooling agent tidak ada di `main` (`.agents/`, `.claude/`, `.mcp.json`, `opencode.json`, `boost.json`, perubahan `composer.*`) | High sebelum push | Ikut ter-merge lewat `git add -A`; gunakan `git add <file>` dan `.gitignore` |
+| Pastikan file tooling agent tidak ada di `main` (`.agents/`, `.claude/`, `.mcp.json`, `opencode.json`, `boost.json`, perubahan `composer.*`) | High sebelum push | ✅ Selesai (2026-10-12) — ikut ter-merge lewat `git add -A`; gunakan `git add <file>` dan `.gitignore` |
 | Endpoint "laporan saya" (mis. `?mine=1`) untuk dropdown claim | Medium | Saat ini difilter di Flutter dari 20 item pertama |
 | URL foto relatif (simpan path, bangun URL saat response) | Medium | Hindari ubah DB tiap ganti jaringan; sebelum demo |
 | Riwayat laporan saya di tab Profil | Low | `onTap` masih kosong |
-| Bersihkan history git dari `firebase-service-account.json` | High sebelum repo Public | `git filter-repo` |
+| Bersihkan history git dari `firebase-service-account.json` | High sebelum repo Public | ✅ Selesai (2026-10-12) — `git filter-repo` |
 | Chat real-time, Security Hardening, Master Buildings | Sesuai plan masing-masing | Lihat plan terkait |
+
+> Daftar backlog terbaru & rinci: [[Backlog Perbaikan Lanjutan - Lost&Found]].
 
 ---
 
@@ -184,7 +186,7 @@ Memilih lokasi langsung mengambil lokasi saat ini. User tidak bisa memilih lokas
 2. ✅ Bug 1: foto — selesai, merge ke `main` lokal (2026-10-09)
 3. ✅ Bug 2 tahap 2a: backend `GET /buildings` + Flutter `location_picker_section.dart` + kedua form — selesai (2026-10-09)
 4. ✅ Bug 2 tahap 2b: pilih lokasi di peta (`flutter_map` + OSM) + saran gedung sebagai daftar (Haversine lokal, opsi B) + fallback `location_name` backend — selesai, dites di HP fisik (2026-10-11)
-5. ✅ ~~Update PRD 3.F, Technical Reference 9, 10, 15.3, 15.8~~ — dokumen diperbarui 2026-10-11 (PRD 3.F, Design §4/§5.8, TechnicalReference §9/§15.7/§15.1/§16)
+5. ✅ ~~Update PRD 3.F, Technical Reference 9, 10, 15.3, 15.8~~ — dokumen diperbarui 2026-10-11 (PRD 3.F, Design §4/§5.8, TechnicalReference §9/§15.7/§15.1/§16). Koreksi: PRD 3.F Kamera + TechnicalReference §10 (opsi galeri) baru diperbarui 2026-10-13
 6. ✅ Merge `feature/location-fallback` (backend) dan `feature/map-location-picker` (Flutter) ke `main` — dikonfirmasi user (2026-10-11)
 
 Catatan: crash saat membuat laporan hilang dari alur claim diabaikan (diduga masalah internal HP MIUI, bukan Flutter). Buka kembali bila terulang di perangkat lain.
@@ -193,8 +195,8 @@ Catatan: crash saat membuat laporan hilang dari alur claim diabaikan (diduga mas
 
 ## Related Files
 
-- **Laravel:** `D:\PBL\lostfound`
-- **Flutter:** `C:\Project\mobile-lostfound`
+- **Laravel:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Flutter:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Verifikasi via Chat:** [[Verifikasi via Chat - Lost&Found]]

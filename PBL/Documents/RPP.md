@@ -1,3 +1,11 @@
+---
+type: context
+project: lost-found
+status: active
+updated: 2026-10-13
+summary: RPP awal PBL (dokumen akademik; stack di sini bukan sumber kebenaran teknis)
+---
+
 |                           |     |                                                |
 | ------------------------- | --- | ---------------------------------------------- |
 | **Ringkasan Proyek**      |     |                                                |

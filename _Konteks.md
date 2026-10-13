@@ -1,7 +1,7 @@
 ---
 type: context
 status: active
-updated: 2026-09-30
+updated: 2026-10-13
 summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 ---
 
@@ -29,8 +29,9 @@ summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 
 ## Catatan & Pengingat Penting
 
-- 
-- 
+- RPP.md adalah dokumen akademik awal (menyebut MySQL, Gitea, Lupa Password) dan tidak diperbarui; stack aktual mengikuti TechnicalReference.md.
+- Repo ada di GitHub Private: `Davinciz/lostfound-backend` (Laravel) dan `Davinciz/lostfound-mobile` (Flutter).
+- Notion belum disinkronkan dengan vault/repo.
 
 ---
 
@@ -39,6 +40,7 @@ summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 ObsidianVault/
 ├── _Base/              # Dataview config (Index.base dengan 3 view)
 ├── _Konteks.md         # File ini
+├── IDEA.md             # Ide & catatan lepas
 └── PBL/                # Project yang sedang dikerjakan
 	├── Attachments/        # Gambar, diagram, file pendukung
 	├── Documents/          # Dokumentasi Project 
@@ -52,20 +54,20 @@ ObsidianVault/
 | `daily` | Log aktivitas harian | 2026-09-28.md |
 | `prd` | Product Requirements Document | PRD.md |
 | `design` | Spesifikasi desain UI/UX | Design.md |
-| `technical` | Dokumentasi teknis (ERD, API, arsitektur) | TechnicalReference.md, ERD_lostfound.md |
-| `plan` | Planning & proposal fitur | Auto Location Grouping.md |
+| `technical` | Dokumentasi teknis (ERD, API, arsitektur) | TechnicalReference.md, ERD.md |
+| `plan` | Planning & proposal fitur | Master Buildings + Auto Location - Lost&Found.md |
 | `context` | Konteks meta (tentang vault/project) | _Konteks.md |
 
 ## Aturan Kerja
 
 - Sebelum mengerjakan tugas, baca catatan ini, lalu Index.base, lalu cek PBL dan DailyChanges terbaru.
 - Buka hanya catatan yang relevan berdasarkan `summary`; jangan membaca seluruh vault.
-- Setiap selesai tugas, tulis ringkasan ke D:ObsidianVault/PBL/DailyChanges/<tanggal>.md.
+- Setiap selesai tugas, tulis ringkasan ke D:\ObsidianVault\PBL\DailyChanges\<tanggal>.md.
 - Perbarui `status` dan `updated` di catatan yang diubah.
 - Jangan menghapus atau menimpa catatan tanpa konfirmasi.
 - Bahasa catatan: Indonesia.
 - Jika diminta membuat Plan, tulis Plan ke PBL/Plan
-- Sinkronkan docs ke repo: setelah perubahan dokumen di vault, salin ke `D:\PBL\lostfound\docs\` (DailyChanges, documents, planning)
+- Sinkronkan docs ke repo: setelah perubahan dokumen di vault, salin ke `C:\Project\lostfound-backend\docs\` (DailyChanges, documents, planning)
 
 
 ## Aturan Pembuatan Plan 
@@ -75,7 +77,7 @@ File ini adalah aturan wajib. Sebelum membuat atau mengubah plan apa pun, baca f
 ## 1. Lokasi & Penamaan
 
 - Semua plan disimpan di folder `PBL/Plan/`.
-- Nama file = judul plan, contoh: `Verifikasi Kepemilikan - Lost&Found.md`.
+- Nama file = judul plan, contoh: `Verifikasi via Chat - Lost&Found.md`.
 - Format judul: `<Nama Fitur> - <Nama Project>`.
 - Sebelum membuat plan baru, cek apakah plan serupa sudah ada. Jika ada, update plan tersebut, jangan buat duplikat.
 
@@ -142,10 +144,10 @@ project: lost-found
 status: active
 priority: high
 updated: 2026-09-30
-summary: Verifikasi kepemilikan untuk prevent fraud claim dengan pertanyaan keamanan
+summary: Verifikasi kepemilikan lewat chat in-app antara pengklaim dan penemu
 ---
 
-# Verifikasi Kepemilikan - Lost&Found
+# Verifikasi via Chat - Lost&Found
 
 **Tanggal:** 2026-09-30
 **Project:** [[PBL]] Lost&Found
@@ -183,4 +185,4 @@ summary: Verifikasi kepemilikan untuk prevent fraud claim dengan pertanyaan keam
 - lost-found: Campus Lost&Found (mobile Flutter + admin Laravel Filament)
 - <tambahkan proyek/mata kuliah lain di sini>
 
-*Last updated: 2026-09-30*
+*Last updated: 2026-10-13*

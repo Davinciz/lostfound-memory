@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-09
+updated: 2026-10-13
 summary: Planning real-time chat in-app dengan Pusher (MVP) → Soketi migration path
 ---
 
@@ -12,6 +12,12 @@ summary: Planning real-time chat in-app dengan Pusher (MVP) → Soketi migration
 **Tanggal:** 2026-09-30  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Planning  
+**Priority:** Medium  
+
+> **Status implementasi (2026-10-12):** tabel `conversations`/`messages` sudah ada di DB; Model, API, Pusher, UI belum.
+
+> [!note] Contoh kode ilustratif
+> Contoh kode di plan ini (mis. `Kernel.php`, `RouteServiceProvider`, `BROADCAST_DRIVER`) mengikuti struktur Laravel lama. Versi terpasang: **Laravel v13.32.0** dan **Filament 3.3.55**; contoh Filament harus memakai sintaks **Filament 3.x**. Verifikasi kompatibilitas via `composer.json`/`composer.lock`.
 
 ---
 
@@ -445,10 +451,10 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 
 ## Related Files
 
-- **Project root:** `D:\PBL\lostfound`
+- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
-- **Auto Location Plan:** [[Auto Location Grouping - Lost&Found]]
+- **Master Buildings Plan:** [[Master Buildings + Auto Location - Lost&Found]]
 
 ---
 

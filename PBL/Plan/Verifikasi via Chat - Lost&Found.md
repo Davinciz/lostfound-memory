@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-09
+updated: 2026-10-13
 summary: Verifikasi kepemilikan via real-time chat in-app, bukan pertanyaan keamanan
 ---
 
@@ -12,6 +12,7 @@ summary: Verifikasi kepemilikan via real-time chat in-app, bukan pertanyaan keam
 **Tanggal:** 2026-10-02  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Planning  
+**Priority:** Medium  
 
 ---
 
@@ -90,7 +91,6 @@ FCM notification ke penemu: "Ada claim baru, chat untuk verifikasi kepemilikan."
 **Aksi admin:**
 - **Terima** → status `accepted`, notifikasi ke pemilik + penemu
 - **Tolak** → status `rejected` + alasan, notifikasi ke pemilik
-- **Batalkan** → status `withdrawn`
 
 ### 6. Serah Terima + Foto Bukti
 Sesuai [[Foto Bukti Transfer - Lost&Found]]:
@@ -306,18 +306,22 @@ TextEntry::make('conversation.messages_count')
 
 ## Next Steps
 
+> Centang ✅ di bawah bersumber dari log DailyChanges yang sudah ada (bukan konfirmasi baru).
+
 1. ✅ Plan selesai
-2. ⬜ Hapus 3 kolom verifikasi dari database (migration)
-3. ⬜ Update backend: validasi `lost_report_id`, auto-create conversation
-4. ⬜ Update Flutter: dropdown + banner tips
-5. ⬜ Test end-to-end: claim → chat → admin approve → serah terima
-6. ⬜ Monitor fraud rate (compare dengan baseline)
+2. ✅ Hapus 3 kolom verifikasi dari database (migration) — tercatat selesai di DailyChanges 2026-10-05
+3. ✅ Update backend: validasi `lost_report_id` + cek kepemilikan (403) — tercatat selesai di DailyChanges 2026-10-06
+4. ✅ Dropdown "Pilih Laporan Hilang Anda" di ClaimScreen — tercatat selesai di DailyChanges 2026-10-06
+5. ✅ Metadata chat di admin (ClaimResource, 2026-10-06; tidak membaca isi chat)
+6. ⬜ Banner tips + auto-create conversation + redirect ke chat (menunggu Real-Time Chat)
+7. ⬜ Test end-to-end: claim → chat → admin approve → serah terima
+8. ⬜ Monitor fraud rate (compare dengan baseline)
 
 ---
 
 ## Related Files
 
-- **Project root:** `D:\PBL\lostfound`
+- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Real-Time Chat Plan:** [[Real-Time Chat - Lost&Found]]

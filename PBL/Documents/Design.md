@@ -2,7 +2,7 @@
 type: design
 project: lost-found
 status: active
-updated: 2026-10-11
+updated: 2026-10-13
 summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO dan profil NIM opsional.
 ---
 
@@ -110,7 +110,7 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 ## 3. Role Pengguna
 | Role | Akses |
 | --- | --- |
-| **User** (mahasiswa, dosen, karyawan) | Login dengan Google SSO; hanya email `@mhs.polines.ac.id`, `@dsn.polines.ac.id`, `@polines.ac.id` (domain harus cocok persis). Melaporkan barang hilang/ditemukan (foto, deskripsi, lokasi GPS/gedung), mencari & memfilter laporan, mengajukan claim (wajib punya laporan hilang), chat dengan penemu/pemilik, menerima notifikasi. |
+| **User** (mahasiswa, dosen, karyawan) | Login dengan Google SSO; hanya email `@mhs.polines.ac.id`, `@dsn.polines.ac.id`, `@polines.ac.id` (domain harus cocok persis). Melaporkan barang hilang/ditemukan (foto, deskripsi, lokasi lewat pin di peta + saran gedung), mencari & memfilter laporan, mengajukan claim (wajib punya laporan hilang), chat dengan penemu/pemilik, menerima notifikasi. |
 | **Administrator** | Dashboard web (Filament): melihat semua laporan, memverifikasi claim (terima/tolak/batalkan), mencatat serah terima barang dengan foto bukti, memperbarui status, memblokir/membuka blokir pengguna, mengelola master data gedung. |
 
 ## 4. Fitur Utama
@@ -245,9 +245,9 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan layar profil mobile app. Avatar bulat besar di tengah atas (background gradasi hitam ke kuning, inisial putih), nama lengkap bold di bawahnya, email abu-abu kecil, NIM hanya jika tersedia. Tombol outline "Edit Profil" di bawah. List menu vertikal dengan ikon kiri, label tengah, chevron kanan untuk tiap item (Laporan Saya, Claim Saya, Pengaturan, Bantuan, Tentang Aplikasi). Tombol "Keluar" teks merah di paling bawah tanpa background. Bottom navigation dengan tab Profil aktif. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.18 Edit Profil
-**Elemen:** back + judul, avatar dengan tombol ubah foto, input Nama Lengkap, NIM hanya-baca (sembunyikan bila kosong), email hanya-baca, No. WhatsApp, toggle "Tampilkan nomor WhatsApp ke pengguna lain" (default mati, dengan keterangan privasi), Email (hanya-baca, tidak bisa diubah karena terikat Google SSO), tombol "Simpan Perubahan" hitam penuh.
+**Elemen:** back + judul, avatar dengan tombol ubah foto, input Nama Lengkap, NIM hanya-baca (sembunyikan bila kosong), No. WhatsApp, toggle "Tampilkan nomor WhatsApp ke pengguna lain" (default mati, dengan keterangan privasi), Email (hanya-baca, terikat Google SSO), tombol "Simpan Perubahan" hitam penuh.
 
-**Stitch prompt:** Buatkan layar edit profil mobile app, avatar bulat di atas dengan ikon kamera kecil overlay di pojok kanan bawah avatar (bg kuning, ikon hitam) untuk ganti foto, field Nama Lengkap/NIM hanya-baca (sembunyikan bila kosong)/No. WhatsApp tersusun vertikal, di bawahnya toggle switch hitam "Tampilkan nomor WhatsApp ke pengguna lain" dengan teks bantuan abu-abu, field Email berstatus disabled (abu-abu), tombol "Simpan Perubahan" hitam penuh di bawah. Font Plus Jakarta Sans, palet hitam-kuning.
+**Stitch prompt:** Buatkan layar edit profil mobile app, avatar bulat di atas dengan ikon kamera kecil overlay di pojok kanan bawah avatar (bg kuning, ikon hitam) untuk ganti foto, field Nama Lengkap/NIM hanya-baca (sembunyikan bila kosong)/No. WhatsApp tersusun vertikal, di bawahnya toggle switch hitam "Tampilkan nomor WhatsApp ke pengguna lain" dengan teks bantuan abu-abu, field Email (hanya-baca, terikat Google SSO) berstatus disabled (abu-abu), tombol "Simpan Perubahan" hitam penuh di bawah. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.19 Pengaturan (Settings)
 **Elemen:**
@@ -288,12 +288,12 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan halaman detail laporan admin web, dua kolom: kiri galeri foto besar, kanan data laporan (kode, nama barang, kategori, deskripsi, data pelapor, gedung dan peta kecil lokasi) dan badge status di atas. Di bawah, panel aksi dengan dropdown "Ubah Status" dan tombol teks "Hapus Laporan" warna merah. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 6.5 Daftar Claim
-**Elemen:** search + filter status claim; tabel kolom Foto Barang/Nama Barang/Nama Pengklaim/Tanggal Pengajuan/Status/Aksi (Lihat Detail, Terima, Tolak, Batalkan).
+**Elemen:** search + filter status claim; tabel kolom Foto Barang/Nama Barang/Nama Pengklaim/Tanggal Pengajuan/Status/Aksi (Lihat Detail, Terima, Tolak).
 
-**Stitch prompt:** Buatkan halaman "Daftar Claim" admin web, tabel dengan kolom foto barang, nama barang, nama pengklaim, tanggal pengajuan, badge status (oranye=Menunggu, hijau=Diterima, merah=Ditolak, abu=Dibatalkan), dan kolom aksi dengan tombol kecil "Terima" (hitam), "Tolak" (outline merah), "Batalkan" (teks abu-abu). Search bar dan filter status di atas tabel. Font Plus Jakarta Sans, palet hitam-kuning.
+**Stitch prompt:** Buatkan halaman "Daftar Claim" admin web, tabel dengan kolom foto barang, nama barang, nama pengklaim, tanggal pengajuan, badge status (oranye=Menunggu, hijau=Diterima, merah=Ditolak), dan kolom aksi dengan tombol kecil "Terima" (hitam) dan "Tolak" (outline merah). Search bar dan filter status di atas tabel. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 6.6 Detail Claim (Admin)
-**Elemen:** dua panel berdampingan untuk perbandingan: kiri = laporan temuan (foto, deskripsi, gedung, tanggal, penemu); kanan = laporan hilang milik pengklaim (foto, deskripsi, gedung, tanggal) + data pengklaim (nama, email, NIM) dan alasan claim. Tombol: Terima Claim (hijau), Tolak Claim (merah, wajib catatan admin), Batalkan. Setelah claim diterima: tombol "Serahkan Barang" dengan upload foto bukti serah terima; setelah selesai tampil foto bukti, waktu serah terima, dan nama petugas. Admin tidak melihat isi chat.
+**Elemen:** dua panel berdampingan untuk perbandingan: kiri = laporan temuan (foto, deskripsi, gedung, tanggal, penemu); kanan = laporan hilang milik pengklaim (foto, deskripsi, gedung, tanggal) + data pengklaim (nama, email, NIM) dan alasan claim. Tombol: Terima Claim (hijau), Tolak Claim (merah, wajib catatan admin). Setelah claim diterima: tombol "Serahkan Barang" dengan upload foto bukti serah terima; setelah selesai tampil foto bukti, waktu serah terima, dan nama petugas. Admin tidak melihat isi chat.
 
 **Stitch prompt:** Buatkan halaman detail claim admin web. Dua panel berdampingan: kiri "Laporan Temuan" (foto, deskripsi, gedung, tanggal, nama penemu), kanan "Laporan Hilang Pengklaim" (foto, deskripsi, gedung, tanggal) dengan di bawahnya data pengklaim (nama, email, NIM) dan alasan claim. Di bawah, tombol "Terima Claim" hijau penuh dan "Tolak Claim" outline merah (membuka field catatan admin wajib diisi). Tambahkan panel "Serah Terima" dengan area upload foto bukti dan tombol "Serahkan Barang". Font Plus Jakarta Sans, palet hitam-kuning, layout dua kolom agar admin mudah membandingkan kedua laporan.
 
@@ -329,7 +329,7 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 - Penyimpanan foto: Laravel Storage (disk public)
 - Push notification: FCM (`firebase_messaging` + `kreait/laravel-firebase`)
 - Chat real-time: Pusher (MVP) → Soketi
-- Repository & monitoring: Gitea (Milestone & Issue)
+- Repository: GitHub (Private). Issue/Milestone Gitea tidak ikut dimigrasi; monitoring: belum ditentukan.
 
 ---
 *Dokumen ini siap dipakai sebagai brief untuk generate di Google Stitch. Generate satu layar (atau beberapa layar sejenis) per prompt, pakai teks "Stitch prompt" di tiap section secara langsung, supaya hasilnya tidak terpotong dan konsisten antar layar.*

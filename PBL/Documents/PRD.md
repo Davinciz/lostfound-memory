@@ -2,7 +2,7 @@
 type: prd
 project: lost-found
 status: active
-updated: 2026-10-11
+updated: 2026-10-13
 summary: Kebutuhan Campus Lost&Found untuk pelaporan barang, pencarian, claim, dan autentikasi Google SSO
 ---
 
@@ -64,7 +64,7 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 ---
 ## 3. Feature List
 ### A. Manajemen Laporan Hilang
-- **Membuat laporan hilang** — judul, deskripsi, kategori, tanggal hilang, lokasi GPS, foto (min 1, maks 3). Status: `pending` → `claimed` → `returned`/`closed`
+- **Membuat laporan hilang** — judul, deskripsi, kategori, tanggal hilang, lokasi (pin di peta), foto (min 1, maks 3). Status: `pending` → `claimed` → `returned`/`closed`
 - **Feed laporan hilang** — kartu/list dengan foto, judul, lokasi, waktu, badge status
 ### B. Manajemen Laporan Temuan
 - **Membuat laporan ditemukan** — sama seperti hilang, dengan waktu ditemukan. Status: `pending` → `claimed` → `returned`/`closed`
@@ -74,15 +74,15 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 ### D. Sistem Claim
 - **Ajukan claim** — pemilik barang wajib punya laporan hilang, pilih laporan hilangnya, isi alasan claim. Sistem otomatis buat conversation antara pengklaim dan penemu untuk verifikasi kepemilikan via chat. Notifikasi ke penemu: "Ada claim baru, chat untuk verifikasi."
 - **Verifikasi kepemilikan** — dilakukan via real-time chat antara penemu dan pengklaim. Penemu tanya detail yang tidak terlihat di foto. Admin tidak membaca chat.
-- **Proses claim (admin)** — admin lihat foto, alasan claim, metadata. Admin trust bahwa penemu sudah verifikasi via chat. Aksi: terima (→ `accepted` + laporan jadi `claimed`), tolak (→ `rejected` + alasan), batalkan (→ `withdrawn`). Notifikasi ke pemilik + penemu. Setelah admin terima, serah terima fisik → upload foto bukti → status `returned`.
+- **Proses claim (admin)** — admin lihat foto, alasan claim, metadata. Admin trust bahwa penemu sudah verifikasi via chat. Aksi: terima (→ `accepted` + laporan jadi `claimed`), tolak (→ `rejected` + alasan). Notifikasi ke pemilik + penemu. Setelah admin terima, serah terima fisik → upload foto bukti → status `returned`.
 ### E. Integrasi WhatsApp
 - **Chat via WhatsApp dari detail laporan** — tombol "Chat via WhatsApp" jika nomor WhatsApp reporter tersedia dan diizinkan, deep-link ke WhatsApp dengan pra-isi pesan
 - **Visibilitas WhatsApp** — user bisa pilih "Tampilkan" / "Sembunyikan" nomor WhatsApp (default: sembunyikan)
 - **Notifikasi via WhatsApp (opsional)** — notifikasi event penting (claim, dll.) via WhatsApp Business API sebagai complement FCM
 ### F. GPS
 - Pilih lokasi lewat titik (pin) di peta, saran gedung terdekat sebagai daftar (maks 3, radius ~75m), detail lokasi opsional. Tombol "Lokasi saya" hanya menggeser peta ke posisi GPS, tidak menetapkan lokasi.
-### F. Kamera
-- Akses kamera native, min 1 foto, maks 3 foto, preview sebelum kirim, upload ke storage saat submit
+### F2. Kamera & Galeri
+- Kamera (1 foto per tap) atau galeri (multi-pilih); total min 1, maks 3 foto; preview sebelum kirim; upload ke Laravel Storage saat submit
 ### G. Push Notifications (FCM)
 - Notifikasi saat: claim diajukan, claim diproses (terima/tolak), barang diserahkan, pesan chat baru, update pada laporan milik user
 - FCM token disimpan di DB saat login pertama; server-triggered via Firebase Admin SDK
@@ -109,7 +109,7 @@ Search → Cari Laporan → Lihat Detail → "Ajukan Claim" → Pilih Laporan Hi
 ```
 ### 4.3 Admin Proses Claim
 ```javascript
-Web Admin → Dashboard → List Claim pending → Detail Claim → Review → Terima/Tolak/Batalkan → Update Status + FCM → Notifikasi ke Pemilik + Penemu
+Web Admin → Dashboard → List Claim pending → Detail Claim → Review → Terima/Tolak → Update Status + FCM → Notifikasi ke Pemilik + Penemu
 ```
 ---
 ## 5. Data Model
@@ -136,9 +136,10 @@ Message: id(UUID), conversation_id→Conversation, sender_id→User, message(tex
 - Status disimpan lowercase di database; label UI boleh kapital
 - `claims.lost_report_id` NOT NULL — pemilik wajib punya laporan hilang sebelum bisa claim
 - Verifikasi kepemilikan via chat (bukan pertanyaan keamanan); admin tidak membaca isi chat
+- `withdrawn` disediakan di enum; belum ada aksi yang memakainya. Opsi masa depan: pengklaim membatalkan claim sendiri (butuh plan terpisah, belum disetujui)
 ---
 ## 6. REST API Design
-Base URL: `https://api.kampus-lostfound.id/v1`
+Base URL: `https://api.kampus-lostfound.id/v1` (rencana domain; belum ada deployment)
 <table header-row="true">
 <tr>
 <td>Method</td>
@@ -212,7 +213,7 @@ Base URL: `https://api.kampus-lostfound.id/v1`
 </tr>
 <tr>
 <td>PATCH `/claims/:id`</td>
-<td>Update (admin only)</td>
+<td>Update (admin only) *(verifikasi ke routes aktual; kemungkinan tidak sinkron)*</td>
 <td>Sanctum admin</td>
 </tr>
 <tr>
@@ -240,12 +241,32 @@ Base URL: `https://api.kampus-lostfound.id/v1`
 <td>Tolak claim</td>
 <td>Sanctum admin</td>
 </tr>
+<tr>
+<td>GET `/buildings`</td>
+<td>Daftar master gedung (marker peta + saran gedung)</td>
+<td>Sanctum (Bearer token)</td>
+</tr>
+<tr>
+<td>POST `/photos/upload`</td>
+<td>Upload foto (jpg/jpeg/png/webp, maks 2 MB)</td>
+<td>Sanctum (Bearer token)</td>
+</tr>
+<tr>
+<td>POST `/photos/delete`</td>
+<td>Hapus foto</td>
+<td>Sanctum (Bearer token)</td>
+</tr>
+<tr>
+<td>PATCH `/claims/:id/mark-transferred`</td>
+<td>Tandai barang diserahkan (admin atau penemu)</td>
+<td>Sanctum (Bearer token)</td>
+</tr>
 </table>
 ---
 ## 7. UI/UX Guidelines
 **Mobile App — Bottom Navigation (5 tab):** Beranda, Cari, +Lapor (FAB tengah), Chat, Profil
 **Warna:** Palet hitam-kuning — Primary hitam (#111111), aksen kuning (#F5C400); status: hijau untuk returned, oranye untuk pending, abu untuk closed.
-**Screen List:** Splash, Login/Register, Home Feed, Laporan Detail (Hilang/Ditemukan), Buat Laporan (2), Search & Filter, Chat, Profil, Dashboard Admin (web), Claim Detail Admin.
+**Screen List:** Splash, Login (Google SSO), Home Feed, Laporan Detail (Hilang/Ditemukan), Buat Laporan (2), Search & Filter, Chat, Profil, Dashboard Admin (web), Claim Detail Admin.
 ---
 ## 17. Glossary
 <table header-row="true">

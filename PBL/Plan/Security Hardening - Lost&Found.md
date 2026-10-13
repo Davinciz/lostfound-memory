@@ -2,7 +2,7 @@
 type: plan
 project: lost-found
 status: active
-updated: 2026-10-10
+updated: 2026-10-13
 summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan
 priority: medium
 ---
@@ -12,6 +12,10 @@ priority: medium
 **Tanggal:** 2026-09-30  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Planning  
+**Priority:** Medium  
+
+> [!note] Contoh kode ilustratif
+> Contoh kode di plan ini (mis. `Kernel.php`, `RouteServiceProvider`, `BROADCAST_DRIVER`) mengikuti struktur Laravel lama. Versi terpasang: **Laravel v13.32.0** dan **Filament 3.3.55**; contoh Filament harus memakai sintaks **Filament 3.x**. Verifikasi kompatibilitas via `composer.json`/`composer.lock`.
 
 ---
 
@@ -56,7 +60,7 @@ Attacker guess/steal token, access user account.
 // routes/api.php
 Route::middleware('throttle:60,1')->group(function () {
     // Guest endpoints: 60 req/min per IP
-    Route::post('/auth/google', ...); // Google SSO; backend validates token and exact domain allowlist.
+    Route::post('/auth/google', ...); // Google SSO; backend validates token and exact domain allowlist. Aktual: 30 permintaan/menit per IP (2026-10-10).
 });
 
 Route::middleware('auth:sanctum', 'throttle:120,1')->group(function () {
@@ -177,11 +181,23 @@ final response = await http.post(
 
 ## Layer 3: Image Moderation
 
-### AWS Rekognition / Google Cloud Vision
-
 **Goal:** Detect inappropriate content sebelum foto di-publish.
 
-**Implementation:**
+> **Catatan (2026-10-12):** Foto diupload via `POST /api/photos/upload` (`PhotoController`, maks 2 MB, disk `public` folder `reports/`), bukan di `store()`. Hook moderasi harus di `PhotoController::upload`; contoh `photos.*` `max:5120` di `store()` tidak berlaku.
+
+### Antrean Review Manual (Pendekatan Terpilih — keputusan user 2026-10-13)
+
+- Foto upload → status `pending_review`.
+- Admin review di Filament dashboard → approve/reject.
+- Auto-approve setelah 24 jam jika tidak di-review.
+- Dipilih karena tidak butuh kartu kredit internasional (batasan project).
+- **Catatan desain data:** kolom/status moderasi diputuskan saat implementasi; belum ada kolom/tabel baru di ERD/schema.
+
+### Alternatif (tidak dipakai): AWS Rekognition / Google Cloud Vision
+
+> Tidak dipakai: butuh akun AWS berkartu kredit internasional. Kode di bawah hanya referensi.
+
+**Implementation (contoh ilustratif):**
 
 ```php
 // app/Services/ImageModerationService.php
@@ -263,11 +279,7 @@ public function store(Request $request, ImageModerationService $moderator)
 }
 ```
 
-**Alternative (Budget-Friendly):** Manual review queue
-
-- Foto upload → status `pending_review`
-- Admin review di Filament dashboard → approve/reject
-- Auto-approve setelah 24 jam jika tidak di-review
+> **Keputusan user (2026-10-13):** antrean review manual dipilih sebagai pendekatan utama (lihat di atas); AWS Rekognition tidak dipakai.
 
 ---
 
@@ -419,7 +431,7 @@ class SecurityService
 {
     public function detectSuspiciousActivity(User $user): bool
     {
-        // Multiple failed login attempts
+        // Multiple failed login attempts — tidak relevan untuk SSO (user tidak login password; admin Filament tetap password)
         $failedLogins = Cache::get("failed_login:{$user->id}", 0);
         if ($failedLogins >= 5) {
             return true;
@@ -538,16 +550,16 @@ protected $middleware = [
 Per DailyChanges 2026-10-06, rate limiting, HTTPS force, CORS, dan security headers belum dikerjakan.
 
 ### Phase 2: High Priority (Week 2)
-- [ ] CAPTCHA (registration + suspicious login)
+- ~~[ ] CAPTCHA (registration + suspicious login)~~ — tidak relevan untuk SSO
 - [ ] Sensitive data encryption (FCM token, phone)
-- [ ] API response filtering (UserResource)
+- [ ] API response filtering (UserResource) — anotasi: `$hidden` `fcm_token`/`email_verified_at` sudah diterapkan (2026-10-06)
 - [ ] Account deletion endpoint
 
 ### Phase 3: Medium Priority (Week 3-4)
-- [ ] Image moderation (AWS Rekognition or manual queue)
+- [ ] Image moderation (antrean review manual; AWS Rekognition tidak dipakai)
 - [ ] Suspicious activity detection
-- [ ] User blocking mechanism
-- [ ] Token expiry enforcement
+- [ ] User blocking mechanism — anotasi: Filament Blokir/Buka Blokir (2026-10-06) + login SSO tolak blocked 403 (2026-10-10); status middleware `CheckBlockedUser` untuk token aktif: belum diketahui
+- [ ] Token expiry enforcement — anotasi: Sanctum 7 hari sudah diterapkan (2026-10-10)
 
 ### Phase 4: Monitoring (Ongoing)
 - [ ] Log failed login attempts
@@ -606,12 +618,12 @@ Per DailyChanges 2026-10-06, rate limiting, HTTPS force, CORS, dan security head
 - HTTPS + CORS + Security headers: **20 menit**
 
 ### Phase 2 (High Priority):
-- CAPTCHA backend + Flutter: **1 jam**
+- ~~CAPTCHA backend + Flutter: 1 jam~~ — dicoret (SSO, tidak relevan)
 - Encryption + API filtering: **45 menit**
 - Account deletion: **20 menit**
 
 ### Phase 3 (Medium Priority):
-- Image moderation: **2 jam** (AWS Rekognition) atau **1 jam** (manual queue)
+- Image moderation: **1 jam** (antrean review manual)
 - Suspicious activity detection: **1 jam**
 
 **Total Critical Path:** ~2.5 jam  
@@ -623,8 +635,8 @@ Per DailyChanges 2026-10-06, rate limiting, HTTPS force, CORS, dan security head
 
 1. ✅ Plan selesai
 2. ⬜ Phase 1: Implement rate limiting + security headers
-3. ⬜ Phase 2: Setup CAPTCHA (reCAPTCHA account)
-4. ⬜ Phase 3: Decision: AWS Rekognition vs manual moderation queue
+3. ~~⬜ Phase 2: Setup CAPTCHA (reCAPTCHA account)~~ — dicoret: login memakai Google SSO, CAPTCHA tidak relevan untuk alur auth aktif
+4. ⬜ Phase 3: Implementasi moderasi gambar via antrean review manual (keputusan user 2026-10-13; AWS Rekognition tidak dipakai)
 5. ⬜ Setup monitoring (Sentry account, CloudWatch alarms)
 6. ⬜ Penetration testing (hire security auditor atau self-test via OWASP checklist)
 
@@ -632,7 +644,7 @@ Per DailyChanges 2026-10-06, rate limiting, HTTPS force, CORS, dan security head
 
 ## Related Files
 
-- **Project root:** `D:\PBL\lostfound`
+- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Verifikasi via Chat:** [[Verifikasi via Chat - Lost&Found]]
