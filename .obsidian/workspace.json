@@ -11,22 +11,14 @@
             "id": "e04b699d74ce6242",
             "type": "leaf",
             "state": {
-              "type": "kanban",
+              "type": "markdown",
               "state": {
-                "file": "Lost&Found Progress.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
-                }
+                "file": "PBL/Documents/TechnicalReference.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-trello",
-              "title": "Lost&Found Progress"
+              "icon": "lucide-file",
+              "title": "TechnicalReference"
             }
           }
         ]
@@ -206,7 +198,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Lost&Found Progress.md",
+                "file": "_Base/Index.base",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
@@ -238,12 +230,18 @@
   },
   "active": "e04b699d74ce6242",
   "lastOpenFiles": [
-    "PBL/Documents/ERD.md",
-    "Lost&Found Progress.md",
     "PBL/DailyChanges/2026-10-13.md",
+    "PBL/Documents/TechnicalReference.md",
+    "_Base/Index.base",
+    "PBL/DailyChanges/2026-10-12.md",
+    "PBL/DailyChanges/2026-10-05.md",
+    "PBL/DailyChanges/2026-09-30.md",
+    "PBL/DailyChanges/2026-09-28.md",
+    "Lost&Found Progress.md",
+    "IDEA.md",
+    "PBL/Documents/ERD.md",
     "PBL/DailyChanges/2026-10-01.md",
     "PBL/Plan/Security Hardening - Lost&Found.md",
-    "PBL/DailyChanges/2026-10-12.md",
     "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
     "PBL/DailyChanges/2026-10-06.md",
     "PBL/Plan/Foto Bukti Transfer - Lost&Found.md",
@@ -254,20 +252,14 @@
     "PBL/DailyChanges/2026-10-10.md",
     "PBL/DailyChanges/2026-10-09.md",
     "PBL/Documents/Design.md",
-    "PBL/DailyChanges/2026-10-05.md",
     "PBL/Plan/Master Buildings + Auto Location - Lost&Found.md",
     "PBL/Plan/Verifikasi via Chat - Lost&Found.md",
-    "_Base/Index.base",
     "Untitled.md",
-    "IDEA.md",
     "PBL/Plan/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
     "PBL/Plan/Real-Time Chat - Lost&Found.md",
     "PBL/Plan/Backlog Perbaikan Lanjutan - Lost&Found.md",
     "_Konteks.md",
     "PBL/Documents/PRD.md",
-    "PBL/DailyChanges/2026-10-02.md",
-    "PBL/DailyChanges/2026-09-30.md",
-    "PBL/DailyChanges/2026-10-08.md",
     "PBL/Attachments/ERD-lostfound.png",
     "PBL.rar",
     "PBL/Documents/Unconfirmed 607876.crdownload",

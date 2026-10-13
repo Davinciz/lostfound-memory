@@ -11,7 +11,7 @@
       "query": "path:PBL/DailyChanges  ",
       "color": {
         "a": 1,
-        "rgb": 10708329
+        "rgb": 15289944
       }
     },
     {
@@ -31,14 +31,14 @@
   ],
   "collapse-display": false,
   "showArrow": false,
-  "textFadeMultiplier": 0.3,
+  "textFadeMultiplier": -3,
   "nodeSizeMultiplier": 1.2405284015852,
   "lineSizeMultiplier": 1,
   "collapse-forces": false,
   "centerStrength": 0.518713248970312,
-  "repelStrength": 10,
-  "linkStrength": 0.879524438573316,
-  "linkDistance": 250,
-  "scale": 0.3628873693012111,
+  "repelStrength": 6.09247027741083,
+  "linkStrength": 0,
+  "linkDistance": 138,
+  "scale": 0.5087618855792576,
   "close": true
 }

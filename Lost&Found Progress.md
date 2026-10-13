@@ -50,7 +50,9 @@ kanban-plugin: board
 	Plan selesai. Sudah: rate limit `POST /api/auth/google` 30/menit. Belum: rate limiting global + security headers, CAPTCHA, image moderation, monitoring.
 
 
-## ✅ Selesai
+***
+
+## Archive
 
 - [x] **Bug 1 — Tombol "Ambil Foto" memotret 3 kali** — selesai 2026-10-11
 - [x] **Bug 2a — Pilih lokasi tanpa paket peta** (GPS manual, dropdown gedung, validasi 0,0) — selesai 2026-10-09
@@ -65,11 +67,8 @@ kanban-plugin: board
 - [x] **Backlog Item 8 — Rotasi key Firebase + `git filter-repo`** — selesai 2026-10-12
 - [x] **Migrasi repo Gitea → GitHub (Private)** + rewrite history backend — selesai 2026-10-12
 
-
-
-
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false,false]}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false],"full-list-lane-width":true,"move-tags":false,"tag-colors":[]}
 ```
 %%
