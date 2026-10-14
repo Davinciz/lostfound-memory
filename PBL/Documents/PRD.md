@@ -2,7 +2,7 @@
 type: prd
 project: lost-found
 status: active
-updated: 2026-10-13
+updated: 2026-10-14
 summary: Kebutuhan Campus Lost&Found untuk pelaporan barang, pencarian, claim, dan autentikasi Google SSO
 ---
 
@@ -72,6 +72,10 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 - Search kata kunci, filter: jenis, kategori, lokasi/area, rentang waktu, status
 - Halaman detail laporan lengkap dengan foto, deskripsi, lokasi di peta, riwayat status
 ### D. Sistem Claim
+
+> [!warning] Akan berubah
+> Flow claim akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: claim dua arah (pemilik & penemu), chat otomatis tanpa tunggu admin, verifikasi oleh penemu lewat tombol "Cocok", serah terima oleh pengguna sendiri, kedaluwarsa 7 hari.
+
 - **Ajukan claim** — pemilik barang wajib punya laporan hilang, pilih laporan hilangnya, isi alasan claim. Sistem otomatis buat conversation antara pengklaim dan penemu untuk verifikasi kepemilikan via chat. Notifikasi ke penemu: "Ada claim baru, chat untuk verifikasi."
 - **Verifikasi kepemilikan** — dilakukan via real-time chat antara penemu dan pengklaim. Penemu tanya detail yang tidak terlihat di foto. Admin tidak membaca chat.
 - **Proses claim (admin)** — admin lihat foto, alasan claim, metadata. Admin trust bahwa penemu sudah verifikasi via chat. Aksi: terima (→ `accepted` + laporan jadi `claimed`), tolak (→ `rejected` + alasan). Notifikasi ke pemilik + penemu. Setelah admin terima, serah terima fisik → upload foto bukti → status `returned`.
@@ -91,6 +95,10 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 - **User:** role `user` untuk mahasiswa, dosen, karyawan; role `admin` khusus admin. User baru dibuat otomatis, blocked ditolak 403 + `blocked_reason`, Sanctum token berlaku 7 hari. Admin Filament tetap memakai password.
 - **Profil:** nama, NIM opsional (otomatis dari email mahasiswa bila pola cocok; sembunyikan jika kosong), email, foto, kontak WhatsApp opsional, riwayat laporan
 ### I. Dashboard Admin
+
+> [!warning] Akan berubah
+> Peran admin berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: dari gerbang wajib menjadi pemantau & penengah. Penemu yang verifikasi dan approve claim, bukan admin.
+
 - Ringkasan metrik (laporan hari ini, claim pending, trend 7 hari)
 - List laporan + filter, detail laporan, foto, serta claims terkait; list claim pending dan detail claim (foto laporan hilang dan temuan sisi-by-sisi, metadata conversation tanpa isi chat, alasan)
 - Kelola master data gedung dan user; admin dapat memblokir/membuka blokir user, tetapi tidak dapat memblokir admin atau dirinya sendiri
@@ -104,6 +112,10 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 Splash → Login → Home Feed → "Lapor Hilang" → Kamera/Foto → Detail Form → Validasi → Preview & Kirim → Upload Foto → POST API → Berhasil + Notifikasi
 ```
 ### 4.2 Mengajukan Claim
+
+> [!warning] Akan berubah
+> Flow akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: chat terbuka langsung tanpa tunggu admin, penemu tekan "Cocok" untuk approve.
+
 ```javascript
 Search → Cari Laporan → Lihat Detail → "Ajukan Claim" → Pilih Laporan Hilang + Alasan → Submit → Notifikasi ke Penemu → Admin Review → Admin Terima → Status claimed (laporan) + accepted (claim) → Serah Terima → Upload Foto Bukti → Status returned
 ```

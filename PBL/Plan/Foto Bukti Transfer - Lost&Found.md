@@ -3,11 +3,14 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-13
+updated: 2026-10-14
 summary: Upload foto bukti serah terima setelah admin terima claim untuk dokumentasi dan mencegah dispute
 ---
 
 # Foto Bukti Transfer - Lost&Found
+
+> [!warning] Akan berubah
+> Authorization serah terima akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: claimant (pemilik) juga boleh upload foto bukti, bukan hanya admin/finder.
 
 **Tanggal:** 2026-09-30  
 **Project:** [[PBL]] Lost&Found  

@@ -220,6 +220,10 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan layar "Claim Saya" mobile app, list kartu claim — tiap kartu: foto barang kiri, nama barang dan tanggal pengajuan di tengah, badge status claim (oranye=Menunggu, hijau=Diterima, merah=Ditolak, abu=Dibatalkan) di kanan. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.13 Detail Claim (User)
+
+> [!warning] Akan berubah
+> UI berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: tambah tombol "Barang Sudah Diserahkan" (claimant & finder) dan "Batalkan Claim" (claimant).
+
 **Elemen:** ringkasan barang, badge status claim, tanggal pengajuan, catatan admin (tampil jika claim ditolak), tombol "Buka Chat". Jika barang sudah diserahkan: section "Bukti Serah Terima" berisi foto bukti, "Diserahkan pada [tanggal, jam]", "Oleh: [nama]".
 
 **Stitch prompt:** Buatkan layar detail claim mobile app. Atas: kartu ringkasan barang (foto kecil, nama, kode) dengan badge status hijau "Diterima". Di bawahnya info tanggal pengajuan, lalu tombol outline "Buka Chat". Di bagian bawah section "Bukti Serah Terima": foto besar berradius 12px, caption abu-abu "Diserahkan pada 30 Sep 2026, 10:30 · Oleh: Admin Kampus". Font Plus Jakarta Sans, palet hitam-kuning.
@@ -288,11 +292,19 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan halaman detail laporan admin web, dua kolom: kiri galeri foto besar, kanan data laporan (kode, nama barang, kategori, deskripsi, data pelapor, gedung dan peta kecil lokasi) dan badge status di atas. Di bawah, panel aksi dengan dropdown "Ubah Status" dan tombol teks "Hapus Laporan" warna merah. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 6.5 Daftar Claim
+
+> [!warning] Akan berubah
+> Tabel berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: tambah kolom accepted_at, closed_reason, filter claim kedaluwarsa.
+
 **Elemen:** search + filter status claim; tabel kolom Foto Barang/Nama Barang/Nama Pengklaim/Tanggal Pengajuan/Status/Aksi (Lihat Detail, Terima, Tolak).
 
 **Stitch prompt:** Buatkan halaman "Daftar Claim" admin web, tabel dengan kolom foto barang, nama barang, nama pengklaim, tanggal pengajuan, badge status (oranye=Menunggu, hijau=Diterima, merah=Ditolak), dan kolom aksi dengan tombol kecil "Terima" (hitam) dan "Tolak" (outline merah). Search bar dan filter status di atas tabel. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 6.6 Detail Claim (Admin)
+
+> [!warning] Akan berubah
+> Aksi berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: tombol Terima jadi override (bukan jalur utama), tambah aksi Cabut Claim.
+
 **Elemen:** dua panel berdampingan untuk perbandingan: kiri = laporan temuan (foto, deskripsi, gedung, tanggal, penemu); kanan = laporan hilang milik pengklaim (foto, deskripsi, gedung, tanggal) + data pengklaim (nama, email, NIM) dan alasan claim. Tombol: Terima Claim (hijau), Tolak Claim (merah, wajib catatan admin). Setelah claim diterima: tombol "Serahkan Barang" dengan upload foto bukti serah terima; setelah selesai tampil foto bukti, waktu serah terima, dan nama petugas. Admin tidak melihat isi chat.
 
 **Stitch prompt:** Buatkan halaman detail claim admin web. Dua panel berdampingan: kiri "Laporan Temuan" (foto, deskripsi, gedung, tanggal, nama penemu), kanan "Laporan Hilang Pengklaim" (foto, deskripsi, gedung, tanggal) dengan di bawahnya data pengklaim (nama, email, NIM) dan alasan claim. Di bawah, tombol "Terima Claim" hijau penuh dan "Tolak Claim" outline merah (membuka field catatan admin wajib diisi). Tambahkan panel "Serah Terima" dengan area upload foto bukti dan tombol "Serahkan Barang". Font Plus Jakarta Sans, palet hitam-kuning, layout dua kolom agar admin mudah membandingkan kedua laporan.

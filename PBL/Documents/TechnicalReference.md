@@ -2,7 +2,7 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-13
+updated: 2026-10-14
 summary: Referensi teknis Flutter-Laravel dengan Google SSO aktif, stack terpasang, skema PostgreSQL, dan Filament.
 ---
 
@@ -118,6 +118,10 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 - **Deep link:** ke halaman detail laporan/claim
 ---
 ## 12. Dashboard Admin — Rincian
+
+> [!warning] Akan berubah
+> Peran admin berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: dari gerbang wajib menjadi pemantau & penengah. Penemu verifikasi lewat tombol "Cocok" di chat, user sendiri yang serah terima dengan foto bukti.
+
 - **Overview:** kartu metrik, tabel laporan terbaru, tabel claim pending
 - **Laporan Admin:** filter status/kategori/tanggal/lokasi; kolom ID, pembuat, judul, kategori, lokasi, tanggal, status, aksi
 - **Claim Admin:** filter status; tabel ID, pemilik, barang hilang, barang ditemukan, tanggal, status, aksi; detail view foto side-by-side + peta + alasan + catatan admin
@@ -758,6 +762,10 @@ Schema::create('claims', function (Blueprint $table) {
 ```
 ---
 ## 15.8 Filament Resources — Mapping ke ERD
+
+> [!warning] Akan berubah
+> Aksi Filament berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: aksi Terima jadi override (bukan jalur utama), tambah aksi Cabut/Tolak manual, detail view tambah timestamp accepted_at & closed_reason.
+
 ### LostReportResource
 - Tabel laporan memuat kode, judul, kategori, lokasi, status, pelapor, thumbnail foto, dan tanggal; filter gedung/tanggal tersedia.
 - Halaman View menampilkan detail laporan dan foto; RelationManager menampilkan claims terkait.
