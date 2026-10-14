@@ -3,7 +3,7 @@ type: technical
 project: lost-found
 status: active
 updated: 2026-10-14
-summary: Referensi teknis Flutter-Laravel dengan Google SSO aktif, stack terpasang, skema PostgreSQL, dan Filament.
+summary: Referensi teknis lengkap Lost&Found; endpoint, autentikasi, storage, skema, Filament, deployment
 ---
 
 > Dokumentasi teknis: arsitektur, ERD, migration, Filament resources, AI onboarding context.

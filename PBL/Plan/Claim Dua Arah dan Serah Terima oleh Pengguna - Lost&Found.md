@@ -326,52 +326,63 @@ Aplikasi menampilkan petunjuk kontekstual agar pengguna tahu siapa menekan tombo
 
 **2. ClaimController::acceptClaim() — DIUBAH PERAN**
 - Sebelumnya: hanya admin yang bisa call
-- Sekarang: **penemu (foundReport.reporter_id)** juga bisa call (tombol "Cocok")
-- Authorization: `ClaimPolicy::accept()` → `auth()->id() == claim.foundReport.reporter_id OR auth()->role == 'admin'`
+- Sekarang: **penerima claim (bukan pengaju)** juga bisa call
+  - Jika pemilik yang mengajukan claim ke laporan temuan → penemu (foundReport.reporter_id) yang accept
+  - Jika penemu yang mengajukan claim ke laporan hilang → pemilik (lostReport.reporter_id) yang accept
+- Authorization: `ClaimPolicy::accept()` → cek apakah user adalah penerima (bukan pengaju) atau admin
+- Logic: hitung apakah `auth()->id()` adalah pelapor laporan yang TIDAK diajukan oleh claimant
 - Tambah guard Bug 3 (laporan harus `pending`) — sudah ada di log 2026-10-09, verifikasi masih aktif
 
 **3. ClaimController::rejectClaim() — BARU**
 - Endpoint: `POST /api/claims/:id/reject`
 - Body: `{ "reason": "..." }` (wajib)
-- Authorization: penemu atau admin
-- Side effect: claim → `rejected`, chat read-only (bukan delete conversation, tetapi flag `conversation.locked = true`?)
-- Notifikasi FCM ke claimant
+- Authorization: penerima claim (bukan pengaju) atau admin
+- Side effect: claim → `rejected`, chat read-only (hitung dari status, bukan kolom locked)
+- Notifikasi FCM ke pengaju
 
 **4. ClaimController::withdrawClaim() — BARU**
 - Endpoint: `POST /api/claims/:id/withdraw`
 - Body: `{ "reason": "..." }` (wajib)
-- Authorization: claimant (`claim.claimant_id == auth()->id()`)
+- Authorization: pengaju (`claimant_id == auth()->id()`)
 - Side effect:
   - Claim → `withdrawn`, chat read-only
   - Jika claim sebelumnya `accepted`: laporan → `pending`, buka claim yang dibekukan
-- Notifikasi FCM ke pihak lawan (penemu jika claimant yang batalkan, claimant jika penemu yang batalkan)
+- Notifikasi FCM ke penerima (pihak lawan dari pengaju)
 
 **5. ClaimController::markTransferred()**
 - Sebelumnya: admin atau finder
-- Sekarang: **claimant, finder, atau admin** (ClaimPolicy disesuaikan)
+- Sekarang: **pengaju, penerima, atau admin** (ClaimPolicy disesuaikan)
+- Body: `{ "proof_photo": multipart file }` wajib — validasi 422 jika kosong
 - Tambah side effect: tutup claim lain pada laporan itu → `rejected` dengan alasan sistem
 
 **6. ClaimResource (Filament) — Aksi "Terima"**
 - Tetap ada, tetapi bukan jalur utama
 - Visible hanya untuk admin
-- Label diubah: "Terima Claim (Override)" atau tetap "Terima Claim" tetapi dengan tooltip "Biasanya penemu yang verifikasi; gunakan ini jika penemu tidak respond"
+- Label diubah: "Terima Claim (Override)" atau tetap "Terima Claim" tetapi dengan tooltip "Biasanya penerima yang verifikasi; gunakan ini jika penerima tidak respond"
 
 **7. Guard Bug 3 (Celah acceptClaim)**
 - Sudah selesai di DailyChanges 2026-10-09 (commit `20d8164`, merge `b1e5556`)
 - Verifikasi: aksi Terima diblokir jika `lostReport.status !== 'pending' OR foundReport.status !== 'pending'`
 
 **8. ClaimPolicy::markTransferred()**
-- Sebelumnya: `admin OR founder.reporter_id`
-- Sekarang: `admin OR foundReport.reporter_id OR claim.claimant_id`
+- Sebelumnya: `admin OR foundReport.reporter_id`
+- Sekarang: `admin OR pengaju OR penerima` (kedua pihak claim boleh)
+
+**9. ClaimPolicy — Tambahan untuk Claim Dua Arah**
+- `ClaimPolicy::accept()` — cek user adalah penerima (bukan pengaju) atau admin
+- `ClaimPolicy::reject()` — cek user adalah penerima (bukan pengaju) atau admin
+- `ClaimPolicy::withdraw()` — cek user adalah pengaju
+- Helper: `isPenerima($user, $claim)` → return true jika user adalah pelapor laporan yang TIDAK diajukan oleh claimant
 
 **9. Command: `claims:expire`**
 - Query claim pending > 7 hari, update ke `withdrawn`
 - Query claim accepted > 7 hari tanpa `transferred_at`, update ke `withdrawn` + laporan → `pending`
 - Kirim FCM notification
 
-**10. Conversation::locked (USULAN, lihat Open Item #4)**
-- Kolom baru `conversations.locked` (boolean, default false)
-- Atau hitung dari status claim terkait? (tanpa kolom baru)
+**10. Chat Read-Only (Tanpa Kolom `locked`)**
+- Status beku atau tertutup dihitung dari kondisi claim (`rejected`, `withdrawn`, `returned`) atau laporan (`claimed` oleh claim lain)
+- Backend endpoint `/api/conversations/:id/messages` cek kondisi sebelum terima pesan baru
+- Flutter chat UI disable input jika kondisi terpenuhi
 
 ---
 
@@ -387,22 +398,24 @@ Aplikasi menampilkan petunjuk kontekstual agar pengguna tahu siapa menekan tombo
 **2. Form Claim**
 - Dropdown "Pilih Laporan [Hilang/Temuan] Kamu" (label sesuai konteks)
 - Textarea alasan
-- Catatan: "Chat dengan [penemu/pemilik] akan terbuka setelah kamu kirim. [Penemu/Pemilik] akan memverifikasi kepemilikan."
+- Catatan: "Chat dengan [penerima] akan terbuka setelah kamu kirim. [Penerima] akan memverifikasi kepemilikan."
 
-**3. ChatScreen — Tombol Verifikasi (untuk Penemu)**
-- Cek: `auth.userId == conversation.foundReport.reporterId` (penemu)
-- Jika iya dan `claim.status == 'pending'`: tampilkan 2 tombol di atas input chat:
-  - **"Cocok"** (hijau) → call `POST /api/claims/:id/accept`
-  - **"Tidak cocok"** (merah) → dialog textarea alasan → call `POST /api/claims/:id/reject`
-- Banner tips tetap muncul
+**3. ChatScreen — Tombol Verifikasi (untuk Penerima)**
+- Cek: user adalah penerima (bukan pengaju) + `claim.status == 'pending'`
+- Tampilkan 2 tombol di atas input chat:
+  - Jika user = penemu: **"Cocok"** (hijau) / **"Tidak cocok"** (merah)
+  - Jika user = pemilik: **"Ya, ini barang saya"** (hijau) / **"Bukan barang saya"** (merah)
+- Tap tombol → dialog textarea alasan (wajib untuk reject) → call API
+- Banner tips muncul sesuai peran
 
 **4. Detail Claim — Tombol Serah Terima**
-- Jika `claim.status == 'accepted'` dan user = claimant ATAU finder:
+- Jika `claim.status == 'accepted'` dan user = pengaju ATAU penerima:
   - Tombol "Barang Sudah Diserahkan"
-  - Tap → pilih foto (kamera/galeri) → upload → call `PATCH /api/claims/:id/mark-transferred`
+  - Tap → pilih foto (kamera/galeri) wajib → upload → call `PATCH /api/claims/:id/mark-transferred`
+  - Validasi: tombol disable jika foto belum dipilih
 
 **5. Detail Claim — Tombol Batalkan**
-- Jika `claim.status == 'pending' OR 'accepted'` dan user = claimant:
+- Jika `claim.status == 'pending' OR 'accepted'` dan user = pengaju:
   - Tombol merah outline "Batalkan Claim"
   - Dialog konfirmasi + textarea alasan → call `POST /api/claims/:id/withdraw`
 
@@ -424,9 +437,9 @@ Aplikasi menampilkan petunjuk kontekstual agar pengguna tahu siapa menekan tombo
 
 **2. ClaimResource — Detail View**
 - Tambah field:
-  - `accepted_at` (timestamp "Cocok" ditekan)
-  - `rejected_reason` / `withdrawn_reason` (alasan penutupan)
-  - `closed_by` (siapa yang tutup: penemu/claimant/admin/system)
+  - `accepted_at` (timestamp konfirmasi "Cocok" / "Ya, ini barang saya")
+  - `closed_reason` (alasan penutupan)
+  - `closed_by` (siapa yang tutup: pengaju/penerima/admin/system)
 - Metadata chat tanpa isi (sudah ada, lihat DailyChanges 2026-10-06)
 
 **3. ClaimResource — Aksi Override**
@@ -435,39 +448,26 @@ Aplikasi menampilkan petunjuk kontekstual agar pengguna tahu siapa menekan tombo
 
 ---
 
-## Usulan Perubahan Skema (USULAN, Menunggu Persetujuan User)
+## Perubahan Skema (Disetujui User 2026-10-14)
+
+> **Status:** Disetujui. Belum ada migration. Tugas untuk Coding Agent di Phase 1.
 
 ### Tabel `claims`
 
-**Kolom baru (usulan):**
+**Kolom baru (disetujui):**
 ```php
 // Migration
-$table->text('closed_reason')->nullable()->comment('Alasan penutupan (rejected/withdrawn)');
-$table->uuid('closed_by')->nullable()->comment('User yang menutup (claimant/finder/admin) atau NULL jika system');
-$table->timestamp('accepted_at')->nullable()->comment('Waktu "Cocok" ditekan (untuk hitung 7 hari kedaluwarsa)');
+$table->text('closed_reason')->nullable()->comment('Alasan penutupan (rejected/withdrawn/expired)');
+$table->uuid('closed_by')->nullable()->comment('User yang menutup (pengaju/penerima/admin) atau NULL jika system');
+$table->timestamp('accepted_at')->nullable()->comment('Waktu konfirmasi diterima (untuk hitung 7 hari kedaluwarsa)');
 
 $table->foreign('closed_by')->references('id')->on('users')->onDelete('set null');
 $table->index('accepted_at'); // untuk query expire
 ```
 
-**Alternatif tanpa kolom baru:**
-- `closed_reason` → pakai `admin_note` yang sudah ada (ubah nama kolom atau tetap `admin_note` tetapi artinya diperluas)
-- `closed_by` → hitung dari `transferred_by` atau relasi claim → user (tetapi tidak bisa tahu siapa yang reject/withdraw)
-- `accepted_at` → pakai `updated_at` saat status berubah ke `accepted` (kurang akurat jika claim di-update lagi)
-
-**Catatan:** Verdict tetap pakai `status` (accepted/rejected), bukan kolom `verdict` baru.
-
-### Tabel `conversations`
-
-**Kolom baru (usulan):**
-```php
-$table->boolean('locked')->default(false)->comment('Chat read-only setelah claim rejected/withdrawn');
-```
-
-**Alternatif tanpa kolom baru:**
-- Hitung dari `claim.status IN ('rejected', 'withdrawn', 'returned')`
-- Pro: tidak perlu migration, logic di backend
-- Cons: harus join `claims` tiap kali cek locked
+**Catatan:** 
+- Verdict tetap pakai `status` (accepted/rejected), bukan kolom `verdict` baru
+- Chat read-only dihitung dari kondisi claim (`rejected`, `withdrawn`, `returned`) atau laporan (`claimed` oleh claim lain), **BUKAN dari kolom tersimpan**
 
 ---
 
@@ -475,24 +475,24 @@ $table->boolean('locked')->default(false)->comment('Chat read-only setelah claim
 
 ### Phase 1: Backend Core (Laravel)
 
-**1.1 Migration — Kolom Baru (jika disetujui)**
-- `claims`: `closed_reason`, `closed_by`, `accepted_at`
-- `conversations`: `locked` (opsional)
+**1.1 Migration — Kolom Baru**
+- `claims`: `closed_reason`, `closed_by`, `accepted_at` (disetujui user 2026-10-14)
 
 **1.2 Endpoint Baru**
-- `POST /api/claims/:id/accept` (sebelumnya admin-only, sekarang penemu juga boleh)
-- `POST /api/claims/:id/reject` (body: `reason`)
-- `POST /api/claims/:id/withdraw` (body: `reason`)
+- `POST /api/claims/:id/accept` (penerima claim, bukan pengaju)
+- `POST /api/claims/:id/reject` (body: `reason` wajib)
+- `POST /api/claims/:id/withdraw` (body: `reason` wajib)
 
 **1.3 Update Endpoint Existing**
-- `ClaimController::store()` — validasi claimant peran + maksimal 5 pending
-- `ClaimController::markTransferred()` — authorization claimant juga boleh, side effect tutup claim lain
+- `ClaimController::store()` — validasi pengaju peran + maksimal 5 pending
+- `ClaimController::markTransferred()` — authorization pengaju & penerima, body `proof_photo` wajib, side effect tutup claim lain
 
 **1.4 Policy Update**
-- `ClaimPolicy::accept()` — penemu atau admin
-- `ClaimPolicy::reject()` — penemu atau admin
-- `ClaimPolicy::withdraw()` — claimant
-- `ClaimPolicy::markTransferred()` — claimant, finder, atau admin
+- `ClaimPolicy::accept()` — penerima (bukan pengaju) atau admin
+- `ClaimPolicy::reject()` — penerima (bukan pengaju) atau admin
+- `ClaimPolicy::withdraw()` — pengaju
+- `ClaimPolicy::markTransferred()` — pengaju, penerima, atau admin
+- Helper `isPenerima($user, $claim)` — return true jika user adalah pelapor laporan yang TIDAK diajukan claimant
 
 **1.5 Logic Pembekuan Claim**
 - Helper function `Claim::isFreezed()` atau query scope `Claim::scopeActive($query)`
@@ -506,17 +506,19 @@ $table->boolean('locked')->default(false)->comment('Chat read-only setelah claim
 - Register di `Kernel.php`: `$schedule->command('claims:expire')->hourly();`
 
 **1.7 Notification Service**
-- FCM ke penemu saat claim dibuat (sudah ada?)
-- FCM ke claimant saat claim accepted/rejected/withdrawn
+- FCM ke penerima saat claim dibuat (bukan ke penemu fixed, tapi ke pihak yang menerima claim)
+- FCM ke pengaju saat claim accepted/rejected/withdrawn oleh penerima
+- FCM ke penerima saat claim withdrawn oleh pengaju
 - FCM pengingat H-1 sebelum expire
 
 **1.8 Test**
-- `ClaimAcceptTest` — penemu tekan "Cocok"
-- `ClaimRejectTest` — penemu tolak + alasan
-- `ClaimWithdrawTest` — claimant batalkan + side effect laporan
+- `ClaimAcceptTest` — penerima tekan "Cocok" / "Ya, ini barang saya"
+- `ClaimRejectTest` — penerima tolak + alasan
+- `ClaimWithdrawTest` — pengaju batalkan + side effect laporan
 - `ClaimExpireTest` — scheduler auto-withdrawn
 - `ClaimFreezedTest` — claim lain dibekukan saat laporan `claimed`
 - `ClaimRaceConditionTest` — transaction lock
+- `ClaimTwoWayTest` — penemu ajukan claim ke laporan hilang, pemilik yang accept
 
 ---
 
@@ -528,21 +530,24 @@ $table->boolean('locked')->default(false)->comment('Chat read-only setelah claim
 - Redirect ke form Lapor jika belum punya laporan lawan
 
 **2.2 ChatScreen — Tombol Verifikasi**
-- Cek user = penemu + claim pending
-- Tampilkan 2 tombol: "Cocok" / "Tidak cocok"
-- Banner tips
+- Cek user = penerima (bukan pengaju) + claim pending
+- Tampilkan 2 tombol: 
+  - Jika user = penemu (penerima dari pemilik yang claim): "Cocok" / "Tidak cocok"
+  - Jika user = pemilik (penerima dari penemu yang claim): "Ya, ini barang saya" / "Bukan barang saya"
+- Banner tips sesuai peran (lihat §2)
 
 **2.3 Detail Claim — Tombol Aksi**
-- "Barang Sudah Diserahkan" (jika accepted, user = claimant atau finder)
-- "Batalkan Claim" (jika pending/accepted, user = claimant)
+- "Barang Sudah Diserahkan" (jika accepted, user = pengaju atau penerima) — wajib upload 1 foto
+- "Batalkan Claim" (jika pending/accepted, user = pengaju)
 
 **2.4 Badge Status**
 - Tambah badge "Dibekukan" (abu) untuk claim pending + laporan claimed
 
 **2.5 Model & Service**
-- `ClaimService.acceptClaim(id)`
-- `ClaimService.rejectClaim(id, reason)`
-- `ClaimService.withdrawClaim(id, reason)`
+- `ClaimService.acceptClaim(id)` — penerima accept
+- `ClaimService.rejectClaim(id, reason)` — penerima reject
+- `ClaimService.withdrawClaim(id, reason)` — pengaju withdraw
+- `ClaimService.markTransferred(id, photoFile)` — pengaju atau penerima, foto wajib
 - `Claim` model field baru: `acceptedAt`, `closedReason`, `closedBy`
 
 **2.6 Deep Link — Return from Lapor Temuan**
@@ -589,24 +594,26 @@ $table->boolean('locked')->default(false)->comment('Chat read-only setelah claim
 ## Strategi Test
 
 **Unit Test (Laravel):**
-- `ClaimPolicy::accept()` — penemu boleh, outsider ditolak
+- `ClaimPolicy::accept()` — penerima boleh, outsider & pengaju ditolak
+- `ClaimPolicy::isPenerima()` — helper logic peran penerima
 - `Claim::isFreezed()` — logic pembekuan
 - `ExpireClaimsCommand` — query pending/accepted > 7 hari
 
 **Feature Test (Laravel):**
-- `POST /api/claims` — validasi peran claimant, maksimal 5 pending
+- `POST /api/claims` — validasi peran pengaju, maksimal 5 pending
 - `POST /api/claims/:id/accept` — laporan → `claimed`, claim lain → freezed
-- `POST /api/claims/:id/reject` — claim → `rejected`, chat locked
+- `POST /api/claims/:id/reject` — claim → `rejected`, chat read-only
 - `POST /api/claims/:id/withdraw` — claim → `withdrawn`, laporan → `pending` jika sebelumnya accepted
-- `PATCH /api/claims/:id/mark-transferred` — claimant boleh, side effect tutup claim lain
+- `PATCH /api/claims/:id/mark-transferred` — pengaju & penerima boleh, foto wajib, side effect tutup claim lain
 
 **Integration Test (Flutter + Laravel):**
 - Claim dibuat → conversation auto-created → chat terbuka
-- Penemu tekan "Cocok" → claim accepted → laporan claimed → notifikasi FCM
-- Serah terima → foto upload → claim returned
+- Penerima tekan "Cocok" / "Ya, ini barang saya" → claim accepted → laporan claimed → notifikasi FCM
+- Serah terima → foto upload wajib → claim returned
 
 **Manual Test:**
 - Multi-device: pemilik + penemu di HP berbeda
+- Test claim dua arah: penemu ajukan claim ke laporan hilang, pemilik yang verifikasi
 - Timeline lengkap: claim → chat → verifikasi → expire (ubah waktu sistem atau kurangi 7 hari jadi 1 menit untuk test)
 
 ---
@@ -627,94 +634,74 @@ $table->boolean('locked')->default(false)->comment('Chat read-only setelah claim
 
 ## Next Steps
 
-> **Semua belum dikerjakan. Menunggu persetujuan user.**
+> **Status:** Keputusan user 2026-10-14 sudah dimasukkan ke plan. Skema disetujui. Open items 1, 2, 4 tertutup. Item 3 ditunda.
 
-1. ⬜ User konfirmasi 4 open items (lihat di bawah)
-2. ⬜ User konfirmasi usulan skema (kolom baru atau pakai yang ada)
-3. ⬜ Implementasi Real-Time Chat selesai (dependency)
-4. ⬜ Backend Phase 1 (migration + endpoint + policy + scheduler)
-5. ⬜ Flutter Phase 2 (tombol verifikasi + serah terima + batalkan)
-6. ⬜ Filament Phase 3 (detail view + aksi override)
-7. ⬜ Test Phase 4 (unit + feature + integration + manual)
-8. ⬜ Deploy + monitoring (metrik claim accepted, waktu verifikasi, expire rate)
-
----
-
-## Open Items untuk User
-
-### 1. Foto Bukti Serah Terima: Wajib atau Opsional?
-**Konteks:** Saat pemilik/penemu menekan "Barang sudah diserahkan", apakah upload foto wajib atau opsional?
-
-**Opsi A — Wajib:**
-- Pro: dokumentasi lengkap, mencegah dispute, audit trail kuat
-- Cons: friction jika salah satu lupa foto, tidak bisa serah terima tanpa foto
-
-**Opsi B — Opsional:**
-- Pro: tidak memblokir serah terima, fleksibel untuk situasi darurat
-- Cons: tidak ada bukti jika dispute, admin sulit evaluasi
-
-**Rekomendasi Hermes:** Wajib, tetapi ada escape hatch "Lewati (tanpa foto)" dengan warning keras dan wajib konfirmasi.
+1. ✅ Open items tertutup (1: foto wajib, 2: penerima yang konfirmasi, 4: skema disetujui)
+2. ⬜ Implementasi Real-Time Chat selesai (dependency)
+3. ⬜ Backend Phase 1 (migration + endpoint + policy + scheduler)
+4. ⬜ Flutter Phase 2 (tombol verifikasi + serah terima + batalkan)
+5. ⬜ Filament Phase 3 (detail view + aksi override)
+6. ⬜ Test Phase 4 (unit + feature + integration + manual)
+7. ⬜ Deploy + monitoring (metrik claim accepted, waktu verifikasi, expire rate)
 
 ---
 
-### 2. Verifikasi Pemilik jika Penemu yang Mengajukan Claim
-**Konteks:** Jika **penemu** mengajukan claim ke laporan hilang, siapa yang menekan "Cocok"?
+## Ditunda (Fitur Sengketa)
 
-**Skenario:**
-- Penemu: "Saya menemukan dompet, dan ada laporan hilang yang cocok. Saya ajukan claim."
-- Pemilik laporan hilang: (menerima notifikasi) "Ada yang menemukan barangmu, chat untuk konfirmasi."
+**Item 3 (dari Open Items): Cara Pengguna Melaporkan Sengketa ke Admin**
 
-**Pertanyaan:** Apakah **pemilik** harus menekan tombol "Ini Barang Saya" sebelum claim menjadi `accepted`? Atau **penemu** tetap yang menekan "Cocok" setelah pemilik menjawab pertanyaan verifikasi?
+Fitur pelaporan sengketa ke admin (tombol "Laporkan Masalah" di detail claim, flag `disputed`, dashboard admin) **DITUNDA**. Alasan:
+- Perlu plan terpisah untuk fitur dispute resolution
+- Belum terbukti perlu di early adoption
+- Admin saat ini bisa lihat semua claim dan metadata chat (tanpa isi) untuk monitoring
+- Pengaju bisa batalkan claim (withdrawn) jika ada masalah
+- Admin bisa override (cabut/tolak claim) tanpa flag khusus
 
-**Opsi A — Penemu yang menekan "Cocok" (sama seperti flow pemilik yang claim):**
-- Flow: penemu tanya via chat → pemilik jawab → penemu yakin → penemu tekan "Cocok"
-- Pro: konsisten, penemu yang megang barang jadi verifikator
-- Cons: pemilik pasif, tidak ada konfirmasi aktif dari pemilik
-
-**Opsi B — Pemilik yang menekan "Ini Barang Saya":**
-- Flow: penemu tanya via chat → pemilik jawab → pemilik tekan "Ini Barang Saya" → accepted
-- Pro: pemilik aktif konfirmasi, penemu tidak perlu "judge"
-- Cons: asimetri dengan flow lama, tombol verifikasi ada di 2 pihak (bingung)
-
-**Rekomendasi Hermes:** Opsi A (penemu tetap yang tekan "Cocok"). Alasan: penemu yang pegang barang fisik, jadi penemu yang putuskan cocok atau tidak setelah pemilik jawab pertanyaan.
+Jika setelah launch terbukti banyak sengketa yang tidak terselesaikan lewat chat, buat plan "Pelaporan Sengketa Claim" terpisah.
 
 ---
 
-### 3. Cara Pengguna Melaporkan Sengketa ke Admin
-**Konteks:** Jika ada dispute (misal: pemilik bilang barang tidak sesuai setelah claim accepted, atau penemu bilang pemilik tidak datang serah terima), bagaimana user melaporkan ke admin?
+## Open Items untuk User (TERTUTUP)
 
-**Opsi A — Tombol "Laporkan Masalah" di Detail Claim:**
-- UI: tombol outline abu "Laporkan Masalah"
-- Flow: dialog textarea "Jelaskan masalahmu" → submit → flag claim sebagai "disputed" → notifikasi ke admin
-- Admin lihat list claim disputed di dashboard → buka detail → evaluasi → putuskan (cabut/tolak/abaikan)
+> Semua open items sudah dijawab user 2026-10-14. Dicatat di sini sebagai riwayat keputusan.
 
-**Opsi B — Lewat Chat dengan Flag:**
-- UI: tombol "Tandai Bermasalah" di chat
-- Flow: user tap → flag conversation → admin dapat notifikasi
+### 1. Foto Bukti Serah Terima: Wajib atau Opsional? ✅ TERTUTUP
 
-**Opsi C — Tidak ada fitur khusus, user hubungi admin via kontak kampus (WA/email):**
-- Pro: simple, tidak perlu fitur baru
-- Cons: tidak terintegrasi, admin tidak punya visibilitas di dashboard
+**Keputusan:** WAJIB (1 foto).
 
-**Rekomendasi Hermes:** Opsi A (tombol "Laporkan Masalah"). Fitur baru, butuh plan terpisah atau ditambahkan ke plan ini.
+- Tombol "Barang sudah diserahkan" tidak bisa dikirim tanpa foto
+- Validasi backend 422 jika foto kosong
+- Alasan: admin tidak membaca chat, jadi foto adalah jejak utama untuk menengahi sengketa
 
 ---
 
-### 4. Skema Kolom Baru di `claims`
-**Pertanyaan:** Apakah menambah 3 kolom baru (`closed_reason`, `closed_by`, `accepted_at`) atau pakai kolom yang sudah ada (`admin_note` untuk reason, `updated_at` untuk timestamp)?
+### 2. Verifikasi Pemilik jika Penemu yang Mengajukan Claim ✅ TERTUTUP
 
-**Opsi A — Tambah 3 Kolom (usulan di plan):**
-- Pro: jelas, terpisah per tujuan, mudah query expire
-- Cons: 1 migration lagi
+**Keputusan:** Pihak yang TIDAK mengajukan claim yang menekan tombol konfirmasi.
 
-**Opsi B — Pakai Kolom Existing:**
-- `closed_reason` → pakai `admin_note` (ubah arti kolom jadi "catatan penutupan")
-- `closed_by` → tidak ada (atau hitung dari `transferred_by`)
-- `accepted_at` → pakai `updated_at` (kurang akurat)
-- Pro: tidak perlu migration
-- Cons: `admin_note` jadi overloaded, sulit tahu siapa yang tutup
+- Pemilik mengajukan claim ke laporan temuan → PENEMU yang tekan "Cocok" / "Tidak cocok"
+- Penemu mengajukan claim ke laporan hilang → PEMILIK yang tekan "Ya, ini barang saya" / "Bukan barang saya"
+- Pengaju hanya bisa membatalkan (withdrawn), tidak bisa konfirmasi claim-nya sendiri
 
-**Rekomendasi Hermes:** Opsi A (tambah kolom baru) untuk clarity dan maintainability.
+---
+
+### 3. Cara Pengguna Melaporkan Sengketa ke Admin ⏸️ DITUNDA
+
+**Keputusan:** Ditunda. Dibuat plan terpisah bila terbukti perlu setelah launch.
+
+Lihat bagian "Ditunda (Fitur Sengketa)" di atas.
+
+---
+
+### 4. Skema Kolom Baru di `claims` ✅ TERTUTUP
+
+**Keputusan:** Tambah 3 kolom baru (disetujui 2026-10-14).
+
+- `accepted_at` (timestamp): waktu konfirmasi diterima, dasar hitungan 7 hari
+- `closed_reason` (text): alasan penolakan/pembatalan/kedaluwarsa/penutupan sistem
+- `closed_by` (uuid, FK users, on delete set null): pihak yang menutup; null = sistem
+
+Lihat bagian "Perubahan Skema (Disetujui User 2026-10-14)" untuk detail migration.
 
 ---
 

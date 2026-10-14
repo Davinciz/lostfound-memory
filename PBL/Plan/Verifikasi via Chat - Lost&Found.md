@@ -10,7 +10,12 @@ summary: Verifikasi kepemilikan via real-time chat in-app, bukan pertanyaan keam
 # Verifikasi via Chat - Lost&Found
 
 > [!warning] Akan berubah
-> Flow verifikasi akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: chat terbuka otomatis saat claim dibuat (tanpa tunggu admin), penemu menekan tombol "Cocok" untuk approve claim.
+> Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
+> - Chat terbuka **otomatis** saat claim dibuat (status pending), tanpa menunggu admin
+> - **Penerima claim** (bukan pengaju) yang menekan tombol konfirmasi:
+>   - Pemilik yang claim → Penemu tekan "Cocok" / "Tidak cocok"
+>   - Penemu yang claim → Pemilik tekan "Ya, ini barang saya" / "Bukan barang saya"
+> - Claim dua arah: pemilik dan penemu sama-sama bisa mengajukan claim
 
 **Tanggal:** 2026-10-02  
 **Project:** [[PBL]] Lost&Found  

@@ -2,8 +2,8 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-13
-summary: ERD 7 tabel Lost&Found; skema Google SSO diterapkan, NIM opsional, dan password nullable untuk user.
+updated: 2026-10-14
+summary: ERD 7 tabel Lost&Found; skema Google SSO diterapkan, NIM opsional, password nullable; kolom baru claims disetujui 2026-10-14
 ---
 
 # ERD Lost & Found
@@ -65,14 +65,17 @@ Laporan barang temuan.
 
 #### 5. `claims`
 
+> [!note] Kolom baru disetujui 2026-10-14
+> Tiga kolom baru disetujui user: `accepted_at`, `closed_reason`, `closed_by`. Belum ada migration. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
+
 Pengajuan klaim yang menghubungkan laporan hilang, laporan temuan, dan pengklaim.
 
 - **PK:** `id` (UUID)
-- **FK:** `lost_report_id` → lost_reports.id (NOT NULL, claimant wajib punya laporan hilang), `found_report_id` → found_reports.id, `claimant_id` → users.id, `transferred_by` → users.id (nullable)
-- **Kolom klaim:** status (default `pending`), reason (text), admin_note (text)
+- **FK:** `lost_report_id` → lost_reports.id (NOT NULL), `found_report_id` → found_reports.id (NOT NULL), `claimant_id` → users.id, `transferred_by` → users.id (nullable), `closed_by` → users.id (nullable, kolom baru)
+- **Kolom klaim:** status (default `pending`), reason (text), admin_note (text), `accepted_at` (timestamp nullable, kolom baru), `closed_reason` (text nullable, kolom baru)
 - **Kolom serah terima:** proof_of_transfer_photo_url, transferred_at, transferred_by
 - **Check constraint:** status ∈ `pending`, `accepted`, `returned`, `rejected`, `withdrawn`
-- **Index:** status
+- **Index:** status, `accepted_at` (kolom baru, untuk query expire)
 - **Relasi:** Many-to-one ke lost_reports, found_reports, users; 1 claim → N conversations (chat otomatis dibuat saat claim)
 
 #### 6. `conversations`
@@ -137,3 +140,4 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **2026-10-08:** Autentikasi email mahasiswa, NIM wajib, role student (riwayat; diganti pada 2026-10-10).
 - **2026-10-10:** Google SSO diterapkan untuk tiga domain Polines; role `user | admin` default `user`; password nullable untuk pengguna SSO; NIM opsional, unik, otomatis dari email mahasiswa bila pola cocok. Implementasi dan migration selesai menurut laporan user; login mahasiswa diuji di HP fisik.
 - **2026-10-11:** Flow lokasi diubah. User memilih lokasi dengan menaruh pin di peta (`flutter_map` + OpenStreetMap), bukan GPS otomatis. Koordinat laporan = titik yang dipilih user; gedung (jika dipilih) hanya mengisi `building_id` dan `location_name`, tidak menimpa koordinat. Aturan lama "gedung menang atas GPS" dibalik. Aturan `location_name` baru: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)". Endpoint `POST /location/suggest` dan `LocationService` backend dicoret; Haversine dihitung lokal di Flutter (opsi B). `building_id` tetap nullable; backend tetap memvalidasi building_id (uuid, exists) dan menolak koordinat kosong/0,0.
+- **2026-10-14:** Tiga kolom baru di `claims` disetujui: `accepted_at` (timestamp, untuk hitung kedaluwarsa 7 hari), `closed_reason` (text, alasan rejected/withdrawn/expired), `closed_by` (uuid FK users, null = sistem). Belum ada migration. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]. Chat read-only dihitung dari kondisi claim atau laporan, bukan dari kolom tersimpan.
