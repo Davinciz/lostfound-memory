@@ -112,6 +112,9 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 
 ## Alur Status
 
+> [!warning] Arti `accepted` akan berubah
+> Di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]], arti status `accepted` berubah dari "admin menerima claim" menjadi "penerima claim (pihak yang tidak mengajukan) menekan Cocok/Ya". Admin tetap bisa override.
+
 **Lost Report:** pending → claimed → returned / closed
 
 **Found Report:** pending → claimed → returned / closed
@@ -119,8 +122,9 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 **Claim:** pending → accepted → returned / rejected / withdrawn
 
 **Keterangan:**
-- Claim `accepted` = admin setujui, laporan lost & found jadi `claimed`
+- Claim `accepted` = admin setujui, laporan lost & found jadi `claimed` (akan berubah: penerima yang setujui)
 - Claim `returned` = barang diserahkan (via markTransferred), laporan lost & found jadi `returned`
+- Claim `withdrawn` = pengaju batalkan atau kedaluwarsa 7 hari
 
 ## Constraint & Index
 

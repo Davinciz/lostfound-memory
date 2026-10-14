@@ -165,7 +165,7 @@ Mengubah alur claim dari **admin-centric** menjadi **user-driven**: penemu dan p
 - Claim lain yang dibekukan terbuka lagi
 - Notifikasi FCM ke kedua pihak
 
-**Implementasi:** Laravel Scheduler (`app/Console/Kernel.php`) job harian atau per jam
+**Implementasi:** Laravel Scheduler (`routes/console.php` Laravel 11+) job harian atau per jam
 ```php
 $schedule->command('claims:expire')->hourly();
 ```
@@ -375,12 +375,12 @@ Aplikasi menampilkan petunjuk kontekstual agar pengguna tahu siapa menekan tombo
 - `ClaimPolicy::withdraw()` — cek user adalah pengaju
 - Helper: `isPenerima($user, $claim)` → return true jika user adalah pelapor laporan yang TIDAK diajukan oleh claimant
 
-**9. Command: `claims:expire`**
+**10. Command: `claims:expire`**
 - Query claim pending > 7 hari, update ke `withdrawn`
 - Query claim accepted > 7 hari tanpa `transferred_at`, update ke `withdrawn` + laporan → `pending`
 - Kirim FCM notification
 
-**10. Chat Read-Only (Tanpa Kolom `locked`)**
+**11. Chat Read-Only (Tanpa Kolom `locked`)**
 - Status beku atau tertutup dihitung dari kondisi claim (`rejected`, `withdrawn`, `returned`) atau laporan (`claimed` oleh claim lain)
 - Backend endpoint `/api/conversations/:id/messages` cek kondisi sebelum terima pesan baru
 - Flutter chat UI disable input jika kondisi terpenuhi
