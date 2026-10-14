@@ -9,7 +9,7 @@ kanban-plugin: board
 - [ ] 🎯 **Core MVP selesai** — claim flow, foto bukti serah terima, master buildings + auto location
 	Ringkasan: **13 item selesai · 5 backlog pending · 3 fitur besar masih rencana**.
 - [ ] ✅ **Selesai (13):** Bug 1, 2a, 2b, 3 + celah lanjutan · Foto Bukti Transfer · Master Buildings (Backend/Flutter/Filament) · Backlog Item 4, 7 & 8 · Migrasi repo Gitea→GitHub
-- [ ] 🚧 **Fokus berikutnya:** Backlog Item 1–3, 5 (validasi foto, error register, endpoint "laporan saya", riwayat profil) + Item 9 (kepemilikan foto pada `photos/delete`)
+- [ ] 🚧 **Fokus berikutnya:** Backlog Item 1 + 9 (validasi foto + kepemilikan `photos/delete`, dikerjakan bersama), lalu Item 2, 3, 5
 - [ ] 🧭 **Rencana besar:** Real-Time Chat · Verifikasi via Chat · Security Hardening
 - [ ] 📅 **Terakhir diperbarui:** 2026-10-14
 
@@ -24,8 +24,8 @@ kanban-plugin: board
 	Tambah `GET /api/lost-reports?mine=1` & `GET /api/found-reports?mine=1` (Sanctum `auth()->id()`). Saat ini dropdown claim difilter di Flutter dari 20 item pertama.
 - [ ] **Item 5 — Riwayat laporan saya di tab Profil** `Low`
 	`onTap` masih kosong. Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3).
-- [ ] **Item 9 — Kepemilikan foto pada `POST /api/photos/delete`** `Medium (usulan, menunggu user)`
-	Endpoint belum mengecek kepemilikan: user terautentikasi mana pun bisa menghapus file `reports/`/`claims/proof/` milik user lain bila tahu path-nya. Opsi desain A/B/C belum diputuskan.
+- [ ] **Item 9 — Kepemilikan foto pada `POST /api/photos/delete`** `Medium`
+	Endpoint belum mengecek kepemilikan: user terautentikasi mana pun bisa menghapus file `reports/`/`claims/proof/` milik user lain bila tahu path-nya. Opsi desain **C** (diputuskan 2026-10-14); dikerjakan bersama Item 1.
 
 
 ## 🔍 Menunggu Konfirmasi

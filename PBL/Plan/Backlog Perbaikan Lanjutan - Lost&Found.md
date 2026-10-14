@@ -5,7 +5,7 @@ status: active
 priority: medium
 created: 2026-10-11
 updated: 2026-10-14
-summary: Backlog perbaikan lanjutan — item 7 (tooling) & 8 (rotasi key Firebase) selesai 2026-10-12, item 4 (URL foto relatif) selesai 2026-10-14; sisa item 1–3, 5, 6 dan item 9 baru (kepemilikan photos/delete)
+summary: Backlog perbaikan lanjutan — item 4, 7, 8 selesai; item 9 (kepemilikan photos/delete) prioritas final medium, dikerjakan bersama item 1; sisa item 1–3, 5, 6 + open items (dev email, Pint, folder lama)
 ---
 
 # Backlog Perbaikan Lanjutan - Lost&Found
@@ -27,7 +27,7 @@ Menyelesaikan backlog yang tersisa setelah semua bug utama (1, 2a, 2b, 3) selesa
 
 ## Item Prioritization
 
-**Prioritas final (ditetapkan user 2026-10-13):**
+**Prioritas final (ditetapkan user 2026-10-13, diperbarui 2026-10-14):**
 
 | Item | Prioritas final | Alasan |
 |------|------------------|--------|
@@ -39,7 +39,7 @@ Menyelesaikan backlog yang tersisa setelah semua bug utama (1, 2a, 2b, 3) selesa
 | Item 4 — URL foto relatif | ✅ Selesai (2026-10-14) | Path relatif di DB, URL dibangun di response; teruji di HP |
 | Item 5 — Riwayat laporan saya di tab Profil | **Low** | `onTap` masih kosong |
 | Item 6 — Pembedaan halaman View Lost vs Found di Filament | **Medium** | Prompt sudah dikirim, hasil belum dikonfirmasi |
-| Item 9 — Kepemilikan foto pada `POST /api/photos/delete` | **Medium** (usulan, menunggu user) | User terautentikasi mana pun bisa hapus foto milik user lain |
+| Item 9 — Kepemilikan foto pada `POST /api/photos/delete` | **Medium** (final, 2026-10-14) | Dikerjakan bersama Item 1; user terautentikasi mana pun bisa hapus foto milik user lain |
 
 ---
 
@@ -197,8 +197,8 @@ Key `firebase-service-account.json` terekspos di history git.
 
 ## Item 9 — Kepemilikan Foto pada `POST /api/photos/delete`
 
-**Status:** ⬜ Belum dikerjakan  
-**Prioritas usulan:** Medium (usulan, menunggu user)  
+**Status:** ⬜ Belum dikerjakan (dikerjakan bersama Item 1 di sesi berikutnya)  
+**Prioritas final:** Medium (ditetapkan user 2026-10-14)  
 **Sumber:** Temuan sesi Item 4 (2026-10-14)
 
 ### Masalah
@@ -211,11 +211,11 @@ Key `firebase-service-account.json` terekspos di history git.
 ### Target
 Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya lewat alur edit/hapus laporan.
 
-### Opsi Desain (BELUM diputuskan)
-- **Opsi A:** Cek kepemilikan lewat referensi di DB — foto hanya boleh dihapus bila dirujuk oleh laporan/claim milik user yang meminta.
-- **Opsi B:** Hilangkan endpoint delete bebas; hapus foto hanya lewat alur edit/hapus laporan.
-- **Opsi C:** Gabungan — endpoint delete tetap ada, tetapi hanya untuk foto yang belum dirujuk dan milik user.
-- Keputusan belum diambil. Tidak mengusulkan tabel/kolom baru sebagai keputusan.
+### Keputusan Desain (2026-10-14): **Opsi C**
+- **✅ Opsi C (DIPILIH):** Gabungan — endpoint delete tetap ada, tetapi hanya untuk foto yang belum dirujuk dan milik user.
+- ~~Opsi A:~~ Cek kepemilikan lewat referensi di DB — foto hanya boleh dihapus bila dirujuk oleh laporan/claim milik user yang meminta. *(tidak dipilih)*
+- ~~Opsi B:~~ Hilangkan endpoint delete bebas; hapus foto hanya lewat alur edit/hapus laporan. *(tidak dipilih)*
+- Tidak mengusulkan tabel/kolom baru sebagai keputusan.
 
 ---
 
@@ -223,10 +223,10 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 
 **Catatan (belum dikerjakan; menunggu keputusan user):**
 
-- **(i) Dev email (`GOOGLE_DEV_EMAILS`)** — melonggarkan cek domain di **semua environment selain `production`** (termasuk staging). Pertimbangkan membatasi ke `local`/`testing` bila ada staging bersama. Normalisasi daftar email belum ada: `explode(',', env(...))` mengembalikan `['']` saat kosong dan tidak di-trim/lowercase.
+- **(i) Dev email (`GOOGLE_DEV_EMAILS`)** — keputusan 2026-10-14: **normalisasi daftar email akan dikerjakan** (trim, lowercase, buang entri kosong) — perubahan kecil. **Pembatasan ke `local`/`testing` DITUNDA** sampai ada staging bersama; dicatat sebagai **syarat sebelum deploy/staging**. (Latar: `explode(',', env(...))` mengembalikan `['']` saat kosong dan tidak di-trim/lowercase; pelonggaran cek domain berlaku di semua env selain `production`.)
 - **(ii) Wajib `php artisan storage:link` di setiap setup/clone baru** — symlink `public/storage` dan isi `storage/app/public` **tidak ikut Git**; wajib dibuat dan foto lama disalin di tiap clone baru.
-- **(iii) 11 file Pint lama + `test_fcm.php`** — `pint --test` menandai file lama di luar PR Item 4 (ListClaims, EditUser, ListUsers, AdminController, ClaimController, SearchController, AdminMiddleware, GoogleTokenVerifier, `bootstrap/app.php`, `providers.php`, dan `test_fcm.php` di root repo). Prioritas **low**; menunggu keputusan user (perbaiki atau biarkan; `test_fcm.php` dihapus atau tidak).
-- **(iv) Inventaris folder lama `D:\PBL\lostfound` sebelum dihapus** — ada branch yang hanya ada lokal (mis. `backup-main-salah-commit`, `feature/google-sso-backend`); cek `git branch --no-merged main` lebih dulu, dan pastikan foto `storage/app/public` sudah tersalin.
+- **(iii) 11 file Pint lama + `test_fcm.php`** — keputusan 2026-10-14: prioritas **low**, dikerjakan nanti di **branch terpisah `chore/pint-cleanup`**; `test_fcm.php` dihapus bila ter-track git. **Belum dikerjakan.** (Daftar: ListClaims, EditUser, ListUsers, AdminController, ClaimController, SearchController, AdminMiddleware, GoogleTokenVerifier, `bootstrap/app.php`, `providers.php`, dan `test_fcm.php` di root repo.)
+- **(iv) Folder lama `D:\PBL\lostfound`** — ✅ **Inventaris SELESAI (2026-10-14):** tidak ada branch belum ter-merge, `git status` bersih, 72 file foto di `storage/app/public` sudah identik dengan folder baru (3 file hanya ada di folder baru). Folder lama **boleh dihapus setelah user zip cadangan**; **BELUM dihapus**.
 
 ---
 

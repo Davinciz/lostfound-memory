@@ -11,21 +11,14 @@
             "id": "e04b699d74ce6242",
             "type": "leaf",
             "state": {
-              "type": "kanban",
+              "type": "markdown",
               "state": {
-                "file": "PBL/Documents/Lost&Found Progress.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
-                }
+                "file": "PBL/Plan/Backlog Perbaikan Lanjutan - Lost&Found.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-trello",
-              "title": "Lost&Found Progress"
+              "icon": "lucide-file",
+              "title": "Backlog Perbaikan Lanjutan - Lost&Found"
             }
           }
         ]
@@ -218,8 +211,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 284.83331298828125,
-    "collapsed": true
+    "width": 284.83331298828125
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -238,6 +230,7 @@
   },
   "active": "e04b699d74ce6242",
   "lastOpenFiles": [
+    "PBL/Documents/Lost&Found Progress.md",
     "PBL/DailyChanges/2026-10-14.md",
     "PBL/Plan/Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found.md",
     "PBL/Plan/Backlog Perbaikan Lanjutan - Lost&Found.md",
@@ -245,7 +238,6 @@
     "PBL/Documents/PRD.md",
     "PBL/DailyChanges/2026-10-13.md",
     "PBL/DailyChanges/2026-10-12.md",
-    "PBL/Documents/Lost&Found Progress.md",
     "PBL/DailyChanges/2026-10-11.md",
     "PBL/Documents/TechnicalReference.md",
     "_Base/Index.base",

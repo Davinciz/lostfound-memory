@@ -163,7 +163,7 @@ Memilih lokasi langsung mengambil lokasi saat ini. User tidak bisa memilih lokas
 | Pembedaan halaman View Lost vs Found di Filament | Medium | Prompt sudah dikirim, hasil belum dikonfirmasi |
 | Pastikan file tooling agent tidak ada di `main` (`.agents/`, `.claude/`, `.mcp.json`, `opencode.json`, `boost.json`, perubahan `composer.*`) | High sebelum push | ✅ Selesai (2026-10-12) — ikut ter-merge lewat `git add -A`; gunakan `git add <file>` dan `.gitignore` |
 | Endpoint "laporan saya" (mis. `?mine=1`) untuk dropdown claim | Medium | Saat ini difilter di Flutter dari 20 item pertama |
-| URL foto relatif (simpan path, bangun URL saat response) | Medium | Hindari ubah DB tiap ganti jaringan; sebelum demo |
+| URL foto relatif (simpan path, bangun URL saat response) | Medium | ✅ Selesai (2026-10-14) — lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 4 |
 | Riwayat laporan saya di tab Profil | Low | `onTap` masih kosong |
 | Bersihkan history git dari `firebase-service-account.json` | High sebelum repo Public | ✅ Selesai (2026-10-12) — `git filter-repo` |
 | Chat real-time, Security Hardening, Master Buildings | Sesuai plan masing-masing | Lihat plan terkait |
