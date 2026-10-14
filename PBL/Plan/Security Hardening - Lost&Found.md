@@ -2,7 +2,7 @@
 type: plan
 project: lost-found
 status: active
-updated: 2026-10-13
+updated: 2026-10-14
 summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan
 priority: medium
 ---
@@ -184,6 +184,8 @@ final response = await http.post(
 **Goal:** Detect inappropriate content sebelum foto di-publish.
 
 > **Catatan (2026-10-12):** Foto diupload via `POST /api/photos/upload` (`PhotoController`, maks 2 MB, disk `public` folder `reports/`), bukan di `store()`. Hook moderasi harus di `PhotoController::upload`; contoh `photos.*` `max:5120` di `store()` tidak berlaku.
+
+> **Catatan temuan (2026-10-14):** `POST /api/photos/delete` (`PhotoController`) belum mengecek kepemilikan foto — user terautentikasi mana pun bisa menghapus file `reports/` atau `claims/proof/` milik user lain bila tahu path-nya. Dicatat sebagai [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9; belum diperbaiki.
 
 ### Antrean Review Manual (Pendekatan Terpilih — keputusan user 2026-10-13)
 
@@ -394,6 +396,10 @@ public function destroy(Request $request)
     return response()->json(['message' => 'Account deleted successfully']);
 }
 ```
+
+### 4. Authorization pada Penghapusan Foto (temuan 2026-10-14)
+
+> **Catatan (belum item selesai):** `POST /api/photos/delete` belum memverifikasi kepemilikan foto. Otorisasi per-baris belum ada, sehingga user terautentikasi mana pun bisa menghapus file `reports/` atau `claims/proof/` milik user lain bila tahu path-nya. Nama file UUID sulit ditebak, tetapi itu bukan kontrol akses. Usulan perbaikan: [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9 (belum diputuskan).
 
 ---
 

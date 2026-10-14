@@ -1,6 +1,7 @@
 // Lost & Found Database Schema
 // updated: 2026-10-14 (kolom baru claims: accepted_at, closed_reason, closed_by — disetujui, belum migration)
 // Skema PostgreSQL; struktur Google SSO diterapkan 2026-10-10 (user melaporkan migration selesai).
+// Catatan: photo_urls (lost/found_reports) & proof_of_transfer_photo_url (claims) menyimpan PATH RELATIF (mis. reports/uuid.jpg); URL lengkap dibangun di response API dari APP_URL.
 // Docs: https://dbml.dbdiagram.io/docs
 //
 // Catatan:
@@ -64,7 +65,7 @@ Table lost_reports {
   latitude decimal(10,8) [not null, note: 'Titik pin yang dipilih user di peta']
   longitude decimal(11,8) [not null, note: 'Titik pin yang dipilih user di peta']
   location_name varchar [note: 'Aturan: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)"']
-  photo_urls json [not null, note: 'Array of photo URLs from Laravel Storage']
+  photo_urls json [not null, note: 'Array of relative photo paths (mis. reports/uuid.jpg); URL dibangun di response dari APP_URL']
   status varchar [default: 'pending', note: 'pending | claimed | returned | closed (huruf kecil)']
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
@@ -87,7 +88,7 @@ Table found_reports {
   latitude decimal(10,8) [not null, note: 'Titik pin yang dipilih user di peta']
   longitude decimal(11,8) [not null, note: 'Titik pin yang dipilih user di peta']
   location_name varchar [note: 'Aturan: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)"']
-  photo_urls json [not null, note: 'Array of photo URLs from Laravel Storage']
+  photo_urls json [not null, note: 'Array of relative photo paths (mis. reports/uuid.jpg); URL dibangun di response dari APP_URL']
   status varchar [default: 'pending', note: 'pending | claimed | returned | closed (huruf kecil)']
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
@@ -109,7 +110,7 @@ Table claims {
   accepted_at timestamp [note: 'Waktu konfirmasi diterima oleh penerima (untuk hitung kedaluwarsa 7 hari) — KOLOM BARU 2026-10-14']
   closed_reason text [note: 'Alasan penutupan (rejected/withdrawn/expired) — KOLOM BARU 2026-10-14']
   closed_by uuid [note: 'User yang menutup (pengaju/penerima/admin), NULL = sistem — KOLOM BARU 2026-10-14']
-  proof_of_transfer_photo_url varchar [note: 'Foto bukti serah terima']
+  proof_of_transfer_photo_url varchar [note: 'Path relatif foto bukti serah terima (mis. claims/proof/uuid.jpg); URL dibangun di response dari APP_URL']
   transferred_at timestamp [note: 'Waktu barang diserahkan']
   transferred_by uuid [note: 'User yang menandai transfer (admin/finder/claimant)']
   created_at timestamp [not null, default: `now()`]

@@ -43,7 +43,7 @@ Laporan barang hilang yang dibuat pengguna.
 
 - **PK:** `id` (UUID)
 - **FK:** `reporter_id` → users.id, `building_id` → buildings.id (nullable)
-- **Kolom:** code (unique, kode laporan yang mudah dibaca), title, description, category, lost_date (date), latitude, longitude (titik yang dipilih user di peta), location_name (aturan: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)"), photo_urls (JSON), status (default `pending`)
+- **Kolom:** code (unique, kode laporan yang mudah dibaca), title, description, category, lost_date (date), latitude, longitude (titik yang dipilih user di peta), location_name (aturan: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)"), photo_urls (JSON, **path relatif** mis. `reports/uuid.jpg`; URL lengkap dibangun di response dari `APP_URL`), status (default `pending`)
 - **Check constraint:**
     - category ∈ `buku`, `elektronik`, `jaket_kemeja`, `dompet`, `aksesoris`, `alat_tulis`, `lainnya`
     - status ∈ `pending`, `claimed`, `returned`, `closed`
@@ -56,7 +56,7 @@ Laporan barang temuan.
 
 - **PK:** `id` (UUID)
 - **FK:** `reporter_id` → users.id, `building_id` → buildings.id (nullable)
-- **Kolom:** code (unique), title, description, category, found_date (timestamp, mencatat jam penemuan), latitude, longitude (titik yang dipilih user di peta), location_name (aturan sama dengan lost_reports), photo_urls (JSON), status (default `pending`)
+- **Kolom:** code (unique), title, description, category, found_date (timestamp, mencatat jam penemuan), latitude, longitude (titik yang dipilih user di peta), location_name (aturan sama dengan lost_reports), photo_urls (JSON, **path relatif** mis. `reports/uuid.jpg`; URL lengkap dibangun di response dari `APP_URL`), status (default `pending`)
 - **Check constraint:**
     - category sama dengan `lost_reports`
     - status ∈ `pending`, `claimed`, `returned`, `closed`
@@ -73,7 +73,7 @@ Pengajuan klaim yang menghubungkan laporan hilang, laporan temuan, dan pengklaim
 - **PK:** `id` (UUID)
 - **FK:** `lost_report_id` → lost_reports.id (NOT NULL), `found_report_id` → found_reports.id (NOT NULL), `claimant_id` → users.id, `transferred_by` → users.id (nullable), `closed_by` → users.id (nullable, kolom baru)
 - **Kolom klaim:** status (default `pending`), reason (text), admin_note (text), `accepted_at` (timestamp nullable, kolom baru), `closed_reason` (text nullable, kolom baru)
-- **Kolom serah terima:** proof_of_transfer_photo_url, transferred_at, transferred_by
+- **Kolom serah terima:** proof_of_transfer_photo_url (**path relatif** mis. `claims/proof/uuid.jpg`; URL dibangun di response dari `APP_URL`), transferred_at, transferred_by
 - **Check constraint:** status ∈ `pending`, `accepted`, `returned`, `rejected`, `withdrawn`
 - **Index:** status, `accepted_at` (kolom baru, untuk query expire)
 - **Relasi:** Many-to-one ke lost_reports, found_reports, users; 1 claim → N conversations (chat otomatis dibuat saat claim)
@@ -145,3 +145,4 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **2026-10-10:** Google SSO diterapkan untuk tiga domain Polines; role `user | admin` default `user`; password nullable untuk pengguna SSO; NIM opsional, unik, otomatis dari email mahasiswa bila pola cocok. Implementasi dan migration selesai menurut laporan user; login mahasiswa diuji di HP fisik.
 - **2026-10-11:** Flow lokasi diubah. User memilih lokasi dengan menaruh pin di peta (`flutter_map` + OpenStreetMap), bukan GPS otomatis. Koordinat laporan = titik yang dipilih user; gedung (jika dipilih) hanya mengisi `building_id` dan `location_name`, tidak menimpa koordinat. Aturan lama "gedung menang atas GPS" dibalik. Aturan `location_name` baru: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)". Endpoint `POST /location/suggest` dan `LocationService` backend dicoret; Haversine dihitung lokal di Flutter (opsi B). `building_id` tetap nullable; backend tetap memvalidasi building_id (uuid, exists) dan menolak koordinat kosong/0,0.
 - **2026-10-14:** Tiga kolom baru di `claims` disetujui: `accepted_at` (timestamp, untuk hitung kedaluwarsa 7 hari), `closed_reason` (text, alasan rejected/withdrawn/expired), `closed_by` (uuid FK users, null = sistem). Belum ada migration. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]. Chat read-only dihitung dari kondisi claim atau laporan, bukan dari kolom tersimpan.
+- **2026-10-14 (lanjutan):** `photo_urls` (lost_reports & found_reports) dan `proof_of_transfer_photo_url` (claims) kini menyimpan **path relatif** (mis. `reports/uuid.jpg`, `claims/proof/uuid.jpg`); URL lengkap dibangun di response API dari `APP_URL`. Struktur kolom **tidak berubah** (Backlog Item 4, selesai 2026-10-14).

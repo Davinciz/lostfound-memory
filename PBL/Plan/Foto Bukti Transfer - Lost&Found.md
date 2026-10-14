@@ -389,7 +389,7 @@ if (claim.proofOfTransferPhotoUrl != null) {
 - Upload ke Laravel Storage disk `public`, folder `claims/proof`
 - URL: `http://api.domain.com/storage/claims/proof/uuid.jpg`
 - Akses: foto disimpan di disk `public`, jadi URL foto bisa dibuka siapa pun yang tahu URL (UUID sulit ditebak, tapi ini **bukan** kontrol akses). Klaim "accessible by claimant, finder, admin" hanya berlaku lewat authorization check di API, bukan proteksi file.
-- URL foto absolut akan terdampak **Backlog Item 4** (URL foto relatif) — lihat [[Backlog Perbaikan Lanjutan - Lost&Found]].
+- URL foto kini **path relatif** (`claims/proof/uuid.jpg`); URL lengkap dibangun di response API dari `APP_URL`. Catatan lama "URL absolut terdampak Backlog Item 4" sudah **selesai 2026-10-14** (lihat [[Backlog Perbaikan Lanjutan - Lost&Found]]).
 
 ### 2. Authorization
 - Endpoint `/mark-transferred` hanya admin atau finder (verified via Policy: `foundReport.reporter_id == auth()->id()`)

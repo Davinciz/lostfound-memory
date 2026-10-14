@@ -7,11 +7,11 @@ kanban-plugin: board
 ## 📊 Progres Project
 
 - [ ] 🎯 **Core MVP selesai** — claim flow, foto bukti serah terima, master buildings + auto location
-	Ringkasan: **12 item selesai · 5 backlog pending · 3 fitur besar masih rencana**.
-- [ ] ✅ **Selesai (12):** Bug 1, 2a, 2b, 3 + celah lanjutan · Foto Bukti Transfer · Master Buildings (Backend/Flutter/Filament) · Backlog Item 7 & 8 · Migrasi repo Gitea→GitHub
-- [ ] 🚧 **Fokus berikutnya:** Backlog Item 1–5 (validasi foto, error register, endpoint "laporan saya", URL foto relatif, riwayat profil)
+	Ringkasan: **13 item selesai · 5 backlog pending · 3 fitur besar masih rencana**.
+- [ ] ✅ **Selesai (13):** Bug 1, 2a, 2b, 3 + celah lanjutan · Foto Bukti Transfer · Master Buildings (Backend/Flutter/Filament) · Backlog Item 4, 7 & 8 · Migrasi repo Gitea→GitHub
+- [ ] 🚧 **Fokus berikutnya:** Backlog Item 1–3, 5 (validasi foto, error register, endpoint "laporan saya", riwayat profil) + Item 9 (kepemilikan foto pada `photos/delete`)
 - [ ] 🧭 **Rencana besar:** Real-Time Chat · Verifikasi via Chat · Security Hardening
-- [ ] 📅 **Terakhir diperbarui:** 2026-10-13
+- [ ] 📅 **Terakhir diperbarui:** 2026-10-14
 
 
 ## 📋 To Do List
@@ -22,10 +22,10 @@ kanban-plugin: board
 	Cek apakah sisa `RegisterScreen` lama dari migrasi SSO. Perbarui agar sesuai flow SSO (Google sign-in + fallback form), atau catat penyebab sebenarnya.
 - [ ] **Item 3 — Endpoint "Laporan Saya" (`?mine=1`)** `Medium`
 	Tambah `GET /api/lost-reports?mine=1` & `GET /api/found-reports?mine=1` (Sanctum `auth()->id()`). Saat ini dropdown claim difilter di Flutter dari 20 item pertama.
-- [ ] **Item 4 — URL foto relatif** `High · sebelum demo`
-	Simpan path relatif di DB (mis. `reports/uuid.jpg`), bangun URL lengkap saat response API (`APP_URL . '/storage/' . $photo_path`). Hindari URL patah saat ganti jaringan/domain.
 - [ ] **Item 5 — Riwayat laporan saya di tab Profil** `Low`
 	`onTap` masih kosong. Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3).
+- [ ] **Item 9 — Kepemilikan foto pada `POST /api/photos/delete`** `Medium (usulan, menunggu user)`
+	Endpoint belum mengecek kepemilikan: user terautentikasi mana pun bisa menghapus file `reports/`/`claims/proof/` milik user lain bila tahu path-nya. Opsi desain A/B/C belum diputuskan.
 
 
 ## 🔍 Menunggu Konfirmasi
@@ -63,6 +63,7 @@ kanban-plugin: board
 - [x] **Master Buildings — Phase 1 Backend** (migration, model, seeder 23 gedung, `GET /api/buildings`) — selesai 2026-10-09
 - [x] **Master Buildings — Phase 2 Flutter** (Haversine lokal, peta + pin + saran gedung) — selesai 2026-10-11
 - [x] **Master Buildings — Phase 3 Filament** (`BuildingResource` CRUD, filter, search) — selesai 2026-10-09
+- [x] **Backlog Item 4 — URL foto relatif** — selesai 2026-10-14 (branch `feature/relative-photo-url`, commit `de291ab`, 86 test lulus; merge & push dikonfirmasi user; teruji di HP)
 - [x] **Backlog Item 7 — Pembersihan file tooling agent di `main` Laravel** — selesai 2026-10-12
 - [x] **Backlog Item 8 — Rotasi key Firebase + `git filter-repo`** — selesai 2026-10-12
 - [x] **Migrasi repo Gitea → GitHub (Private)** + rewrite history backend — selesai 2026-10-12

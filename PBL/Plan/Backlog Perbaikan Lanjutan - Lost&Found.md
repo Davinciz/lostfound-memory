@@ -4,14 +4,14 @@ project: lost-found
 status: active
 priority: medium
 created: 2026-10-11
-updated: 2026-10-13
-summary: Backlog perbaikan lanjutan — item 7 (tooling) & 8 (rotasi key Firebase) selesai 2026-10-12; sisa item 1–6 (validasi foto, error register, endpoint laporan saya, URL foto relatif, riwayat profil, View Filament)
+updated: 2026-10-14
+summary: Backlog perbaikan lanjutan — item 7 (tooling) & 8 (rotasi key Firebase) selesai 2026-10-12, item 4 (URL foto relatif) selesai 2026-10-14; sisa item 1–3, 5, 6 dan item 9 baru (kepemilikan photos/delete)
 ---
 
 # Backlog Perbaikan Lanjutan - Lost&Found
 
 **Created:** 2026-10-11  
-**Updated:** 2026-10-13  
+**Updated:** 2026-10-14  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Active  
 **Priority:** Medium  
@@ -36,9 +36,10 @@ Menyelesaikan backlog yang tersisa setelah semua bug utama (1, 2a, 2b, 3) selesa
 | Item 1 — Validasi field wajib sebelum upload foto + rollback foto yatim | **Medium** | Foto yatim muncul saat validasi gagal setelah upload |
 | Item 2 — Error `register_screen.dart:43` | **Medium** | Dilaporkan agent sebagai "pre-existing", perlu dicek |
 | Item 3 — Endpoint "laporan saya" (`?mine=1`) | **Medium** | Dropdown claim saat ini difilter di Flutter dari 20 item pertama |
-| Item 4 — URL foto relatif | **High** (sebelum demo) | Hindari ubah DB tiap ganti jaringan |
+| Item 4 — URL foto relatif | ✅ Selesai (2026-10-14) | Path relatif di DB, URL dibangun di response; teruji di HP |
 | Item 5 — Riwayat laporan saya di tab Profil | **Low** | `onTap` masih kosong |
 | Item 6 — Pembedaan halaman View Lost vs Found di Filament | **Medium** | Prompt sudah dikirim, hasil belum dikonfirmasi |
+| Item 9 — Kepemilikan foto pada `POST /api/photos/delete` | **Medium** (usulan, menunggu user) | User terautentikasi mana pun bisa hapus foto milik user lain |
 
 ---
 
@@ -107,8 +108,8 @@ Tambahkan endpoint `GET /api/lost-reports?mine=1` dan `GET /api/found-reports?mi
 
 ## Item 4 — URL Foto Relatif
 
-**Status:** ⬜ Belum dikerjakan  
-**Prioritas:** High (sebelum demo)  
+**Status:** ✅ Selesai (2026-10-14)  
+**Prioritas:** ~~High (sebelum demo)~~ — selesai  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
 ### Masalah
@@ -116,6 +117,15 @@ URL foto absolut tersimpan di DB. Bila ganti jaringan/domain, URL patah.
 
 ### Target
 Simpan path relatif di DB (mis. `reports/uuid.jpg`). Bangun URL lengkap saat response API (`APP_URL . '/storage/' . $photo_path`).
+
+### Hasil (2026-10-14)
+- Branch `feature/relative-photo-url`, commit `de291ab`; 86 test lulus. Sudah di-merge ke `main` dan di-push (dikonfirmasi user). APK dibuild ulang; teruji di HP: foto tampil.
+- DB menyimpan **path relatif** (`reports/uuid.jpg`, `claims/proof/uuid.jpg`). Response API membangun URL lengkap lewat accessor model (`APP_URL` + `/storage/` + path), jadi ganti IP/domain cukup ubah `APP_URL`. Struktur kolom **tidak berubah**.
+- Berlaku untuk `lost_reports.photo_urls`, `found_reports.photo_urls`, `claims.proof_of_transfer_photo_url`.
+- `POST /api/photos/upload` mengembalikan `{url, path}` (201). `POST /api/photos/delete` menerima URL lengkap atau path relatif, dinormalisasi, wajib berawalan `reports/` atau `claims/proof/`, path traversal ditolak.
+- Create report menerima URL lengkap ATAU path relatif (dinormalisasi ke relatif); domain asing ditolak 422.
+- Migration `2026_10_14_094758_normalize_photo_urls_to_relative_paths`: 2 baris `lost_reports` + 1 `found_reports` dimigrasi, `claims` 0; idempoten; `down()` no-op (rollback = restore backup JSON).
+- Temuan keamanan terkait (kepemilikan foto saat delete) dicatat sebagai **Item 9** di bawah.
 
 ---
 
@@ -182,6 +192,41 @@ Key `firebase-service-account.json` terekspos di history git.
 ### Catatan
 - Repo GitHub tetap **Private**.
 - Aman dijadikan Public hanya setelah dicek ulang bersih (pastikan tidak ada key/secret lain tersisa di history).
+
+---
+
+## Item 9 — Kepemilikan Foto pada `POST /api/photos/delete`
+
+**Status:** ⬜ Belum dikerjakan  
+**Prioritas usulan:** Medium (usulan, menunggu user)  
+**Sumber:** Temuan sesi Item 4 (2026-10-14)
+
+### Masalah
+`POST /api/photos/delete` tidak mengecek kepemilikan foto. User terautentikasi mana pun bisa menghapus file `reports/` atau `claims/proof/` milik user lain bila tahu path-nya.
+
+### Dampak Keamanan
+- Penghapusan foto milik orang lain (tidak ada otorisasi per-baris).
+- Nama file berbasis UUID sulit ditebak, tetapi itu **bukan** kontrol akses; kebocoran URL (mis. dibagikan) membuka penghapusan.
+
+### Target
+Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya lewat alur edit/hapus laporan.
+
+### Opsi Desain (BELUM diputuskan)
+- **Opsi A:** Cek kepemilikan lewat referensi di DB — foto hanya boleh dihapus bila dirujuk oleh laporan/claim milik user yang meminta.
+- **Opsi B:** Hilangkan endpoint delete bebas; hapus foto hanya lewat alur edit/hapus laporan.
+- **Opsi C:** Gabungan — endpoint delete tetap ada, tetapi hanya untuk foto yang belum dirujuk dan milik user.
+- Keputusan belum diambil. Tidak mengusulkan tabel/kolom baru sebagai keputusan.
+
+---
+
+## Open Items (2026-10-14)
+
+**Catatan (belum dikerjakan; menunggu keputusan user):**
+
+- **(i) Dev email (`GOOGLE_DEV_EMAILS`)** — melonggarkan cek domain di **semua environment selain `production`** (termasuk staging). Pertimbangkan membatasi ke `local`/`testing` bila ada staging bersama. Normalisasi daftar email belum ada: `explode(',', env(...))` mengembalikan `['']` saat kosong dan tidak di-trim/lowercase.
+- **(ii) Wajib `php artisan storage:link` di setiap setup/clone baru** — symlink `public/storage` dan isi `storage/app/public` **tidak ikut Git**; wajib dibuat dan foto lama disalin di tiap clone baru.
+- **(iii) 11 file Pint lama + `test_fcm.php`** — `pint --test` menandai file lama di luar PR Item 4 (ListClaims, EditUser, ListUsers, AdminController, ClaimController, SearchController, AdminMiddleware, GoogleTokenVerifier, `bootstrap/app.php`, `providers.php`, dan `test_fcm.php` di root repo). Prioritas **low**; menunggu keputusan user (perbaiki atau biarkan; `test_fcm.php` dihapus atau tidak).
+- **(iv) Inventaris folder lama `D:\PBL\lostfound` sebelum dihapus** — ada branch yang hanya ada lokal (mis. `backup-main-salah-commit`, `feature/google-sso-backend`); cek `git branch --no-merged main` lebih dulu, dan pastikan foto `storage/app/public` sudah tersalin.
 
 ---
 

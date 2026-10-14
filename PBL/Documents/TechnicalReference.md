@@ -157,6 +157,8 @@ storage/app/public/reports/
 ```
 https://api.domain.com/storage/reports/uuid-1.jpg
 ```
+
+> **Catatan (2026-10-14):** DB menyimpan **path relatif** (`reports/uuid-1.jpg`), bukan URL absolut. URL di atas dibangun di response API dari `APP_URL` + `/storage/` + path (lewat accessor model). Ganti IP/domain cukup ubah `APP_URL`, tanpa migrasi data.
 ---
 ## 14. Milestone & Roadmap
 **Phase 1: MVP (4-6 minggu)** — Google SSO mobile + admin Filament ✓, CRUD laporan ✓ (kamera/galeri + pin peta), feed ✓, search dasar ✓, FCM setup ✓, dashboard admin dasar ✓, Laravel Storage ✓
@@ -263,11 +265,16 @@ DB_PASSWORD=...
 
 FIREBASE_CREDENTIALS=... (path ke service account key JSON, atau JSON string; sesuai `config/firebase.php`)
 GOOGLE_CLIENT_ID=... (OAuth Web client ID; simpan hanya di environment, jangan di dokumen nilai aktual)
+GOOGLE_DEV_EMAILS=... (daftar email dev dipisah koma; HANYA nama variabel — jangan tulis nilainya di dokumen)
 
 APP_URL=https://api.domain.com
 	```
 
 Catatan: Throttle `POST /api/auth/google` — 30 permintaan/menit per IP.
+
+**Catatan `APP_URL` (2026-10-14):** `APP_URL` menentukan URL foto lengkap di response API. DB menyimpan path relatif; accessor model membentuk `APP_URL` + `/storage/` + path. Jadi pindah IP/domain cukup ubah `APP_URL`, tanpa mengubah isi DB.
+
+**Catatan `GOOGLE_DEV_EMAILS` (2026-10-14):** hanya **nama variabel**; nilainya tidak ditulis di dokumen. Dibaca `AuthController` untuk melonggarkan cek **domain** bila `app()->environment('production')` bernilai false. Verifikasi token, audience, `email_verified`, blocked, dan throttle tetap berlaku. Lihat Open Items §17 (aktif di semua env non-production; normalisasi daftar belum ada).
 ### 15.3 Struktur Repository
 Project memakai dua repository terpisah, bukan monorepo:
 
@@ -443,7 +450,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <tr>
 <td>`photo_urls`</td>
 <td>JSON</td>
-<td>Array URL foto (min 1, maks 3)</td>
+<td>Array **path relatif** foto (mis. `reports/uuid.jpg`, min 1, maks 3). URL lengkap dibangun di response API dari `APP_URL` (2026-10-14).</td>
 </tr>
 <tr>
 <td>`status`</td>
@@ -528,7 +535,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <tr>
 <td>`photo_urls`</td>
 <td>JSON</td>
-<td>Array URL foto (min 1, maks 3)</td>
+<td>Array **path relatif** foto (mis. `reports/uuid.jpg`, min 1, maks 3). URL lengkap dibangun di response API dari `APP_URL` (2026-10-14).</td>
 </tr>
 <tr>
 <td>`status`</td>
@@ -618,7 +625,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <tr>
 <td>`proof_of_transfer_photo_url`</td>
 <td>String (nullable)</td>
-<td>Foto bukti serah terima</td>
+<td>**Path relatif** foto bukti serah terima (mis. `claims/proof/uuid.jpg`); URL lengkap dibangun di response API dari `APP_URL` (2026-10-14).</td>
 </tr>
 <tr>
 <td>`transferred_at`</td>
@@ -800,6 +807,18 @@ Schema::create('claims', function (Blueprint $table) {
 ### UserResource
 - Resource pengelolaan user; admin dapat memblokir dan membuka blokir akun.
 - Admin tidak dapat memblokir akun admin atau akunnya sendiri.
+
+### 15.9 Setup Lokal Backend (Clone Baru)
+
+Checklist saat menyiapkan clone baru (mis. `C:\Project\lostfound-backend`):
+
+1. **`.env`** — siapkan variabel yang dibutuhkan (lihat §15.2). Jangan commit `.env`; jangan tulis nilai rahasia di dokumen.
+2. **`php artisan storage:link`** — buat symlink `public/storage` → `storage/app/public` (butuh PowerShell Administrator atau Windows Developer Mode).
+3. **Salin foto lama** — isi `storage/app/public` (mis. `reports/`, `claims/proof/`) **tidak ikut Git**; salin dari folder lama (mis. `robocopy`) saat clone ulang.
+4. **`php artisan config:clear`** — bersihkan cache config setelah mengubah `.env`.
+5. **`GOOGLE_DEV_EMAILS`** — hanya **nama variabel**; nilai (daftar email dev) diisi di `.env` lokal, tidak ditulis di dokumen. Dipakai melonggarkan cek domain di luar `production`.
+
+> Pelajaran (2026-10-14): foto tidak tampil di HP pada clone baru karena `public/storage` belum ada dan file lama masih di folder lama; solusinya `storage:link` + salin `storage/app/public`.
 ---
 ## 16. AI / Developer Onboarding Context
 *(Bagian ini khusus agar AI atau developer baru dapat langsung paham konteks project saat membaca PRD ini)*
@@ -834,8 +853,8 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - `POST /api/claims` — ajukan claim (dengan alasan)
 - `PATCH /api/claims/{id}` — admin proses claim (terima/tolak) — perlu admin role *(verifikasi ke routes aktual; kemungkinan tidak sinkron)*
 - `GET /api/buildings` — daftar master gedung untuk marker peta + saran gedung
-- `POST /api/photos/upload` — upload foto (jpg/jpeg/png/webp, maks 2 MB)
-- `POST /api/photos/delete` — hapus foto
+- `POST /api/photos/upload` — upload foto (jpg/jpeg/png/webp, maks 2 MB); mengembalikan `{url, path}` (201) — `path` = path relatif yang disimpan (2026-10-14)
+- `POST /api/photos/delete` — hapus foto; menerima URL lengkap atau path relatif, dinormalisasi, wajib berawalan `reports/` atau `claims/proof/`, path traversal ditolak (2026-10-14). **Belum ada cek kepemilikan** — lihat Open Items §17
 - `PATCH /api/claims/{claim}/mark-transferred` — tandai barang diserahkan (admin atau penemu)
 - `GET /api/admin/*` — endpoint admin
 **Point Penting yang Perlu Diingat:**
@@ -852,3 +871,6 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 ## 17. Open Items
 
 - **Verifikasi kompatibilitas Filament 3.3.x dengan Laravel 13** — cek `composer.json` dan `composer.lock` (belum dikerjakan; jangan simpulkan hasil sebelum diperiksa).
+- **Kepemilikan foto pada `POST /api/photos/delete` (2026-10-14)** — endpoint belum mengecek kepemilikan; user terautentikasi mana pun bisa menghapus file `reports/` atau `claims/proof/` milik user lain bila tahu path-nya. Usulan perbaikan: [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9 (belum dikerjakan; prioritas usulan medium, menunggu user).
+- **Dev email `GOOGLE_DEV_EMAILS` (2026-10-14)** — aktif di semua environment non-production (termasuk staging); pertimbangkan batasi ke `local`/`testing`. Normalisasi daftar email belum ada (`explode(',', env(...))` → `['']` saat kosong, tidak di-trim/lowercase).
+- **Wajib `php artisan storage:link` di setiap setup/clone baru (2026-10-14)** — symlink `public/storage` dan isi `storage/app/public` tidak ikut Git.
