@@ -601,6 +601,21 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <td>Catatan admin saat memproses claim</td>
 </tr>
 <tr>
+<td>`accepted_at`</td>
+<td>Timestamp (nullable)</td>
+<td>Waktu konfirmasi diterima oleh penerima — untuk hitung kedaluwarsa 7 hari (KOLOM BARU, disetujui 2026-10-14, belum ada migration)</td>
+</tr>
+<tr>
+<td>`closed_reason`</td>
+<td>Text (nullable)</td>
+<td>Alasan penutupan (rejected/withdrawn/expired) (KOLOM BARU, disetujui 2026-10-14, belum ada migration)</td>
+</tr>
+<tr>
+<td>`closed_by`</td>
+<td>UUID (FK → users.id, nullable)</td>
+<td>User yang menutup (pengaju/penerima/admin), NULL = sistem (KOLOM BARU, disetujui 2026-10-14, belum ada migration)</td>
+</tr>
+<tr>
 <td>`proof_of_transfer_photo_url`</td>
 <td>String (nullable)</td>
 <td>Foto bukti serah terima</td>
@@ -626,7 +641,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <td>Waktu diperbarui</td>
 </tr>
 </table>
-**Index:** `lost_report_id`, `found_report_id`, `claimant_id`, `status`
+**Index:** `lost_report_id`, `found_report_id`, `claimant_id`, `status`, `accepted_at` (INDEX BARU 2026-10-14)
 
 **Catatan:** Verifikasi kepemilikan dilakukan via real-time chat antara penemu dan pengklaim (conversation auto-created saat claim dibuat), bukan pertanyaan keamanan. Admin tidak membaca isi chat.
 ---

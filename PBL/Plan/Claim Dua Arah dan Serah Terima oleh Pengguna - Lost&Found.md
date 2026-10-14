@@ -324,11 +324,12 @@ Aplikasi menampilkan petunjuk kontekstual agar pengguna tahu siapa menekan tombo
 - Tambah check: maksimal 5 claim pending aktif (belum dibekukan) pada laporan target
 - Auto-create conversation (sudah sesuai plan Real-Time Chat)
 
-**2. ClaimController::acceptClaim() — DIUBAH PERAN**
-- Sebelumnya: hanya admin yang bisa call
-- Sekarang: **penerima claim (bukan pengaju)** juga bisa call
+**2. Endpoint Accept Claim (BARU untuk Penerima)**
+- Sebelumnya: hanya admin yang bisa approve claim via AdminController atau aksi Terima di ClaimResource Filament
+- Sekarang: **penerima claim (bukan pengaju)** juga bisa call endpoint baru untuk accept
   - Jika pemilik yang mengajukan claim ke laporan temuan → penemu (foundReport.reporter_id) yang accept
   - Jika penemu yang mengajukan claim ke laporan hilang → pemilik (lostReport.reporter_id) yang accept
+- **Endpoint baru:** `POST /api/claims/:id/accept` (untuk penerima, bukan ClaimController yang lama)
 - Authorization: `ClaimPolicy::accept()` → cek apakah user adalah penerima (bukan pengaju) atau admin
 - Logic: hitung apakah `auth()->id()` adalah pelapor laporan yang TIDAK diajukan oleh claimant
 - Tambah guard Bug 3 (laporan harus `pending`) — sudah ada di log 2026-10-09, verifikasi masih aktif
@@ -356,7 +357,7 @@ Aplikasi menampilkan petunjuk kontekstual agar pengguna tahu siapa menekan tombo
 - Tambah side effect: tutup claim lain pada laporan itu → `rejected` dengan alasan sistem
 
 **6. ClaimResource (Filament) — Aksi "Terima"**
-- Tetap ada, tetapi bukan jalur utama
+- Aksi Terima di ClaimResource Filament tetap ada (AdminController atau action di resource), tetapi bukan jalur utama
 - Visible hanya untuk admin
 - Label diubah: "Terima Claim (Override)" atau tetap "Terima Claim" tetapi dengan tooltip "Biasanya penerima yang verifikasi; gunakan ini jika penerima tidak respond"
 
@@ -503,7 +504,7 @@ $table->index('accepted_at'); // untuk query expire
 - Logic:
   - Pending > 7 hari → `withdrawn`
   - Accepted > 7 hari tanpa transfer → `withdrawn` + laporan → `pending`
-- Register di `Kernel.php`: `$schedule->command('claims:expire')->hourly();`
+- Register di `routes/console.php` (Laravel 11+): `Schedule::command('claims:expire')->hourly();`
 
 **1.7 Notification Service**
 - FCM ke penerima saat claim dibuat (bukan ke penemu fixed, tapi ke pihak yang menerima claim)

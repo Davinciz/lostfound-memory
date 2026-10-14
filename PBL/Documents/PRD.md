@@ -74,7 +74,7 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 ### D. Sistem Claim
 
 > [!warning] Akan berubah
-> Flow claim akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: claim dua arah (pemilik & penemu), chat otomatis tanpa tunggu admin, verifikasi oleh penemu lewat tombol "Cocok", serah terima oleh pengguna sendiri, kedaluwarsa 7 hari.
+> Flow claim akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: claim dua arah (pemilik & penemu), chat otomatis tanpa tunggu admin, **penerima claim** (pihak yang tidak mengajukan claim) yang menekan "Cocok" / "Ya, ini barang saya", serah terima oleh pengguna sendiri, kedaluwarsa 7 hari.
 
 - **Ajukan claim** — pemilik barang wajib punya laporan hilang, pilih laporan hilangnya, isi alasan claim. Sistem otomatis buat conversation antara pengklaim dan penemu untuk verifikasi kepemilikan via chat. Notifikasi ke penemu: "Ada claim baru, chat untuk verifikasi."
 - **Verifikasi kepemilikan** — dilakukan via real-time chat antara penemu dan pengklaim. Penemu tanya detail yang tidak terlihat di foto. Admin tidak membaca chat.
@@ -97,7 +97,7 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 ### I. Dashboard Admin
 
 > [!warning] Akan berubah
-> Peran admin berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: dari gerbang wajib menjadi pemantau & penengah. Penemu yang verifikasi dan approve claim, bukan admin.
+> Peran admin berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: dari gerbang wajib menjadi pemantau & penengah. **Penerima claim** (pihak yang tidak mengajukan claim) yang verifikasi dan approve claim, bukan admin.
 
 - Ringkasan metrik (laporan hari ini, claim pending, trend 7 hari)
 - List laporan + filter, detail laporan, foto, serta claims terkait; list claim pending dan detail claim (foto laporan hilang dan temuan sisi-by-sisi, metadata conversation tanpa isi chat, alasan)
@@ -114,7 +114,7 @@ Splash → Login → Home Feed → "Lapor Hilang" → Kamera/Foto → Detail For
 ### 4.2 Mengajukan Claim
 
 > [!warning] Akan berubah
-> Flow akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: chat terbuka langsung tanpa tunggu admin, penemu tekan "Cocok" untuk approve.
+> Flow akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: chat terbuka langsung tanpa tunggu admin, **penerima claim** (pihak yang tidak mengajukan claim) menekan "Cocok" / "Ya, ini barang saya" untuk approve.
 
 ```javascript
 Search → Cari Laporan → Lihat Detail → "Ajukan Claim" → Pilih Laporan Hilang + Alasan → Submit → Notifikasi ke Penemu → Admin Review → Admin Terima → Status claimed (laporan) + accepted (claim) → Serah Terima → Upload Foto Bukti → Status returned
@@ -134,7 +134,7 @@ LostReport: id(UUID), reporter_id→User, code(unique, LST-YYMMDD-XXXX), title, 
 
 FoundReport: id(UUID), reporter_id→User, code(unique, FND-YYMMDD-XXXX), title, description, category[same as LostReport], found_date(timestamp), building_id→Building(nullable), latitude(decimal 10,8), longitude(decimal 11,8), location_name(nullable), photo_urls(json), status[pending|claimed|returned|closed], created_at, updated_at
 
-Claim: id(UUID), lost_report_id→LostReport(NOT NULL), found_report_id→FoundReport, claimant_id→User, status[pending|accepted|returned|rejected|withdrawn], reason(text), admin_note(nullable), proof_of_transfer_photo_url(nullable), transferred_at(nullable), transferred_by→User(nullable), created_at, updated_at
+Claim: id(UUID), lost_report_id→LostReport(NOT NULL), found_report_id→FoundReport(NOT NULL), claimant_id→User, status[pending|accepted|returned|rejected|withdrawn], reason(text), admin_note(nullable), accepted_at(nullable, disetujui 2026-10-14), closed_reason(nullable, disetujui 2026-10-14), closed_by→User(nullable, disetujui 2026-10-14), proof_of_transfer_photo_url(nullable), transferred_at(nullable), transferred_by→User(nullable), created_at, updated_at
 
 Conversation: id(UUID), user1_id→User, user2_id→User, lost_report_id→LostReport(nullable), found_report_id→FoundReport(nullable), claim_id→Claim(nullable), created_at, updated_at
 
