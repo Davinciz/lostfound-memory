@@ -2,7 +2,7 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-14
+updated: 2026-10-15
 summary: Referensi teknis lengkap Lost&Found; endpoint, autentikasi, storage, skema, Filament, deployment
 ---
 
@@ -274,7 +274,9 @@ Catatan: Throttle `POST /api/auth/google` — 30 permintaan/menit per IP.
 
 **Catatan `APP_URL` (2026-10-14):** `APP_URL` menentukan URL foto lengkap di response API. DB menyimpan path relatif; accessor model membentuk `APP_URL` + `/storage/` + path. Jadi pindah IP/domain cukup ubah `APP_URL`, tanpa mengubah isi DB.
 
-**Catatan `GOOGLE_DEV_EMAILS` (2026-10-14):** hanya **nama variabel**; nilainya tidak ditulis di dokumen. Dibaca `AuthController` untuk melonggarkan cek **domain** bila `app()->environment('production')` bernilai false. Verifikasi token, audience, `email_verified`, blocked, dan throttle tetap berlaku. Lihat Open Items §17 (aktif di semua env non-production; normalisasi daftar belum ada).
+**Catatan `GOOGLE_DEV_EMAILS` (2026-10-14, diluruskan 2026-10-15):** hanya **nama variabel**; nilainya tidak ditulis di dokumen. Dibaca `AuthController` untuk melonggarkan cek **domain** bila `app()->environment('production')` bernilai false. Verifikasi token, audience, `email_verified`, blocked, dan throttle tetap berlaku. **Normalisasi daftar (trim, lowercase, buang entri kosong) ternyata sudah ada sejak awal** di `config/services.php` dan `AuthController`; sesi 2026-10-15 hanya menambah 4 test. Pembatasan ke `local`/`testing` masih ditunda — lihat Open Items §17.
+
+**Catatan Cache `photo-owner` (2026-10-15):** kepemilikan foto ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9) disimpan di Cache, **bukan** kolom/tabel DB. Key `photo-owner:{path}` → `user_id`, TTL 24 jam; `CACHE_STORE` harus `database` (bukan `array`/`file` yang hilang antar-proses) agar cek kepemilikan saat delete konsisten. Implikasi: setelah TTL lewat, foto lama tidak lagi dikenali sebagai milik user → delete mengembalikan `403` (lihat Open Items §17: usulan job pembersih foto yatim).
 ### 15.3 Struktur Repository
 Project memakai dua repository terpisah, bukan monorepo:
 
@@ -850,11 +852,12 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - `POST /api/auth/google` — verifikasi Google ID token, audience, email_verified, dan allowlist domain di backend; tolak blocked (403 + blocked_reason); terbitkan Sanctum token 7 hari
 - `POST /api/lost-reports` — buat laporan hilang (file upload foto + GPS data)
 - `POST /api/found-reports` — buat laporan ditemukan
+- `GET /api/lost-reports` & `GET /api/found-reports` — daftar laporan (paginasi). Sejak 2026-10-15 ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 3) index mendukung **`?mine=1`**: hanya mengembalikan laporan milik user login (`auth()->id()` dari Sanctum); format respons & pagination **sama** seperti index biasa, urutan terbaru dulu; **tanpa `mine` / `mine=0` perilaku lama tidak berubah**; kombinasi `mine=1&status=pending` bekerja; `mine=1` tanpa token → `401`.
 - `POST /api/claims` — ajukan claim (dengan alasan)
 - `PATCH /api/claims/{id}` — admin proses claim (terima/tolak) — perlu admin role *(verifikasi ke routes aktual; kemungkinan tidak sinkron)*
 - `GET /api/buildings` — daftar master gedung untuk marker peta + saran gedung
-- `POST /api/photos/upload` — upload foto (jpg/jpeg/png/webp, maks 2 MB); mengembalikan `{url, path}` (201) — `path` = path relatif yang disimpan (2026-10-14)
-- `POST /api/photos/delete` — hapus foto; menerima URL lengkap atau path relatif, dinormalisasi, wajib berawalan `reports/` atau `claims/proof/`, path traversal ditolak (2026-10-14). **Belum ada cek kepemilikan** — lihat Open Items §17
+- `POST /api/photos/upload` — upload foto (jpg/jpeg/png/webp, maks 2 MB); mengembalikan `{url, path}` (201) — `path` = path relatif yang disimpan (2026-10-14). Sejak 2026-10-15 upload **mencatat kepemilikan**: Cache `photo-owner:{path}` → `user_id`, **TTL 24 jam** (`CACHE_STORE=database`).
+- `POST /api/photos/delete` — hapus foto; menerima URL lengkap atau path relatif, dinormalisasi, wajib berawalan `reports/` atau `claims/proof/`. Sejak 2026-10-15 ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9, Opsi C) menerapkan cek kepemilikan + rujukan: **`403`** bila foto tidak tercatat sebagai milik peminta (termasuk foto lama pra-fitur), **`409`** bila foto masih dirujuk (`lost_reports.photo_urls`, `found_reports.photo_urls`, `claims.proof_of_transfer_photo_url`), **`422`** bila domain asing/path traversal.
 - `PATCH /api/claims/{claim}/mark-transferred` — tandai barang diserahkan (admin atau penemu)
 - `GET /api/admin/*` — endpoint admin
 **Point Penting yang Perlu Diingat:**
@@ -871,6 +874,9 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 ## 17. Open Items
 
 - **Verifikasi kompatibilitas Filament 3.3.x dengan Laravel 13** — cek `composer.json` dan `composer.lock` (belum dikerjakan; jangan simpulkan hasil sebelum diperiksa).
-- **Kepemilikan foto pada `POST /api/photos/delete` (2026-10-14)** — endpoint belum mengecek kepemilikan; user terautentikasi mana pun bisa menghapus file `reports/` atau `claims/proof/` milik user lain bila tahu path-nya. Usulan perbaikan: [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9 (belum dikerjakan; prioritas usulan medium, menunggu user).
-- **Dev email `GOOGLE_DEV_EMAILS` (2026-10-14)** — aktif di semua environment non-production (termasuk staging); pertimbangkan batasi ke `local`/`testing`. Normalisasi daftar email belum ada (`explode(',', env(...))` → `['']` saat kosong, tidak di-trim/lowercase).
+- **✅ Kepemilikan foto pada `POST /api/photos/delete` — SELESAI (2026-10-15)** — [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9 (Opsi C) diterapkan: branch `fix/photo-delete-ownership`, commit `b2ab837`, 101 test lulus. Upload mencatat Cache `photo-owner:{path}` → `user_id` (TTL 24 jam); delete mengembalikan `403` (bukan pemilik/tidak tercatat), `409` (masih dirujuk), `422` (domain asing/traversal). Tidak ada tabel/kolom baru.
+- **✅ Endpoint "laporan saya" `?mine=1` — SELESAI (2026-10-15)** — [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 3: branch `feature/mine-filter`, commit `371fad5`, 7/7 test pass (`tests/Feature/MineFilterTest.php`). `GET /api/lost-reports?mine=1` & `GET /api/found-reports?mine=1` memfilter milik user login via Sanctum `auth()->id()`; format/pagination sama, backward compatible (tanpa `mine`/`mine=0` perilaku lama), `mine=1&status=pending` bekerja, `mine=1` tanpa token → `401`. Tanpa tabel/kolom/dependensi baru.
+- **Dev email `GOOGLE_DEV_EMAILS` (2026-10-14, diluruskan 2026-10-15)** — **normalisasi daftar ternyata sudah ada sejak awal** di `config/services.php` + `AuthController`; sesi 2026-10-15 hanya menambah 4 test. **Sisa open item:** aktif di semua environment non-production (termasuk staging). **Keputusan 2026-10-15: pembatasan ke `local`/`testing` TETAP DITUNDA** — ini syarat sebelum staging, digarap saat menyiapkan staging, bukan sekarang.
 - **Wajib `php artisan storage:link` di setiap setup/clone baru (2026-10-14)** — symlink `public/storage` dan isi `storage/app/public` tidak ikut Git.
+- **Job pembersih foto yatim terjadwal — KEPUTUSAN 2026-10-15: DITUNDA** — foto yatim lama (tanpa catatan owner di Cache; pra-fitur Item 9) selalu `403` saat delete oleh user dan tidak dirujuk laporan. Dampaknya hanya ruang disk, dan sejak Item 1 foto yatim baru tidak muncul lagi (rollback berjalan). Cukup dibuat plan **hanya bila penyimpanan mulai jadi masalah**; tidak ada plan sekarang.
+- **Audit rollback foto bukti serah terima (`claims/proof`) — KEPUTUSAN 2026-10-15: dikerjakan bersama [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]** — foto bukti serah terima wajib di plan tersebut, jadi alur upload-nya akan disentuh lagi; mengaudit sekarang = mengaudit dua kali.

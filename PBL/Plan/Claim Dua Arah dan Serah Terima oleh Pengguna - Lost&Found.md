@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-14
+updated: 2026-10-15
 summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari
 ---
 
@@ -644,6 +644,7 @@ $table->index('accepted_at'); // untuk query expire
 5. ⬜ Filament Phase 3 (detail view + aksi override)
 6. ⬜ Test Phase 4 (unit + feature + integration + manual)
 7. ⬜ Deploy + monitoring (metrik claim accepted, waktu verifikasi, expire rate)
+8. ⬜ **Audit rollback foto bukti serah terima (`claims/proof`)** — keputusan user 2026-10-15: audit ini dikerjakan **di sini** (bukan terpisah), karena foto bukti wajib di plan ini dan alur upload-nya akan disentuh lagi. Saat mengerjakan Phase 1/2, pastikan alur upload foto bukti punya **rollback** seperti [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 1 (hapus foto bila upload/create gagal).
 
 ---
 

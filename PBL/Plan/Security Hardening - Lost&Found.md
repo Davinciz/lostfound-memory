@@ -2,7 +2,7 @@
 type: plan
 project: lost-found
 status: active
-updated: 2026-10-14
+updated: 2026-10-15
 summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan
 priority: medium
 ---
@@ -185,7 +185,7 @@ final response = await http.post(
 
 > **Catatan (2026-10-12):** Foto diupload via `POST /api/photos/upload` (`PhotoController`, maks 2 MB, disk `public` folder `reports/`), bukan di `store()`. Hook moderasi harus di `PhotoController::upload`; contoh `photos.*` `max:5120` di `store()` tidak berlaku.
 
-> **Catatan temuan (2026-10-14):** `POST /api/photos/delete` (`PhotoController`) belum mengecek kepemilikan foto — user terautentikasi mana pun bisa menghapus file `reports/` atau `claims/proof/` milik user lain bila tahu path-nya. Dicatat sebagai [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9; belum diperbaiki.
+> **Catatan temuan (2026-10-14) — ✅ TERATASI (2026-10-15):** `POST /api/photos/delete` (`PhotoController`) kini mengecek kepemilikan foto ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9, Opsi C, branch `fix/photo-delete-ownership`, commit `b2ab837`, 101 test lulus). Upload mencatat Cache `photo-owner:{path}` → `user_id` (TTL 24 jam); delete mengembalikan `403` (bukan pemilik/tidak tercatat), `409` (masih dirujuk), `422` (domain asing/traversal). Tidak ada tabel/kolom baru. Sisa: foto yatim lama (pra-fitur) tidak bisa dihapus user → usulan job pembersih (lihat §17 TechnicalReference).
 
 ### Antrean Review Manual (Pendekatan Terpilih — keputusan user 2026-10-13)
 
@@ -397,9 +397,11 @@ public function destroy(Request $request)
 }
 ```
 
-### 4. Authorization pada Penghapusan Foto (temuan 2026-10-14)
+### 4. Authorization pada Penghapusan Foto (temuan 2026-10-14) — ✅ TERATASI (2026-10-15)
 
-> **Catatan (belum item selesai):** `POST /api/photos/delete` belum memverifikasi kepemilikan foto. Otorisasi per-baris belum ada, sehingga user terautentikasi mana pun bisa menghapus file `reports/` atau `claims/proof/` milik user lain bila tahu path-nya. Nama file UUID sulit ditebak, tetapi itu bukan kontrol akses. Usulan perbaikan: [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9 (belum diputuskan).
+> **Status: selesai.** `POST /api/photos/delete` kini memverifikasi kepemilikan foto. Otorisasi per-baris diterapkan lewat Cache `photo-owner:{path}` → `user_id` (dicatat saat upload, TTL 24 jam; `CACHE_STORE=database`). Delete mengembalikan `403` (foto tidak tercatat/bukan milik peminta, termasuk foto lama pra-fitur), `409` (masih dirujuk `lost_reports.photo_urls`, `found_reports.photo_urls`, `claims.proof_of_transfer_photo_url`), `422` (domain asing/traversal). Implementasi: [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9 (Opsi C), branch `fix/photo-delete-ownership`, commit `b2ab837`, 101 test lulus. Tidak ada tabel/kolom baru.
+>
+> **Sisa:** foto yatim lama (pra-fitur) selalu `403` dan tidak bisa dihapus user → diusulkan job pembersih terjadwal; **keputusan 2026-10-15: ditunda** (dampak hanya ruang disk; foto yatim baru tidak muncul lagi sejak Item 1). Lihat Open Items §17 TechnicalReference.
 
 ---
 

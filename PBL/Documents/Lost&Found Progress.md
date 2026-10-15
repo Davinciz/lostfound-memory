@@ -7,25 +7,21 @@ kanban-plugin: board
 ## 📊 Progres Project
 
 - [ ] 🎯 **Core MVP selesai** — claim flow, foto bukti serah terima, master buildings + auto location
-	Ringkasan: **13 item selesai · 5 backlog pending · 3 fitur besar masih rencana**.
-- [ ] ✅ **Selesai (13):** Bug 1, 2a, 2b, 3 + celah lanjutan · Foto Bukti Transfer · Master Buildings (Backend/Flutter/Filament) · Backlog Item 4, 7 & 8 · Migrasi repo Gitea→GitHub
-- [ ] 🚧 **Fokus berikutnya:** Backlog Item 1 + 9 (validasi foto + kepemilikan `photos/delete`, dikerjakan bersama), lalu Item 2, 3, 5
+	Ringkasan: **17 item selesai · 1 backlog pending · 3 fitur besar masih rencana**.
+- [ ] ✅ **Selesai (17):** Bug 1, 2a, 2b, 3 + celah lanjutan · Foto Bukti Transfer · Master Buildings (Backend/Flutter/Filament) · Backlog Item 1, 2, 3, 4, 7, 8 & 9 · Migrasi repo Gitea→GitHub
+- [ ] 🚧 **Fokus berikutnya:** Backlog Item 5 (riwayat laporan di Profil) → Item 6 (view Lost vs Found di Filament), lalu Real-Time Chat
 - [ ] 🧭 **Rencana besar:** Real-Time Chat · Verifikasi via Chat · Security Hardening
-- [ ] 📅 **Terakhir diperbarui:** 2026-10-14
+- [ ] 📅 **Terakhir diperbarui:** 2026-10-15
 
 
 ## 📋 To Do List
 
-- [ ] **Item 1 — Validasi field wajib sebelum upload foto + rollback foto yatim** `Medium`
-	Foto di-upload ke Storage sebelum validasi selesai → foto yatim bila validasi gagal. Validasi field wajib (judul, deskripsi, koordinat, kategori) di Flutter **sebelum** upload + rollback foto via `POST /api/photos/delete`.
-- [ ] **Item 2 — Error `register_screen.dart:43`** `Medium`
-	Cek apakah sisa `RegisterScreen` lama dari migrasi SSO. Perbarui agar sesuai flow SSO (Google sign-in + fallback form), atau catat penyebab sebenarnya.
-- [ ] **Item 3 — Endpoint "Laporan Saya" (`?mine=1`)** `Medium`
-	Tambah `GET /api/lost-reports?mine=1` & `GET /api/found-reports?mine=1` (Sanctum `auth()->id()`). Saat ini dropdown claim difilter di Flutter dari 20 item pertama.
 - [ ] **Item 5 — Riwayat laporan saya di tab Profil** `Low`
-	`onTap` masih kosong. Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3).
-- [ ] **Item 9 — Kepemilikan foto pada `POST /api/photos/delete`** `Medium`
-	Endpoint belum mengecek kepemilikan: user terautentikasi mana pun bisa menghapus file `reports/`/`claims/proof/` milik user lain bila tahu path-nya. Opsi desain **C** (diputuskan 2026-10-14); dikerjakan bersama Item 1.
+	`onTap` masih kosong. Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3, ✅ selesai 2026-10-15).
+- [ ] **[DITUNDA] Job pembersih foto yatim terjadwal** `Low`
+	Keputusan 2026-10-15: **ditunda** — dampaknya hanya ruang disk; sejak Item 1 foto yatim baru tidak muncul lagi. Plan dibuat hanya bila penyimpanan mulai jadi masalah.
+- [ ] **[Plan Claim Dua Arah] Audit rollback foto bukti serah terima (`claims/proof`)** `Medium`
+	Keputusan 2026-10-15: dikerjakan **bersama plan [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]** (foto bukti wajib di plan itu, alur upload akan disentuh lagi).
 
 
 ## 🔍 Menunggu Konfirmasi
@@ -63,7 +59,12 @@ kanban-plugin: board
 - [x] **Master Buildings — Phase 1 Backend** (migration, model, seeder 23 gedung, `GET /api/buildings`) — selesai 2026-10-09
 - [x] **Master Buildings — Phase 2 Flutter** (Haversine lokal, peta + pin + saran gedung) — selesai 2026-10-11
 - [x] **Master Buildings — Phase 3 Filament** (`BuildingResource` CRUD, filter, search) — selesai 2026-10-09
+- [x] **Backlog Item 3 — Endpoint "Laporan Saya" (`?mine=1`)** — selesai 2026-10-15 (branch `feature/mine-filter`, commit `371fad5`; filter `mine=1` di `GET /api/lost-reports` & `GET /api/found-reports`, backward compatible, format/pagination sama, `mine=1&status=pending` bekerja; 7/7 test pass; merge + `php artisan test` penuh dikonfirmasi user)
 - [x] **Backlog Item 4 — URL foto relatif** — selesai 2026-10-14 (branch `feature/relative-photo-url`, commit `de291ab`, 86 test lulus; merge & push dikonfirmasi user; teruji di HP)
+- [x] **Backlog Item 1 — Validasi field wajib sebelum upload + rollback foto yatim** — selesai 2026-10-15 (branch Flutter `fix/report-validation-photo-rollback`, commit `acec23d`, 47 test lulus, build OK, tes manual HP berhasil; merge dikonfirmasi user)
+- [x] **Backlog Item 2 — Error `register_screen.dart:43`** — selesai 2026-10-15 (branch `chore/analyze-cleanup`, commit `eae5bad`/`a5735ff`/`3e20c5f`; `register_screen.dart` & `create_report_base.dart` dihapus, 62 auto-fix, analyze 0 error, 47 test lulus; merge + tes HP/FCM berhasil)
+- [x] **Backlog Item 9 — Kepemilikan foto pada `POST /api/photos/delete`** — selesai 2026-10-15 (branch `fix/photo-delete-ownership`, commit `b2ab837`, 101 test lulus; Cache owner TTL 24 jam, 403/409/422; merge dikonfirmasi user)
+- [x] **Normalisasi `GOOGLE_DEV_EMAILS`** — selesai 2026-10-15 (sudah ada sejak awal di `config/services.php` + `AuthController`; sesi ini menambah 4 test)
 - [x] **Backlog Item 7 — Pembersihan file tooling agent di `main` Laravel** — selesai 2026-10-12
 - [x] **Backlog Item 8 — Rotasi key Firebase + `git filter-repo`** — selesai 2026-10-12
 - [x] **Migrasi repo Gitea → GitHub (Private)** + rewrite history backend — selesai 2026-10-12

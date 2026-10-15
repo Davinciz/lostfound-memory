@@ -4,14 +4,14 @@ project: lost-found
 status: active
 priority: medium
 created: 2026-10-11
-updated: 2026-10-14
-summary: Backlog perbaikan lanjutan — item 4, 7, 8 selesai; item 9 (kepemilikan photos/delete) prioritas final medium, dikerjakan bersama item 1; sisa item 1–3, 5, 6 + open items (dev email, Pint, folder lama)
+updated: 2026-10-15
+summary: Backlog perbaikan lanjutan — item 1, 2, 3, 4, 7, 8, 9 selesai; dev email dinormalisasi; sisa item 5, 6 + open items (job pembersih foto yatim DITUNDA, audit claims/proof ke plan Claim Dua Arah, batasi dev email ditunda, Pint)
 ---
 
 # Backlog Perbaikan Lanjutan - Lost&Found
 
 **Created:** 2026-10-11  
-**Updated:** 2026-10-14  
+**Updated:** 2026-10-15  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Active  
 **Priority:** Medium  
@@ -27,19 +27,19 @@ Menyelesaikan backlog yang tersisa setelah semua bug utama (1, 2a, 2b, 3) selesa
 
 ## Item Prioritization
 
-**Prioritas final (ditetapkan user 2026-10-13, diperbarui 2026-10-14):**
+**Prioritas final (ditetapkan user 2026-10-13, diperbarui 2026-10-15):**
 
 | Item | Prioritas final | Alasan |
 |------|------------------|--------|
 | Pembersihan file tooling agent di `main` Laravel | ✅ Selesai (2026-10-12) | File `.agents/`, `.claude/`, `.mcp.json`, `opencode.json`, `boost.json`, perubahan `composer.*` ikut ter-merge lewat `git add -A` |
 | Rotasi key `firebase-service-account.json` + `git filter-repo` | ✅ Selesai (2026-10-12) | Key terekspos di history git |
-| Item 1 — Validasi field wajib sebelum upload foto + rollback foto yatim | **Medium** | Foto yatim muncul saat validasi gagal setelah upload |
-| Item 2 — Error `register_screen.dart:43` | **Medium** | Dilaporkan agent sebagai "pre-existing", perlu dicek |
-| Item 3 — Endpoint "laporan saya" (`?mine=1`) | **Medium** | Dropdown claim saat ini difilter di Flutter dari 20 item pertama |
+| Item 1 — Validasi field wajib sebelum upload foto + rollback foto yatim | ✅ Selesai (2026-10-15) | Foto yatim muncul saat validasi gagal setelah upload; validasi & rollback diterapkan di Flutter |
+| Item 2 — Error `register_screen.dart:43` | ✅ Selesai (2026-10-15) | File usang dihapus + `dart fix` + log rollback upload; analyze 0 error |
+| Item 3 — Endpoint "laporan saya" (`?mine=1`) | ✅ Selesai (2026-10-15) | Filter `mine=1` di index lost/found reports; backward compatible; 7 test pass |
 | Item 4 — URL foto relatif | ✅ Selesai (2026-10-14) | Path relatif di DB, URL dibangun di response; teruji di HP |
 | Item 5 — Riwayat laporan saya di tab Profil | **Low** | `onTap` masih kosong |
 | Item 6 — Pembedaan halaman View Lost vs Found di Filament | **Medium** | Prompt sudah dikirim, hasil belum dikonfirmasi |
-| Item 9 — Kepemilikan foto pada `POST /api/photos/delete` | **Medium** (final, 2026-10-14) | Dikerjakan bersama Item 1; user terautentikasi mana pun bisa hapus foto milik user lain |
+| Item 9 — Kepemilikan foto pada `POST /api/photos/delete` | ✅ Selesai (2026-10-15) | Opsi C diterapkan; Cache owner + kode 403/409/422 |
 
 ---
 
@@ -63,8 +63,8 @@ Blokir aksi Terima (endpoint 422 dan Filament disabled) bila `lostReport.status`
 
 ## Item 1 — Validasi Field Wajib Sebelum Upload Foto + Rollback Foto Yatim
 
-**Status:** ⬜ Belum dikerjakan  
-**Prioritas:** Medium  
+**Status:** ✅ Selesai (2026-10-15)  
+**Prioritas:** ~~Medium~~ — selesai  
 **Sumber:** DailyChanges 2026-10-09 temuan 1
 
 ### Masalah
@@ -74,12 +74,18 @@ Foto di-upload ke Laravel Storage sebelum validasi field wajib selesai. Bila val
 - Validasi field wajib (judul, deskripsi, koordinat, kategori) di Flutter **sebelum** memanggil endpoint upload foto.
 - Bila upload foto gagal di tengah proses atau validasi create report gagal setelah upload, rollback: hapus foto yang sudah ter-upload di sesi tersebut (via `POST /api/photos/delete` atau endpoint serupa).
 
+### Hasil (2026-10-15)
+- Branch Flutter `fix/report-validation-photo-rollback`, commit `acec23d`; **47 test lulus**; **build debug OK**; **tes manual di HP: semua berhasil** (dikonfirmasi user).
+- Validasi field wajib dijalankan **sebelum** upload foto; foto di-rollback bila upload/create report gagal; guard double-submit ditambahkan di form laporan hilang **dan** form laporan temuan.
+- Merge ke `main`: **sudah** (dikonfirmasi user).
+- Catatan: alur rollback kini mencatat kegagalan `403`/`409` dari `photos/delete` sebagai log (bukan error fatal) — lihat juga Item 2.
+
 ---
 
 ## Item 2 — Error `register_screen.dart:43`
 
-**Status:** ⬜ Belum dikerjakan  
-**Prioritas:** Medium  
+**Status:** ✅ Selesai (2026-10-15)  
+**Prioritas:** ~~Medium~~ — selesai  
 **Sumber:** Laporan Coding Agent (dilabeli "pre-existing")
 
 ### Masalah
@@ -90,11 +96,18 @@ Error analyze di `register_screen.dart` baris 43. Dilaporkan agent sebagai "pre-
 - Bila ya, perbarui agar sesuai dengan flow SSO (Google sign-in + fallback form).
 - Bila bukan, catat penyebab sebenarnya dan buka issue terpisah bila perlu.
 
+### Hasil (2026-10-15)
+- Branch `chore/analyze-cleanup`, commit `eae5bad`, `a5735ff`, `3e20c5f`; **47 test lulus**; **build OK**.
+- `register_screen.dart` dan `create_report_base.dart` **dihapus** (tidak lagi direferensikan); **62 auto-fix** `dart fix` diterapkan; log rollback upload diperbaiki (kegagalan `403`/`409` diabaikan, tidak menggagalkan alur).
+- `flutter analyze`: **0 error**; sisa ±13 info (`avoid_print` 8, `use_build_context_synchronously` 1, test 4).
+- Merge ke `main`: **sudah**. Tes manual HP + verifikasi FCM token: **berhasil** (dikonfirmasi user).
+- Temuan lanjutan (low, usulan): ganti `print` → `debugPrint` (info `avoid_print`).
+
 ---
 
 ## Item 3 — Endpoint "Laporan Saya" (`?mine=1`)
 
-**Status:** ⬜ Belum dikerjakan  
+**Status:** ✅ Selesai (2026-10-15)  
 **Prioritas:** Medium  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
@@ -103,6 +116,14 @@ Dropdown claim saat ini difilter di Flutter dari 20 item pertama. Tidak efisien 
 
 ### Target
 Tambahkan endpoint `GET /api/lost-reports?mine=1` dan `GET /api/found-reports?mine=1` yang hanya mengembalikan laporan milik user yang sedang login (via Sanctum `auth()->id()`).
+
+### Hasil (2026-10-15)
+- Branch `feature/mine-filter`, commit `371fad5`; **7/7 test pass** (`tests/Feature/MineFilterTest.php`, 22 assertions).
+- `GET /api/lost-reports?mine=1` dan `GET /api/found-reports?mine=1` hanya mengembalikan laporan milik user login (Sanctum `auth()->id()`); **format respons & pagination sama** seperti index biasa; **tanpa `mine` (atau `mine=0`) perilaku lama tidak berubah** (backward compatible). Urutan terbaru dulu. `mine=1` tanpa token → `401` (middleware yang ada).
+- Kombinasi `mine=1&status=pending` **bekerja** (index sudah mendukung filter status — tidak ada filter baru).
+- File diubah: `app/Http/Controllers/LostReportController.php`, `app/Http/Controllers/FoundReportController.php`, `tests/Feature/MineFilterTest.php`, `routes/api.php`. Tidak ada tabel/kolom/dependensi baru.
+- Merge ke `main`: **sudah**. `php artisan test` penuh: **lulus** (dikonfirmasi user).
+- Risiko: tidak ada (backward compatible).
 
 ---
 
@@ -139,7 +160,7 @@ Simpan path relatif di DB (mis. `reports/uuid.jpg`). Bangun URL lengkap saat res
 `onTap` riwayat laporan di tab Profil masih kosong.
 
 ### Target
-Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3 bila sudah ada).
+Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3, ✅ selesai 2026-10-15).
 
 ---
 
@@ -197,8 +218,8 @@ Key `firebase-service-account.json` terekspos di history git.
 
 ## Item 9 — Kepemilikan Foto pada `POST /api/photos/delete`
 
-**Status:** ⬜ Belum dikerjakan (dikerjakan bersama Item 1 di sesi berikutnya)  
-**Prioritas final:** Medium (ditetapkan user 2026-10-14)  
+**Status:** ✅ Selesai (2026-10-15)  
+**Prioritas:** ~~Medium (ditetapkan user 2026-10-14)~~ — selesai  
 **Sumber:** Temuan sesi Item 4 (2026-10-14)
 
 ### Masalah
@@ -217,16 +238,28 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 - ~~Opsi B:~~ Hilangkan endpoint delete bebas; hapus foto hanya lewat alur edit/hapus laporan. *(tidak dipilih)*
 - Tidak mengusulkan tabel/kolom baru sebagai keputusan.
 
+### Hasil (2026-10-15)
+- Branch backend `fix/photo-delete-ownership`, commit `b2ab837` (Item 9); **101 test lulus** (sebelumnya 86). Merge ke `main`: **sudah** (dikonfirmasi user).
+- **Upload** mencatat kepemilikan: Cache `photo-owner:{path}` → `user_id`, TTL 24 jam (`CACHE_STORE=database`). Tidak ada tabel/kolom baru.
+- **Delete** menerapkan kepemilikan & rujukan:
+	- `403` — foto tidak tercatat sebagai milik peminta (atau bukan miliknya).
+	- `409` — foto masih dirujuk (`lost_reports.photo_urls`, `found_reports.photo_urls`, `claims.proof_of_transfer_photo_url`).
+	- `422` — domain asing / path traversal.
+- Foto lama (pra-fitur, tidak punya catatan owner) **selalu `403`** — sengaja, karena sudah dirujuk oleh laporan (lihat open item foto yatim & job pembersih).
+
 ---
 
-## Open Items (2026-10-14)
+## Open Items (2026-10-15)
 
 **Catatan (belum dikerjakan; menunggu keputusan user):**
 
-- **(i) Dev email (`GOOGLE_DEV_EMAILS`)** — keputusan 2026-10-14: **normalisasi daftar email akan dikerjakan** (trim, lowercase, buang entri kosong) — perubahan kecil. **Pembatasan ke `local`/`testing` DITUNDA** sampai ada staging bersama; dicatat sebagai **syarat sebelum deploy/staging**. (Latar: `explode(',', env(...))` mengembalikan `['']` saat kosong dan tidak di-trim/lowercase; pelonggaran cek domain berlaku di semua env selain `production`.)
+- **(i) Dev email (`GOOGLE_DEV_EMAILS`)** — ✅ **Dinormalisasi (2026-10-15):** ternyata normalisasi daftar (trim, lowercase, buang entri kosong) **sudah ada sejak awal** di `config/services.php` dan `AuthController`; sesi 2026-10-15 hanya menambah **4 test**. Catatan lama "belum dikerjakan" di DailyChanges 2026-10-14 **diluruskan di log 2026-10-15** (log lama tidak diubah). **Pembatasan ke `local`/`testing` → KEPUTUSAN 2026-10-15: TETAP DITUNDA.** Ini **syarat sebelum staging**, bukan pekerjaan sekarang; digarap saat menyiapkan staging.
 - **(ii) Wajib `php artisan storage:link` di setiap setup/clone baru** — symlink `public/storage` dan isi `storage/app/public` **tidak ikut Git**; wajib dibuat dan foto lama disalin di tiap clone baru.
 - **(iii) 11 file Pint lama + `test_fcm.php`** — keputusan 2026-10-14: prioritas **low**, dikerjakan nanti di **branch terpisah `chore/pint-cleanup`**; `test_fcm.php` dihapus bila ter-track git. **Belum dikerjakan.** (Daftar: ListClaims, EditUser, ListUsers, AdminController, ClaimController, SearchController, AdminMiddleware, GoogleTokenVerifier, `bootstrap/app.php`, `providers.php`, dan `test_fcm.php` di root repo.)
 - **(iv) Folder lama `D:\PBL\lostfound`** — ✅ **Inventaris SELESAI (2026-10-14):** tidak ada branch belum ter-merge, `git status` bersih, 72 file foto di `storage/app/public` sudah identik dengan folder baru (3 file hanya ada di folder baru). Folder lama **boleh dihapus setelah user zip cadangan**; **BELUM dihapus**.
+- **(v) Job pembersih foto yatim terjadwal** — **KEPUTUSAN 2026-10-15: DITUNDA.** Dampaknya hanya ruang disk, dan sejak Item 1 foto yatim baru tidak muncul lagi (rollback berjalan). Cukup dibuat plan **hanya bila penyimpanan mulai jadi masalah**. Tidak ada plan sekarang.
+- **(vi) Audit rollback foto bukti serah terima (`claims/proof`)** — **KEPUTUSAN 2026-10-15: dikerjakan bersama [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].** Foto bukti serah terima wajib di plan tersebut, jadi alur upload-nya akan disentuh lagi; mengaudit sekarang = mengaudit dua kali. Tidak dikerjakan terpisah.
+- **(vii) [Low] Ganti `print` → `debugPrint` (info `avoid_print`)** — sisa 8 info `avoid_print` di analisis Flutter. Usulan prioritas low.
 
 ---
 
@@ -245,7 +278,7 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 - **Plan asal:** [[Perbaikan Flow Claim dan Form Laporan - Lost&Found]]
 - **Laravel:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
 - **Flutter:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
-- **DailyChanges:** [[2026-10-09]], [[2026-10-10]], [[2026-10-11]], [[2026-10-12]]
+- **DailyChanges:** [[2026-10-09]], [[2026-10-10]], [[2026-10-11]], [[2026-10-12]], [[2026-10-14]], [[2026-10-15]]
 
 ---
 
