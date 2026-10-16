@@ -163,10 +163,10 @@ Simpan path relatif di DB (mis. `reports/uuid.jpg`). Bangun URL lengkap saat res
 Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3, ✅ selesai 2026-10-15).
 
 ### Hasil (2026-10-16)
-- Repo Flutter `C:\Project\lostfound-mobile`, branch `feature/my-reports-history`, 3 commit: `69ed4c4` (HEAD → main, origin/main, origin/HEAD) fix: sembunyikan bar bawah untuk pemilik laporan + tambah chip "Laporan Anda"; `a9f13f8` fix: locale init, parsing field code, timezone handling; `83c40cd` fitur riwayat laporan di profil dengan tab Hilang/Temuan.
+- Repo Flutter `C:\Project\lostfound-mobile`, branch `feature/my-reports-history`, 3 commit: `69ed4c4` fix: sembunyikan bar bawah untuk pemilik laporan + tambah chip "Laporan Anda"; `a9f13f8` fix: locale init, parsing field code, timezone handling; `83c40cd` fitur riwayat laporan di profil dengan tab Hilang/Temuan.
 - Merge ke `main`: **Sudah**. `flutter analyze`: 0 error. `flutter test`: 55/55 lulus (sebelumnya 47). `flutter build apk --debug`: sukses. **Tes manual di HP: berhasil** (dikonfirmasi user).
 - **Yang dibangun:** ApiClient.getLostReports() & getFoundReports() — parameter opsional `mine` (default `false`; bila true kirim `mine=1`); memakai endpoint backend Item 3 (sudah selesai). Layar baru `lib/screens/profil/my_reports_screen.dart` — dua tab (**Hilang** \| **Temuan**), pagination (load more), pull-to-refresh, kartu berisi foto + judul + kode + tanggal + badge status, tap membuka layar detail yang sudah ada, state kosong "Belum ada laporan" & state error. `profil_screen.dart`: tile "Riwayat Laporan" kini membuka MyReportsScreen.
-- **Bug perbaikan saat tes HP:** (1) crash `LocaleDataException` (DateFormat `'id_ID'` belum diinisialisasi) → `await initializeDateFormatting('id_ID')` di `main.dart` sebelum `runApp`; (2) kartu tampil UUID, bukan kode laporan → model `LostReport` & `FoundReport` punya field `code` (nullable, di-parse dari `json['code']`, **tidak ikut `toJson`** karena kode dibuat backend) +4 test parsing code; (3) tanggal bisa mundur sehari (API mengirim UTC) → `.toLocal()` pada tanggal di kartu; (4) layar detail tampil bar bawah (Chat WhatsApp / "Ini laporan Anda" terpotong) untuk pemilik → bar belakang disembunyikan di `lost_report_detail_screen.dart` & `found_report_detail_screen.dart`, diganti chip kecil "Laporan Anda" di samping `StatusBadge`; bukan pemilik: perilaku tidak berubah.
+- **Bug perbaikan saat tes HP:** (1) crash `LocaleDataException` (DateFormat `'id_ID'` belum diinisialisasi) → `await initializeDateFormatting('id_ID')` di `main.dart` sebelum `runApp`; (2) kartu tampil UUID, bukan kode laporan → model `LostReport` & `FoundReport` punya field `code` (nullable, di-parse dari `json['code']`, **tidak ikut `toJson`** karena kode dibuat backend) +4 test parsing code; (3) tanggal bisa mundur sehari (API mengirim UTC) → `.toLocal()` pada tanggal di kartu; (4) layar detail tampil bar bawah (Chat WhatsApp / "Ini laporan Anda" terpotong) untuk pemilik → bar bawah disembunyikan di `lost_report_detail_screen.dart` & `found_report_detail_screen.dart`, diganti chip kecil "Laporan Anda" di samping `StatusBadge`; bukan pemilik: perilaku tidak berubah.
 
 ---
 
@@ -186,7 +186,7 @@ Prompt sudah dikirim. Tunggu konfirmasi hasil dari user atau Coding Agent.
 - Branch backend `fix/filament-report-pages`, commit `5f0acd9` + `72c7de1`; **`php artisan test`: 108/108 lulus**. **Merge ke `main`: sudah** (dikonfirmasi user 2026-10-16).
 - **Temuan:** infolist Lost vs Found **SUDAH dibedakan sebelumnya**; masalah sebenarnya adalah semua Page class (View/Create/Edit) **menumpuk** di `ListLostReports.php` dan `ListFoundReports.php`. Kini dipisah jadi **6 file** — `ViewLostReport`, `CreateLostReport`, `EditLostReport`, `ViewFoundReport`, `CreateFoundReport`, `EditFoundReport` — **satu file satu class**; `List*.php` hanya berisi class List.
 - **Tes manual di browser `/admin` berhasil** (dikonfirmasi user): list/view/edit/create Lost & Found; **View Lost** menampilkan `lost_date` tanpa jam + label "Pelapor"; **View Found** menampilkan `found_date` dengan jam + label "Penemu (Pelapor)"; edit record berfoto tersimpan tanpa error.
-- **Bidikan `->url()` pada field `photo_urls`:** sempat dihapus dan label diganti "Path Foto", lalu **DIKEMBALIKAN** (`->url()` + "URL Foto") karena accessor `photo_urls` mengembalikan URL lengkap dan mutator menormalkan ke path relatif saat save. **Hasil akhir: tidak ada perubahan perilaku form foto.**
+- **Catatan teknis `->url()` pada field `photo_urls`:** sempat dihapus dan label diganti "Path Foto", lalu **DIKEMBALIKAN** (`->url()` + "URL Foto") karena accessor `photo_urls` mengembalikan URL lengkap dan mutator menormalkan ke path relatif saat save. **Hasil akhir: tidak ada perubahan perilaku form foto.**
 - Catatan (usulan, belum diputuskan): halaman List Lost/Found tidak punya header action (tombol "New").
 
 ---
@@ -278,7 +278,7 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 - **(x) [Low, usulan] Tombol "Chat WhatsApp" di layar detail (non-pemilik) adalah stub** — WhatsAppService.generateChatLink() dipanggil tapi hasilnya dibuang, url_launcher tidak dipanggil; terkait plan Real-Time Chat; belum diputuskan.
 - **(xi) [Low, usulan] MyReportsScreen: pull-to-refresh** — spinner penuh menggantikan daftar, setState tanpa cek `mounted`, `_lastPage` tidak diperbarui saat load more. Usulan perapian kecil.
 - **(xii) [Low, usulan] Format tanggal tidak konsisten** — layar detail memakai DateFormat('dd MMMM yyyy') tanpa locale eksplisit & tanpa .toLocal(); MyReportsScreen memakai 'dd MMM yyyy' + id_ID + .toLocal(). Usulan menyamakan.
-- **(xiii) [Low, usulan] ApiClient memakai LogInterceptor mencetak header Authorization** — token Sanctum terbaca di log. Usulan: matikan log header di build non-debug (catatan keamanan/Security Hardening; JANGAN tulis isi token apa pun).
+- **(xiii) [Low, usulan] ApiClient memakai LogInterceptor mencetak header Authorization** — token Sanctum terbaca di log. Usulan: matikan log header di build non-debug (catatan keamanan/Security Hardening; isi token tidak dicatat di vault)
 
 ---
 
