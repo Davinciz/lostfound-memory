@@ -4,14 +4,14 @@ project: lost-found
 status: active
 priority: medium
 created: 2026-10-11
-updated: 2026-10-15
-summary: Backlog perbaikan lanjutan — item 1, 2, 3, 4, 7, 8, 9 selesai; dev email dinormalisasi; sisa item 5, 6 + open items (job pembersih foto yatim DITUNDA, audit claims/proof ke plan Claim Dua Arah, batasi dev email ditunda, Pint)
+updated: 2026-10-16
+summary: Backlog perbaikan lanjutan — item 1, 2, 3, 4, 5, 6, 7, 8, 9 selesai; dev email dinormalisasi; sisa open items (job pembersih foto yatim DITUNDA, audit claims/proof ke plan Claim Dua Arah, batasi dev email ditunda, Pint) + usulan (ix) sampai (xiii)
 ---
 
 # Backlog Perbaikan Lanjutan - Lost&Found
 
 **Created:** 2026-10-11  
-**Updated:** 2026-10-15  
+**Updated:** 2026-10-16  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Active  
 **Priority:** Medium  
@@ -37,8 +37,8 @@ Menyelesaikan backlog yang tersisa setelah semua bug utama (1, 2a, 2b, 3) selesa
 | Item 2 — Error `register_screen.dart:43` | ✅ Selesai (2026-10-15) | File usang dihapus + `dart fix` + log rollback upload; analyze 0 error |
 | Item 3 — Endpoint "laporan saya" (`?mine=1`) | ✅ Selesai (2026-10-15) | Filter `mine=1` di index lost/found reports; backward compatible; 7 test pass |
 | Item 4 — URL foto relatif | ✅ Selesai (2026-10-14) | Path relatif di DB, URL dibangun di response; teruji di HP |
-| Item 5 — Riwayat laporan saya di tab Profil | **Low** | `onTap` masih kosong |
-| Item 6 — Pembedaan halaman View Lost vs Found di Filament | **Medium** | Prompt sudah dikirim, hasil belum dikonfirmasi |
+| Item 5 — Riwayat laporan saya di tab Profil | ✅ Selesai (2026-10-16) | branch `feature/my-reports-history`; flutter analyze 0 error; flutter test 55/55 lulus; merge ke main sudah; lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 5 |
+| Item 6 — Pembedaan halaman View Lost vs Found di Filament | ✅ Selesai (2026-10-16) | 6 file Page dipisah (1 file 1 class); merge + 108 test lulus |
 | Item 9 — Kepemilikan foto pada `POST /api/photos/delete` | ✅ Selesai (2026-10-15) | Opsi C diterapkan; Cache owner + kode 403/409/422 |
 
 ---
@@ -152,8 +152,8 @@ Simpan path relatif di DB (mis. `reports/uuid.jpg`). Bangun URL lengkap saat res
 
 ## Item 5 — Riwayat Laporan Saya di Tab Profil
 
-**Status:** ⬜ Belum dikerjakan  
-**Prioritas:** Low  
+**Status:** ✅ Selesai (2026-10-16)  
+**Prioritas:** ~~Low~~ — selesai  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
 ### Masalah
@@ -162,12 +162,18 @@ Simpan path relatif di DB (mis. `reports/uuid.jpg`). Bangun URL lengkap saat res
 ### Target
 Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3, ✅ selesai 2026-10-15).
 
+### Hasil (2026-10-16)
+- Repo Flutter `C:\Project\lostfound-mobile`, branch `feature/my-reports-history`, 3 commit: `69ed4c4` (HEAD → main, origin/main, origin/HEAD) fix: sembunyikan bar bawah untuk pemilik laporan + tambah chip "Laporan Anda"; `a9f13f8` fix: locale init, parsing field code, timezone handling; `83c40cd` fitur riwayat laporan di profil dengan tab Hilang/Temuan.
+- Merge ke `main`: **Sudah**. `flutter analyze`: 0 error. `flutter test`: 55/55 lulus (sebelumnya 47). `flutter build apk --debug`: sukses. **Tes manual di HP: berhasil** (dikonfirmasi user).
+- **Yang dibangun:** ApiClient.getLostReports() & getFoundReports() — parameter opsional `mine` (default `false`; bila true kirim `mine=1`); memakai endpoint backend Item 3 (sudah selesai). Layar baru `lib/screens/profil/my_reports_screen.dart` — dua tab (**Hilang** \| **Temuan**), pagination (load more), pull-to-refresh, kartu berisi foto + judul + kode + tanggal + badge status, tap membuka layar detail yang sudah ada, state kosong "Belum ada laporan" & state error. `profil_screen.dart`: tile "Riwayat Laporan" kini membuka MyReportsScreen.
+- **Bug perbaikan saat tes HP:** (1) crash `LocaleDataException` (DateFormat `'id_ID'` belum diinisialisasi) → `await initializeDateFormatting('id_ID')` di `main.dart` sebelum `runApp`; (2) kartu tampil UUID, bukan kode laporan → model `LostReport` & `FoundReport` punya field `code` (nullable, di-parse dari `json['code']`, **tidak ikut `toJson`** karena kode dibuat backend) +4 test parsing code; (3) tanggal bisa mundur sehari (API mengirim UTC) → `.toLocal()` pada tanggal di kartu; (4) layar detail tampil bar bawah (Chat WhatsApp / "Ini laporan Anda" terpotong) untuk pemilik → bar belakang disembunyikan di `lost_report_detail_screen.dart` & `found_report_detail_screen.dart`, diganti chip kecil "Laporan Anda" di samping `StatusBadge`; bukan pemilik: perilaku tidak berubah.
+
 ---
 
 ## Item 6 — Pembedaan Halaman View Lost vs Found di Filament
 
-**Status:** ⬜ Belum dikerjakan (prompt sudah dikirim, hasil belum dikonfirmasi)  
-**Prioritas:** Medium  
+**Status:** ✅ Selesai (2026-10-16)  
+**Prioritas:** ~~Medium~~ — selesai  
 **Sumber:** Tabel Backlog Terkait plan Perbaikan Flow Claim
 
 ### Masalah
@@ -175,6 +181,13 @@ Halaman View Lost Report dan View Found Report di Filament kemungkinan belum dib
 
 ### Target
 Prompt sudah dikirim. Tunggu konfirmasi hasil dari user atau Coding Agent.
+
+### Hasil (2026-10-16)
+- Branch backend `fix/filament-report-pages`, commit `5f0acd9` + `72c7de1`; **`php artisan test`: 108/108 lulus**. **Merge ke `main`: sudah** (dikonfirmasi user 2026-10-16).
+- **Temuan:** infolist Lost vs Found **SUDAH dibedakan sebelumnya**; masalah sebenarnya adalah semua Page class (View/Create/Edit) **menumpuk** di `ListLostReports.php` dan `ListFoundReports.php`. Kini dipisah jadi **6 file** — `ViewLostReport`, `CreateLostReport`, `EditLostReport`, `ViewFoundReport`, `CreateFoundReport`, `EditFoundReport` — **satu file satu class**; `List*.php` hanya berisi class List.
+- **Tes manual di browser `/admin` berhasil** (dikonfirmasi user): list/view/edit/create Lost & Found; **View Lost** menampilkan `lost_date` tanpa jam + label "Pelapor"; **View Found** menampilkan `found_date` dengan jam + label "Penemu (Pelapor)"; edit record berfoto tersimpan tanpa error.
+- **Bidikan `->url()` pada field `photo_urls`:** sempat dihapus dan label diganti "Path Foto", lalu **DIKEMBALIKAN** (`->url()` + "URL Foto") karena accessor `photo_urls` mengembalikan URL lengkap dan mutator menormalkan ke path relatif saat save. **Hasil akhir: tidak ada perubahan perilaku form foto.**
+- Catatan (usulan, belum diputuskan): halaman List Lost/Found tidak punya header action (tombol "New").
 
 ---
 
@@ -249,7 +262,7 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 
 ---
 
-## Open Items (2026-10-15)
+## Open Items (2026-10-16)
 
 **Catatan (belum dikerjakan; menunggu keputusan user):**
 
@@ -260,6 +273,12 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 - **(v) Job pembersih foto yatim terjadwal** — **KEPUTUSAN 2026-10-15: DITUNDA.** Dampaknya hanya ruang disk, dan sejak Item 1 foto yatim baru tidak muncul lagi (rollback berjalan). Cukup dibuat plan **hanya bila penyimpanan mulai jadi masalah**. Tidak ada plan sekarang.
 - **(vi) Audit rollback foto bukti serah terima (`claims/proof`)** — **KEPUTUSAN 2026-10-15: dikerjakan bersama [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].** Foto bukti serah terima wajib di plan tersebut, jadi alur upload-nya akan disentuh lagi; mengaudit sekarang = mengaudit dua kali. Tidak dikerjakan terpisah.
 - **(vii) [Low] Ganti `print` → `debugPrint` (info `avoid_print`)** — sisa 8 info `avoid_print` di analisis Flutter. Usulan prioritas low.
+- **(viii) [Low, usulan] Header action "New" di halaman List Lost/Found Filament** — halaman List Lost/Found saat ini tidak punya header action (tombol "New"). Usulan, belum diputuskan.
+- **(ix) [Low, usulan] claim_screen.dart masih mengambil GET /lost-reports?status=pending** — alihkan ke mine=true (menggunakan endpoint Item 3); bisa dikerjakan terpisah atau bersama plan Claim Dua Arah; belum diputuskan.
+- **(x) [Low, usulan] Tombol "Chat WhatsApp" di layar detail (non-pemilik) adalah stub** — WhatsAppService.generateChatLink() dipanggil tapi hasilnya dibuang, url_launcher tidak dipanggil; terkait plan Real-Time Chat; belum diputuskan.
+- **(xi) [Low, usulan] MyReportsScreen: pull-to-refresh** — spinner penuh menggantikan daftar, setState tanpa cek `mounted`, `_lastPage` tidak diperbarui saat load more. Usulan perapian kecil.
+- **(xii) [Low, usulan] Format tanggal tidak konsisten** — layar detail memakai DateFormat('dd MMMM yyyy') tanpa locale eksplisit & tanpa .toLocal(); MyReportsScreen memakai 'dd MMM yyyy' + id_ID + .toLocal(). Usulan menyamakan.
+- **(xiii) [Low, usulan] ApiClient memakai LogInterceptor mencetak header Authorization** — token Sanctum terbaca di log. Usulan: matikan log header di build non-debug (catatan keamanan/Security Hardening; JANGAN tulis isi token apa pun).
 
 ---
 
@@ -278,7 +297,7 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 - **Plan asal:** [[Perbaikan Flow Claim dan Form Laporan - Lost&Found]]
 - **Laravel:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
 - **Flutter:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
-- **DailyChanges:** [[2026-10-09]], [[2026-10-10]], [[2026-10-11]], [[2026-10-12]], [[2026-10-14]], [[2026-10-15]]
+- **DailyChanges:** [[2026-10-09]], [[2026-10-10]], [[2026-10-11]], [[2026-10-12]], [[2026-10-14]], [[2026-10-15]], [[2026-10-16]]
 
 ---
 

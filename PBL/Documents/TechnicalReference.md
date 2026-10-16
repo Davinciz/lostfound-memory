@@ -2,7 +2,7 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-15
+updated: 2026-10-16
 summary: Referensi teknis lengkap Lost&Found; endpoint, autentikasi, storage, skema, Filament, deployment
 ---
 
@@ -116,6 +116,22 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 - **Setup:** Firebase project → daftarkan iOS+Android → `google-services.json` / `GoogleService-Info.plist` → server: `kreait/laravel-firebase` + service account key
 - **Notifikasi:** judul pendek + body deskriptif
 - **Deep link:** ke halaman detail laporan/claim
+---
+
+## 11.1 Fitur Riwayat Laporan (MyReportsScreen) — Detail Teknis
+
+Ditulis untuk **Backlog Item 5 (Riwayat Laporan Saya di Tab Profil)**, selesai 2026-10-16 (Flutter; branch `feature/my-reports-history`, **merge ke `main` sudah**).
+
+- **ApiClient:** `ApiClient.getLostReports()` & `getFoundReports()` menerima parameter opsional `mine` (default `false`); bila `mine=true` mengirim `mine=1`. Perilaku tanpa `mine` tidak berubah. Menggunakan endpoint backend Item 3 (sudah selesai).
+- **Layarku:** `lib/screens/profil/my_reports_screen.dart` — dua tab (**Hilang** | **Temuan**), pagination (`load more`), pull-to-refresh, kartu berisi foto + judul + kode + tanggal + badge status; tap kartu membuka layar detail yang sudah ada; state kosong "Belum ada laporan" dan state error.
+- **profilScreen.dart:** tile "Riwayat Laporan" kini membuka `MyReportsScreen`.
+- **Bug perbaikan saat tes HP:**
+  1. Crash `LocaleDataException` (DateFormat locale `'id_ID'` belum diinisialisasi) → `await initializeDateFormatting('id_ID')` di `main.dart` sebelum `runApp`.
+  2. Kartu menampilkan UUID, bukan kode laporan → model `LostReport` & `FoundReport` kini punya field `code` (nullable, di-parse dari `json['code']`, **tidak ikut `toJson`** karena kode dibuat backend) +4 test parsing code.
+  3. Tanggal bisa mundur sehari (API mengirim UTC) → `.toLocal()` pada tanggal di kartu.
+  4. Layar detail tampil **bar bawah** (Chat WhatsApp / "Ini laporan Anda" yang terpotong) untuk pemilik laporan → untuk pemilik, **bar bawah** disembunyikan di `lost_report_detail_screen.dart` & `found_report_detail_screen.dart`, diganti chip kecil "Laporan Anda" di samping `StatusBadge`. Bukan pemilik: perilaku tidak berubah.
+- **Status:** ✅ Selesai (2026-10-16). Lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 5, DailyChanges 2026-10-16, Progres.
+
 ---
 ## 12. Dashboard Admin — Rincian
 
@@ -810,6 +826,12 @@ Schema::create('claims', function (Blueprint $table) {
 - Resource pengelolaan user; admin dapat memblokir dan membuka blokir akun.
 - Admin tidak dapat memblokir akun admin atau akunnya sendiri.
 
+> [!note] Struktur Filament Pages & field `photo_urls` di form (2026-10-16)
+> - **1 file 1 class:** sebelumnya semua Page class (View/Create/Edit) Lost & Found menumpuk di `ListLostReports.php`/`ListFoundReports.php`. Kini dipisah jadi **6 file** — `ViewLostReport`, `CreateLostReport`, `EditLostReport`, `ViewFoundReport`, `CreateFoundReport`, `EditFoundReport` — satu file satu class; `List*.php` hanya berisi class List.
+> - **Infolist Lost vs Found sudah dibedakan:** View Lost menampilkan `lost_date` (Date, tanpa jam) + label "Pelapor"; View Found menampilkan `found_date` (Timestamp, dengan jam) + label "Penemu (Pelapor)".
+> - **Field `photo_urls` di form:** memakai `->url()` + label "URL Foto". Accessor `photo_urls` mengembalikan **URL lengkap** (`APP_URL` + `/storage/` + path), mutator menormalkan input kembali ke **path relatif** saat save. Sempat dihapus `->url()` + diganti "Path Foto", lalu dikembalikan; hasil akhir: tidak ada perubahan perilaku form foto.
+> - Lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 6.
+
 ### 15.9 Setup Lokal Backend (Clone Baru)
 
 Checklist saat menyiapkan clone baru (mis. `C:\Project\lostfound-backend`):
@@ -876,6 +898,8 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - **Verifikasi kompatibilitas Filament 3.3.x dengan Laravel 13** — cek `composer.json` dan `composer.lock` (belum dikerjakan; jangan simpulkan hasil sebelum diperiksa).
 - **✅ Kepemilikan foto pada `POST /api/photos/delete` — SELESAI (2026-10-15)** — [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9 (Opsi C) diterapkan: branch `fix/photo-delete-ownership`, commit `b2ab837`, 101 test lulus. Upload mencatat Cache `photo-owner:{path}` → `user_id` (TTL 24 jam); delete mengembalikan `403` (bukan pemilik/tidak tercatat), `409` (masih dirujuk), `422` (domain asing/traversal). Tidak ada tabel/kolom baru.
 - **✅ Endpoint "laporan saya" `?mine=1` — SELESAI (2026-10-15)** — [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 3: branch `feature/mine-filter`, commit `371fad5`, 7/7 test pass (`tests/Feature/MineFilterTest.php`). `GET /api/lost-reports?mine=1` & `GET /api/found-reports?mine=1` memfilter milik user login via Sanctum `auth()->id()`; format/pagination sama, backward compatible (tanpa `mine`/`mine=0` perilaku lama), `mine=1&status=pending` bekerja, `mine=1` tanpa token → `401`. Tanpa tabel/kolom/dependensi baru.
+- **✅ Pembedaan halaman View Lost vs Found di Filament — SELESAI (2026-10-16)** — [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 6: branch `fix/filament-report-pages`, 108/108 test lulus. Page class (View/Create/Edit) yang sebelumnya menumpuk di `ListLostReports.php`/`ListFoundReports.php` dipisah jadi **6 file** (`ViewLostReport`, `CreateLostReport`, `EditLostReport`, `ViewFoundReport`, `CreateFoundReport`, `EditFoundReport`) — satu file satu class; `List*.php` hanya berisi class List. Infolist Lost vs Found sudah dibedakan: View Lost menampilkan `lost_date` (Date, tanpa jam) + "Pelapor"; View Found menampilkan `found_date` (Timestamp, dengan jam) + "Penemu (Pelapor)". Tes manual `/admin` berhasil. Merge ke `main`: sudah. Field `photo_urls` di form Filament memakai `->url()` + label "URL Foto": accessor mengembalikan URL lengkap, mutator menormalkan ke path relatif saat save — tidak ada perubahan perilaku form foto.
+- **✅ Backlog Item 5 — Riwayat laporan saya di tab Profil — SELESAI (2026-10-16)** — [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 5: repo Flutter `C:\Project\lostfound-mobile`, branch `feature/my-reports-history`, 3 commit (`69ed4c4` HEAD→main; `a9f13f8` fix locale/code/timezone; `83c40cd` fitur profil). `flutter analyze`: 0 error. `flutter test`: 55/55 lulus (sebelumnya 47). `flutter build apk --debug`: sukses. Merge ke `main`: **Sudah**. See [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 5, DailyChanges 2026-10-16, Progress, TechnicalReference §11.1.
 - **Dev email `GOOGLE_DEV_EMAILS` (2026-10-14, diluruskan 2026-10-15)** — **normalisasi daftar ternyata sudah ada sejak awal** di `config/services.php` + `AuthController`; sesi 2026-10-15 hanya menambah 4 test. **Sisa open item:** aktif di semua environment non-production (termasuk staging). **Keputusan 2026-10-15: pembatasan ke `local`/`testing` TETAP DITUNDA** — ini syarat sebelum staging, digarap saat menyiapkan staging, bukan sekarang.
 - **Wajib `php artisan storage:link` di setiap setup/clone baru (2026-10-14)** — symlink `public/storage` dan isi `storage/app/public` tidak ikut Git.
 - **Job pembersih foto yatim terjadwal — KEPUTUSAN 2026-10-15: DITUNDA** — foto yatim lama (tanpa catatan owner di Cache; pra-fitur Item 9) selalu `403` saat delete oleh user dan tidak dirujuk laporan. Dampaknya hanya ruang disk, dan sejak Item 1 foto yatim baru tidak muncul lagi (rollback berjalan). Cukup dibuat plan **hanya bila penyimpanan mulai jadi masalah**; tidak ada plan sekarang.

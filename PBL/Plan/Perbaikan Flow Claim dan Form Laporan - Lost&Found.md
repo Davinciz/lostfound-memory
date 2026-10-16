@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-15
+updated: 2026-10-16
 summary: Perbaiki status claim, pemilihan foto, dan pemilihan lokasi di peta dengan saran gedung pada form laporan
 ---
 
@@ -160,11 +160,11 @@ Memilih lokasi langsung mengambil lokasi saat ini. User tidak bisa memilih lokas
 
 | Item | Prioritas usulan | Catatan |
 |------|------------------|---------|
-| Pembedaan halaman View Lost vs Found di Filament | Medium | Prompt sudah dikirim, hasil belum dikonfirmasi |
+| Pembedaan halaman View Lost vs Found di Filament | Medium | ✅ Selesai (2026-10-16) — lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 6 |
 | Pastikan file tooling agent tidak ada di `main` (`.agents/`, `.claude/`, `.mcp.json`, `opencode.json`, `boost.json`, perubahan `composer.*`) | High sebelum push | ✅ Selesai (2026-10-12) — ikut ter-merge lewat `git add -A`; gunakan `git add <file>` dan `.gitignore` |
 | Endpoint "laporan saya" (mis. `?mine=1`) untuk dropdown claim | Medium | ✅ Selesai (2026-10-15) — lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 3 |
 | URL foto relatif (simpan path, bangun URL saat response) | Medium | ✅ Selesai (2026-10-14) — lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 4 |
-| Riwayat laporan saya di tab Profil | Low | `onTap` masih kosong |
+| Riwayat laporan saya di tab Profil | ✅ Selesai (2026-10-16) | branch `feature/my-reports-history`; flutter analyze 0 error; flutter test 55/55 lulus; merge ke main sudah; lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 5 |
 | Bersihkan history git dari `firebase-service-account.json` | High sebelum repo Public | ✅ Selesai (2026-10-12) — `git filter-repo` |
 | Chat real-time, Security Hardening, Master Buildings | Sesuai plan masing-masing | Lihat plan terkait |
 

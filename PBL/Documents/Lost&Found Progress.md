@@ -7,17 +7,15 @@ kanban-plugin: board
 ## 📊 Progres Project
 
 - [ ] 🎯 **Core MVP selesai** — claim flow, foto bukti serah terima, master buildings + auto location
-	Ringkasan: **17 item selesai · 1 backlog pending · 3 fitur besar masih rencana**.
-- [ ] ✅ **Selesai (17):** Bug 1, 2a, 2b, 3 + celah lanjutan · Foto Bukti Transfer · Master Buildings (Backend/Flutter/Filament) · Backlog Item 1, 2, 3, 4, 7, 8 & 9 · Migrasi repo Gitea→GitHub
-- [ ] 🚧 **Fokus berikutnya:** Backlog Item 5 (riwayat laporan di Profil) → Item 6 (view Lost vs Found di Filament), lalu Real-Time Chat
+	Ringkasan: **19 item selesai · 0 backlog pending · 3 fitur besar masih rencana**.
+- [ ] ✅ **Selesai (19):** Bug 1, 2a, 2b, 3 + celah lanjutan · Foto Bukti Transfer · Master Buildings (Backend/Flutter/Filament) · Backlog Item 1, 2, 3, 4, 5, 6, 7, 8 & 9 · Migrasi repo Gitea→GitHub
+- [ ] 🚧 **Fokus berikutnya:** Real-Time Chat
 - [ ] 🧭 **Rencana besar:** Real-Time Chat · Verifikasi via Chat · Security Hardening
-- [ ] 📅 **Terakhir diperbarui:** 2026-10-15
+- [ ] 📅 **Terakhir diperbarui:** 2026-10-16
 
 
 ## 📋 To Do List
 
-- [ ] **Item 5 — Riwayat laporan saya di tab Profil** `Low`
-	`onTap` masih kosong. Implementasi navigasi ke daftar laporan milik user (pakai endpoint Item 3, ✅ selesai 2026-10-15).
 - [ ] **[DITUNDA] Job pembersih foto yatim terjadwal** `Low`
 	Keputusan 2026-10-15: **ditunda** — dampaknya hanya ruang disk; sejak Item 1 foto yatim baru tidak muncul lagi. Plan dibuat hanya bila penyimpanan mulai jadi masalah.
 - [ ] **[Plan Claim Dua Arah] Audit rollback foto bukti serah terima (`claims/proof`)** `Medium`
@@ -26,8 +24,6 @@ kanban-plugin: board
 
 ## 🔍 Menunggu Konfirmasi
 
-- [ ] **Item 6 — Pembedaan halaman View Lost vs Found di Filament** `Medium`
-	Prompt sudah dikirim, hasil belum dikonfirmasi. View Lost Report & View Found Report kemungkinan belum dibedakan.
 - [x] **Design.md §8 — "Repository & monitoring: Gitea" → GitHub**
 	Baris 332 sudah diperbarui 2026-10-13: "Repository: GitHub (Private). Issue/Milestone Gitea tidak ikut dimigrasi; monitoring: belum ditentukan." 
 - [ ] **Sinkronisasi Notion**
@@ -68,6 +64,8 @@ kanban-plugin: board
 - [x] **Backlog Item 7 — Pembersihan file tooling agent di `main` Laravel** — selesai 2026-10-12
 - [x] **Backlog Item 8 — Rotasi key Firebase + `git filter-repo`** — selesai 2026-10-12
 - [x] **Migrasi repo Gitea → GitHub (Private)** + rewrite history backend — selesai 2026-10-12
+- [x] **Backlog Item 6 — Pembedaan halaman View Lost vs Found di Filament** — selesai 2026-10-16 (branch `fix/filament-report-pages`, 108/108 test lulus; Page class dipisah jadi 6 file — ViewLostReport, CreateLostReport, EditLostReport, ViewFoundReport, CreateFoundReport, EditFoundReport — satu file satu class; `List*.php` hanya class List; merge dikonfirmasi user; tes manual `/admin`: list/view/edit/create Lost & Found berhasil, View Lost tampil `lost_date` tanpa jam + "Pelapor", View Found tampil `found_date` dgn jam + "Penemu (Pelapor)"; `->url()` field `photo_urls` dikembalikan — accessor URL + mutator normalisasi path, tanpa perubahan perilaku form foto)
+- [x] **Backlog Item 5 — Riwayat laporan saya di tab Profil** — selesai 2026-10-16 (Flutter, branch `feature/my-reports-history`, 3 commit: `69ed4c4` HEAD→main; `a9f13f8` fix locale/code/timezone; `83c40cd` fitur profil; flutter analyze 0 error; flutter test 55/55 lulus; flutter build apk --debug sukses; merge ke main sudah; lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 5, DailyChanges 2026-10-16, TechnicalReference §11.1 + §17)
 
 %% kanban:settings
 ```
