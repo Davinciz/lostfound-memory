@@ -4,8 +4,8 @@ project: lost-found
 status: active
 priority: medium
 created: 2026-10-11
-updated: 2026-10-16
-summary: Backlog perbaikan lanjutan — item 1, 2, 3, 4, 5, 6, 7, 8, 9 selesai; dev email dinormalisasi; sisa open items (job pembersih foto yatim DITUNDA, audit claims/proof ke plan Claim Dua Arah, batasi dev email ditunda, Pint) + usulan (ix) sampai (xiii)
+updated: 2026-10-18
+summary: Backlog perbaikan lanjutan — item 1–9 selesai; dev email dinormalisasi; sisa open items (job pembersih foto yatim DITUNDA, audit claims/proof ke plan Claim Dua Arah, batasi dev email ditunda, Pint) + usulan (vii) sampai (xiv)
 ---
 
 # Backlog Perbaikan Lanjutan - Lost&Found
@@ -274,11 +274,14 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 - **(vi) Audit rollback foto bukti serah terima (`claims/proof`)** — **KEPUTUSAN 2026-10-15: dikerjakan bersama [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].** Foto bukti serah terima wajib di plan tersebut, jadi alur upload-nya akan disentuh lagi; mengaudit sekarang = mengaudit dua kali. Tidak dikerjakan terpisah.
 - **(vii) [Low] Ganti `print` → `debugPrint` (info `avoid_print`)** — sisa 8 info `avoid_print` di analisis Flutter. Usulan prioritas low.
 - **(viii) [Low, usulan] Header action "New" di halaman List Lost/Found Filament** — halaman List Lost/Found saat ini tidak punya header action (tombol "New"). Usulan, belum diputuskan.
-- **(ix) [Low, usulan] claim_screen.dart masih mengambil GET /lost-reports?status=pending** — alihkan ke mine=true (menggunakan endpoint Item 3); bisa dikerjakan terpisah atau bersama plan Claim Dua Arah; belum diputuskan.
+- **(ix) [Low, usulan] claim_screen.dart masih mengambil GET /lost-reports?status=pending** — alihkan ke mine=true (menggunakan endpoint Item 3); bisa dikerjakan terpisah atau bersama plan Claim Dua Arah; belum diputuskan. **Tambahan 2026-10-18:** karena `per_page` default 20, dropdown "Laporan hilang kamu" hanya memuat 20 laporan pertama sehingga sebagian laporan user tidak muncul — usul kirim `status=pending` (dan/atau pagination). Lihat open item (h) di [[TechnicalReference]] §17.
 - **(x) [Low, usulan] Tombol "Chat WhatsApp" di layar detail (non-pemilik) adalah stub** — WhatsAppService.generateChatLink() dipanggil tapi hasilnya dibuang, url_launcher tidak dipanggil; terkait plan Real-Time Chat; belum diputuskan.
 - **(xi) [Low, usulan] MyReportsScreen: pull-to-refresh** — spinner penuh menggantikan daftar, setState tanpa cek `mounted`, `_lastPage` tidak diperbarui saat load more. Usulan perapian kecil.
 - **(xii) [Low, usulan] Format tanggal tidak konsisten** — layar detail memakai DateFormat('dd MMMM yyyy') tanpa locale eksplisit & tanpa .toLocal(); MyReportsScreen memakai 'dd MMM yyyy' + id_ID + .toLocal(). Usulan menyamakan.
 - **(xiii) [Low, usulan] ApiClient memakai LogInterceptor mencetak header Authorization** — token Sanctum terbaca di log. Usulan: matikan log header di build non-debug (catatan keamanan/Security Hardening; isi token tidak dicatat di vault)
+- **(xiv) [High, dari klarifikasi user 2026-10-18] IDOR di `ClaimController` (repo backend)** — klaim dapat diakses/diproses tanpa memastikan klaim itu milik user pemilik laporan (`lost_report_id`); perlu perbaikan otorisasi di backend. **Alasan prioritas high:** ini bug keamanan dan **memblokir E-3** (menghapus filter sisi klien di layar Claim Saya) di [[Backlog UI Redesign - Lost&Found]]. Belum dikerjakan. Keputusan user 2026-10-18: dicatat di sini, bukan di [[Security Hardening - Lost&Found]].
+
+**Status pelacakan (2026-10-18):** item **(vii), (ix), (xi), (xii), (xiii)** kini dilacak sebagai **E-2, E-3, E-6** di [[Backlog UI Redesign - Lost&Found]]; entri di sini tetap jadi catatan asal, tidak dihapus.
 
 ---
 
@@ -295,8 +298,8 @@ Hanya pemilik/pengunggah foto yang boleh menghapus, **atau** penghapusan hanya l
 ## Related Files
 
 - **Plan asal:** [[Perbaikan Flow Claim dan Form Laporan - Lost&Found]]
-- **Laravel:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
-- **Flutter:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
+- **Laravel:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
+- **Flutter:** `C:\Project\lostfound-mobile` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS)
 - **DailyChanges:** [[2026-10-09]], [[2026-10-10]], [[2026-10-11]], [[2026-10-12]], [[2026-10-14]], [[2026-10-15]], [[2026-10-16]]
 
 ---

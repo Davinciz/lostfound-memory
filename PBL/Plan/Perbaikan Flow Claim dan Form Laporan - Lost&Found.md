@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-16
+updated: 2026-10-18
 summary: Perbaiki status claim, pemilihan foto, dan pemilihan lokasi di peta dengan saran gedung pada form laporan
 ---
 
@@ -198,8 +198,8 @@ Catatan: crash saat membuat laporan hilang dari alur claim diabaikan (diduga mas
 
 ## Related Files
 
-- **Laravel:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
-- **Flutter:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
+- **Laravel:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
+- **Flutter:** `C:\Project\lostfound-mobile` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Verifikasi via Chat:** [[Verifikasi via Chat - Lost&Found]]

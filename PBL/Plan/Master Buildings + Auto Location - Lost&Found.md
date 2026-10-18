@@ -4,7 +4,7 @@ project: lost-found
 status: active
 priority: high
 created: 2026-09-29
-updated: 2026-10-13
+updated: 2026-10-18
 summary: Master buildings + pilih lokasi di peta dengan saran gedung terdekat (Haversine lokal Flutter); jumlah gedung dinetralkan (plan 22 nama vs DB 23 entri, menunggu konfirmasi)
 ---
 
@@ -554,8 +554,8 @@ class BuildingResource extends Resource
 
 - **ERD DBML:** `D:\ObsidianVault\PBL\Documents\schema.dbml`
 - **ERD Markdown:** `D:\ObsidianVault\PBL\Documents\ERD.md`
-- **Laravel project:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
-- **Flutter project:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
+- **Laravel project:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
+- **Flutter project:** `C:\Project\lostfound-mobile` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS)
 - **Koordinat PDF:** `C:\Users\ADVAN\AppData\Local\hermes\cache\documents\doc_9eb77469e200_Koordinat_Gedung_-_Sheet1.pdf`
 
 ---

@@ -2,7 +2,7 @@
 type: plan
 project: lost-found
 status: active
-updated: 2026-10-15
+updated: 2026-10-18
 summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan
 priority: medium
 ---
@@ -652,7 +652,7 @@ Per DailyChanges 2026-10-06, rate limiting, HTTPS force, CORS, dan security head
 
 ## Related Files
 
-- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Project root:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Verifikasi via Chat:** [[Verifikasi via Chat - Lost&Found]]

@@ -2,8 +2,8 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-14
-summary: ERD 7 tabel Lost&Found; skema Google SSO diterapkan, NIM opsional, password nullable; kolom baru claims disetujui 2026-10-14
+updated: 2026-10-18
+summary: ERD 7 tabel Lost&Found; skema Google SSO diterapkan, NIM opsional, password nullable; kolom baru claims disetujui 2026-10-14; index chat partial unique ditambah 2026-10-18
 ---
 
 # ERD Lost & Found
@@ -84,7 +84,7 @@ Ruang percakapan antara dua pengguna, biasanya terkait klaim atau laporan terten
 
 - **PK:** `id` (UUID)
 - **FK:** `user1_id` → users.id, `user2_id` → users.id, `lost_report_id` → lost_reports.id (nullable), `found_report_id` → found_reports.id (nullable), `claim_id` → claims.id (nullable)
-- **Index:** claim_id, user1_id, user2_id
+- **Index:** claim_id, user1_id, user2_id (index lama tetap) + **partial unique index** `(claim_id) WHERE claim_id IS NOT NULL` dan `(user1_id, user2_id) WHERE claim_id IS NULL` (pasangan user dinormalisasi min/max untuk chat langsung) — ditambahkan migration `2026_10_18_071626_add_conversation_indexes`, **tanpa perubahan kolom/tabel**
 - **Relasi:** 1 conversation → N messages
 
 #### 7. `messages`
@@ -94,7 +94,7 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **PK:** `id` (UUID)
 - **FK:** `conversation_id` → conversations.id, `sender_id` → users.id
 - **Kolom:** message (text), read_at (null berarti belum dibaca)
-- **Index:** conversation_id, created_at, sender_id
+- **Index:** conversation_id, created_at, sender_id; **composite index** `(conversation_id, created_at)` untuk query urutan pesan (migration `2026_10_18_071626_add_conversation_indexes`)
 
 ## Ringkasan Relasi
 
@@ -131,6 +131,7 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - Semua nilai `status` dan `category` dibatasi dengan **check constraint** dan disimpan dalam huruf kecil.
 - **Unique constraint:** users.nim, users.email, lost_reports.code, found_reports.code
 - **Index** untuk pencarian dan filter: category, status, role, nim, type, koordinat `(latitude, longitude)` pada `buildings`, serta kolom FK pada `conversations` dan `messages`.
+- **Index chat (2026-10-18):** migration `2026_10_18_071626_add_conversation_indexes` menambah partial unique index `conversations(claim_id) WHERE claim_id IS NOT NULL` (satu chat per claim), partial unique index `conversations(user1_id, user2_id) WHERE claim_id IS NULL` (satu chat langsung per pasangan user), dan composite index `messages(conversation_id, created_at)`. Tidak ada kolom/tabel baru.
 
 ## Perubahan dari Versi ERD Sebelumnya
 
@@ -146,3 +147,4 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **2026-10-11:** Flow lokasi diubah. User memilih lokasi dengan menaruh pin di peta (`flutter_map` + OpenStreetMap), bukan GPS otomatis. Koordinat laporan = titik yang dipilih user; gedung (jika dipilih) hanya mengisi `building_id` dan `location_name`, tidak menimpa koordinat. Aturan lama "gedung menang atas GPS" dibalik. Aturan `location_name` baru: gedung+detail → "Nama Gedung, detail"; gedung saja → "Nama Gedung"; tanpa gedung+detail → detail; tanpa gedung+detail kosong → "Titik di peta (area luar gedung)". Endpoint `POST /location/suggest` dan `LocationService` backend dicoret; Haversine dihitung lokal di Flutter (opsi B). `building_id` tetap nullable; backend tetap memvalidasi building_id (uuid, exists) dan menolak koordinat kosong/0,0.
 - **2026-10-14:** Tiga kolom baru di `claims` disetujui: `accepted_at` (timestamp, untuk hitung kedaluwarsa 7 hari), `closed_reason` (text, alasan rejected/withdrawn/expired), `closed_by` (uuid FK users, null = sistem). Belum ada migration. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]. Chat read-only dihitung dari kondisi claim atau laporan, bukan dari kolom tersimpan.
 - **2026-10-14 (lanjutan):** `photo_urls` (lost_reports & found_reports) dan `proof_of_transfer_photo_url` (claims) kini menyimpan **path relatif** (mis. `reports/uuid.jpg`, `claims/proof/uuid.jpg`); URL lengkap dibangun di response API dari `APP_URL`. Struktur kolom **tidak berubah** (Backlog Item 4, selesai 2026-10-14).
+- **2026-10-18:** Real-Time Chat Fase 1 backend merge ke `develop` (commit `fb256f9`). Migration `2026_10_18_071626_add_conversation_indexes` menambah partial unique index + composite index (lihat bagian Index chat). **Struktur kolom/tabel tidak berubah.**

@@ -2,8 +2,8 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-16
-summary: Referensi teknis lengkap Lost&Found; endpoint, autentikasi, storage, skema, Filament, deployment
+updated: 2026-10-18
+summary: Referensi teknis lengkap Lost&Found; endpoint, autentikasi, storage, skema, Filament, chat realtime, usulan push notification & WhatsApp
 ---
 
 > Dokumentasi teknis: arsitektur, ERD, migration, Filament resources, AI onboarding context.
@@ -16,7 +16,7 @@ Mobile App (Flutter) ◄──HTTPS──► Laravel API (api.php) ◄──► 
      ▼                                              ▼
 Firebase Cloud Messaging                         Firebase Admin SDK (server-side)
 ```
-> Chat real-time: Pusher (MVP) → Soketi — RENCANA, belum diimplementasi.
+> Chat real-time: Pusher (MVP) → Soketi — **Fase 1 backend SELESAI** (API + broadcasting + index, merge `develop` 2026-10-18); UI Flutter & integrasi claim belum.
 ### 8.2 Komponen & Pemilihan Teknologi (Final)
 <table header-row="true">
 <tr>
@@ -116,6 +116,7 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 - **Setup:** Firebase project → daftarkan iOS+Android → `google-services.json` / `GoogleService-Info.plist` → server: `kreait/laravel-firebase` + service account key
 - **Notifikasi:** judul pendek + body deskriptif
 - **Deep link:** ke halaman detail laporan/claim
+- **Status implementasi (2026-10-18, hasil pembacaan kode oleh user, read-only):** token disimpan via `PUT /users/me/fcm-token`; pengiriman FCM **hanya** di `ClaimTransferService::notifyClaimant` (barang diserahkan) dan kegagalan kirim ditelan tanpa log. **Belum ada:** push claim diajukan / diterima / ditolak, push pesan chat + deep link, daftar notifikasi (tidak ada endpoint/tabel). Rencana & opsi A/B ada di [[Push Notification - Lost&Found]].
 ---
 
 ## 11.1 Fitur Riwayat Laporan (MyReportsScreen) — Detail Teknis
@@ -192,7 +193,7 @@ https://api.domain.com/storage/reports/uuid-1.jpg
 - ✅ Testing: backend 67 test lulus, Flutter `geo_utils` 46 test (laporan agent, log 2026-10-11)
 - ✅ Buildings master data selesai: tabel + seeder, `GET /api/buildings`, Filament, flow peta ter-merge 2026-10-11. Sisa: pembersihan data buildings via Filament.
 - 🔄 Real-time chat: tabel `conversations`/`messages` sudah ada di DB; Model, API, Pusher, UI belum.
-- ✅ Repo dipindah ke GitHub Private (Davinciz/lostfound-backend, Davinciz/lostfound-mobile); key Firebase dirotasi 2026-10-12 (tanpa detail key).
+- ✅ Repo dipindah ke Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend` dan `lostfound-mobile` (HTTPS). GitHub remote "github" masih ada lokal, akan dihapus. Key Firebase dirotasi 2026-10-12 (tanpa detail key).
 ---
 ## 15. Dependencies & Prasyarat
 ### 15.1 Stack Teknologi (Final)
@@ -218,8 +219,8 @@ https://api.domain.com/storage/reports/uuid-1.jpg
 <tr>
 <td>**Backend API**</td>
 <td>Laravel (PHP)</td>
-<td>`laravel/framework`, `laravel/sanctum`, `phpseclib/phpseclib 3.0.57`</td>
-<td>REST API yang sama dengan yang dipakai Filament; phpseclib 3.x diperlukan Google token verification. `google/apiclient v2.20.1` dilaporkan terpasang user, tetapi tidak tercantum di composer.json/composer.lock yang diperiksa.</td>
+<td>`laravel/framework`, `laravel/sanctum`, `phpseclib/phpseclib 3.0.57`, `pusher/pusher-php-server`</td>
+<td>REST API yang sama dengan yang dipakai Filament; phpseclib 3.x diperlukan Google token verification. `google/apiclient v2.20.1` dilaporkan terpasang user, tetapi tidak tercantum di composer.json/composer.lock yang diperiksa. `pusher/pusher-php-server` ditambahkan untuk broadcasting chat (Real-Time Chat Fase 1, 2026-10-18).</td>
 </tr>
 <tr>
 <td>**Database**</td>
@@ -293,14 +294,33 @@ Catatan: Throttle `POST /api/auth/google` — 30 permintaan/menit per IP.
 **Catatan `GOOGLE_DEV_EMAILS` (2026-10-14, diluruskan 2026-10-15):** hanya **nama variabel**; nilainya tidak ditulis di dokumen. Dibaca `AuthController` untuk melonggarkan cek **domain** bila `app()->environment('production')` bernilai false. Verifikasi token, audience, `email_verified`, blocked, dan throttle tetap berlaku. **Normalisasi daftar (trim, lowercase, buang entri kosong) ternyata sudah ada sejak awal** di `config/services.php` dan `AuthController`; sesi 2026-10-15 hanya menambah 4 test. Pembatasan ke `local`/`testing` masih ditunda — lihat Open Items §17.
 
 **Catatan Cache `photo-owner` (2026-10-15):** kepemilikan foto ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9) disimpan di Cache, **bukan** kolom/tabel DB. Key `photo-owner:{path}` → `user_id`, TTL 24 jam; `CACHE_STORE` harus `database` (bukan `array`/`file` yang hilang antar-proses) agar cek kepemilikan saat delete konsisten. Implikasi: setelah TTL lewat, foto lama tidak lagi dikenali sebagai milik user → delete mengembalikan `403` (lihat Open Items §17: usulan job pembersih foto yatim).
-### 15.3 Struktur Repository
+### 15.3 Struktur Repository & Alur Git
 Project memakai dua repository terpisah, bukan monorepo:
 
-- **Flutter mobile:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
-- **Laravel API + Filament admin:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Flutter mobile:** `C:\Project\lostfound-mobile` (Gitea: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS). Remote lokal `github` sudah dihapus 2026-10-17; origin wajib HTTPS.
+- **Laravel API + Filament admin:** `C:\Project\lostfound-backend` (Gitea: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS). Remote lokal `github` sudah dihapus 2026-10-17; origin wajib HTTPS.
 - Dokumentasi proyek disimpan di vault Obsidian, `PBL/Documents/`.
 
 Struktur direktori internal mengikuti struktur standar Flutter dan Laravel masing-masing repository.
+
+#### Alur Git: GitFlow-lite
+- **main** = stabil, hanya menerima merge dari `develop` saat milestone, lalu diberi tag versi (v0.1, v0.2, ... v1.0). Tag disamakan di kedua repo.
+- **develop** = branch integrasi; semua feature/fix dibuat dari develop.
+- **Branch sementara:** `<tipe>/<scope>/<deskripsi-kebab-case>`
+  - tipe: feature | fix | chore | docs | test | refactor
+  - scope backend: api, auth, filament, db, storage, claim, chat, notification, repo
+  - scope mobile: ui, auth, map, report, claim, chat, notification, repo
+  - contoh: `feature/filament/report-detail`, `fix/claim/accept-report-guard`
+  - scope tidak boleh jadi nama branch sendiri (bentrok ref Git)
+- **Merge:** feature/fix ke develop lewat Pull Request, squash merge.
+- **Tanpa release/* dan hotfix/***; darurat pakai `fix/<scope>/...` dari main lalu merge balik ke develop.
+- **Pesan commit:** Conventional Commits dengan scope yang sama, mis. `feat(filament): tambah halaman detail laporan`.
+- **Rollback:** `git revert` (atau `revert -m 1` untuk merge commit) atau checkout tag. Branch belum ter-merge diberi tag `archive/<nama>` sebelum dihapus. Hanya branch yang sudah ter-merge yang boleh dihapus.
+- **Pengaturan Gitea:** default branch `develop` dan proteksi `main` + `develop` (wajib PR) — keduanya **sudah dikonfirmasi user 2026-10-17**.
+- **CONTRIBUTING.md:** ada di branch `chore/gitflow-docs` **sudah di-merge ke `develop`** (backend & mobile).
+- **Status branch backend:** `fix/photo-delete-ownership` & `refactor/laravel-storage` **dihapus** (2026-10-17), karena sudah ter-merge ke `main` & `develop` (SHA ujung: `367ed2738ea5b9ba93a463e3cbb459edba87e15f` dan `8ed0348261e96bd750ce7ff6be43479823f2c6dc`).
+- **Real-Time Chat Fase 1 backend:** branch `feature/chat/realtime-api` (3 commit: `2367926`, `669466b`, `8141719`) → **merge ke `develop` via PR #4 (squash), commit develop `fb256f9`** (2026-10-18). `php artisan test` di develop: **132 lulus** (sebelumnya 108).
+- **Tag baseline:** v0.1 **sudah dibuat** di kedua repo (sinkron): backend `72c7de1` (ujung `main`), mobile `69ed4c4`.
 ### 15.4 Filament Admin — Screen & Fitur
 Filament akan digunakan untuk dashboard admin dengan fitur:
 - **Dashboard Page** — ringkasan metrik (total laporan hari ini, claim pending, chart tren 7 hari)
@@ -874,7 +894,7 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - `POST /api/auth/google` — verifikasi Google ID token, audience, email_verified, dan allowlist domain di backend; tolak blocked (403 + blocked_reason); terbitkan Sanctum token 7 hari
 - `POST /api/lost-reports` — buat laporan hilang (file upload foto + GPS data)
 - `POST /api/found-reports` — buat laporan ditemukan
-- `GET /api/lost-reports` & `GET /api/found-reports` — daftar laporan (paginasi). Sejak 2026-10-15 ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 3) index mendukung **`?mine=1`**: hanya mengembalikan laporan milik user login (`auth()->id()` dari Sanctum); format respons & pagination **sama** seperti index biasa, urutan terbaru dulu; **tanpa `mine` / `mine=0` perilaku lama tidak berubah**; kombinasi `mine=1&status=pending` bekerja; `mine=1` tanpa token → `401`.
+- `GET /api/lost-reports` & `GET /api/found-reports` — daftar laporan (paginasi). Sejak 2026-10-15 ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 3) index mendukung **`?mine=1`**: hanya mengembalikan laporan milik user login (`auth()->id()` dari Sanctum); format respons & pagination **sama** seperti index biasa, urutan terbaru dulu; **tanpa `mine` / `mine=0` perilaku lama tidak berubah**; kombinasi `mine=1&status=pending` bekerja; `mine=1` tanpa token → `401`. Sejak 2026-10-18 index juga menerima **`per_page`**: integer, **default 20**, di-clamp ke rentang **1–50**; nilai kosong/invalid → default 20 **tanpa `422`**. Semua filter **`search`** dibungkus satu grup `where()`, sehingga filter lain (`status`, `mine`) tetap berlaku. Bug `orWhere` di `SearchController` diperbaiki — sebelumnya permintaan `status=pending` masih bisa memunculkan laporan berstatus lain. Format respons tidak berubah.
 - `POST /api/claims` — ajukan claim (dengan alasan)
 - `PATCH /api/claims/{id}` — admin proses claim (terima/tolak) — perlu admin role *(verifikasi ke routes aktual; kemungkinan tidak sinkron)*
 - `GET /api/buildings` — daftar master gedung untuk marker peta + saran gedung
@@ -882,6 +902,15 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - `POST /api/photos/delete` — hapus foto; menerima URL lengkap atau path relatif, dinormalisasi, wajib berawalan `reports/` atau `claims/proof/`. Sejak 2026-10-15 ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9, Opsi C) menerapkan cek kepemilikan + rujukan: **`403`** bila foto tidak tercatat sebagai milik peminta (termasuk foto lama pra-fitur), **`409`** bila foto masih dirujuk (`lost_reports.photo_urls`, `found_reports.photo_urls`, `claims.proof_of_transfer_photo_url`), **`422`** bila domain asing/path traversal.
 - `PATCH /api/claims/{claim}/mark-transferred` — tandai barang diserahkan (admin atau penemu)
 - `GET /api/admin/*` — endpoint admin
+**Endpoint Chat (Real-Time Chat Fase 1, merge `develop` 2026-10-18)** — semua `auth:sanctum`; admin tidak berakses isi chat:
+- `POST /api/conversations` — body `claim_id` **ATAU** (`other_user_id` + tepat satu dari `lost_report_id`/`found_report_id`; `other_user_id` harus pelapor laporan itu; tidak boleh diri sendiri). Find-or-create: **201** baru, **200** sudah ada
+- `GET /api/conversations` — daftar milik user: `id`, `other_user`, `last_message`, `unread_count`, `created_at`, `updated_at`
+- `GET /api/conversations/{id}/messages` — `limit` (default 50, maks 100), `before_id` (kursor `created_at` + `id` karena id UUID tidak berurutan); urutan terbaru dulu
+- `POST /api/conversations/{id}/messages` — body `message` (required, string, maks 2000); memicu broadcast event
+- `PATCH /api/messages/{id}/read` — hanya penerima pesan
+- `POST /api/broadcasting/auth` — `auth:sanctum` Bearer token; body `socket_id` + `channel_name`. Non-peserta → **403**
+- Broadcasting: event `MessageSent` (nama siaran `"MessageSent"`), channel `private-conversation.{conversation_id}`, `implements ShouldBroadcastNow` (tanpa queue worker — chat harus instan, MVP lebih sederhana; bisa dipindah ke queue bila traffic besar). Pengirim **juga** menerima event (tanpa `toOthers`) → klien dedup via `id` pesan. Payload: `id`, `conversation_id`, `sender_id`, `message`, `read_at`, `created_at`, `updated_at`, `sender{id,name,email}` (`UserResource` — `whatsapp`, `nim`, `role`, `blocked` tidak dikirim)
+- **Hasil tes manual chat (2026-10-18, laporan user):** diuji di **1 HP dengan 2 akun berbeda**; UI Flutter (list percakapan + kirim/terima) sudah dipakai. Berhasil: **kirim/terima pesan realtime antar dua user**; belum menemukan bug. Belum diuji: dedup pengirim, mark-read, penolakan non-peserta (`403`), reconnect saat app dibuka kembali, dan tes dua perangkat fisik. Belum dikonfirmasi apakah broadcast benar-benar lewat **Pusher asli** (key/app Pusher sudah disiapkan user).
 **Point Penting yang Perlu Diingat:**
 - Auth mobile: Google SSO, domain persis `mhs.polines.ac.id`, `dsn.polines.ac.id`, `polines.ac.id` setelah lowercase + trim; subdomain ditolak. Validasi backend wajib. Role `user | admin`; NIM opsional, password nullable untuk user SSO; Sanctum token 7 hari. Admin Filament tetap memakai password.
 - GPS: pilih lokasi lewat titik (pin) di peta (`flutter_map` + OSM), saran gedung terdekat sebagai daftar (Haversine lokal Flutter), tombol "Lokasi saya" hanya menggeser peta ke posisi GPS
@@ -891,6 +920,7 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - Admin: hanya role `admin` yang bisa akses endpoint admin dan Filament dashboard; admin tidak baca isi chat
 - Filament: digunakan khusus untuk admin dashboard web, bukan replacement untuk mobile app
 - Google OAuth client Web digunakan sebagai audience ID token; client Android memerlukan SHA-1 tiap mesin developer. Jangan simpan credential di dokumen.
+- Chat (2026-10-18): env broadcasting memakai `BROADCAST_CONNECTION` (di `.env.example` default `log`; dev memakai `pusher`, cluster `ap1`) — nilai `PUSHER_*` tidak ditulis di dokumen. Chat langsung wajib menyertakan laporan (tepat satu `lost_report_id`/`found_report_id`); cabang claim `user1_id` = pelapor laporan hilang, `user2_id` = pelapor laporan temuan, **422** bila keduanya sama.
 ---
 
 ## 17. Open Items
@@ -904,3 +934,13 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - **Wajib `php artisan storage:link` di setiap setup/clone baru (2026-10-14)** — symlink `public/storage` dan isi `storage/app/public` tidak ikut Git.
 - **Job pembersih foto yatim terjadwal — KEPUTUSAN 2026-10-15: DITUNDA** — foto yatim lama (tanpa catatan owner di Cache; pra-fitur Item 9) selalu `403` saat delete oleh user dan tidak dirujuk laporan. Dampaknya hanya ruang disk, dan sejak Item 1 foto yatim baru tidak muncul lagi (rollback berjalan). Cukup dibuat plan **hanya bila penyimpanan mulai jadi masalah**; tidak ada plan sekarang.
 - **Audit rollback foto bukti serah terima (`claims/proof`) — KEPUTUSAN 2026-10-15: dikerjakan bersama [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]** — foto bukti serah terima wajib di plan tersebut, jadi alur upload-nya akan disentuh lagi; mengaudit sekarang = mengaudit dua kali.
+- **Chat — open items (USULAN, belum diputuskan, 2026-10-18):** (a) route ganda `/broadcasting/auth` (otomatis `withRouting(channels:)` + manual `Broadcast::routes` di `api.php`) — usul rapikan via `withBroadcasting(prefix: 'api', middleware: ['api','auth:sanctum'])`, prioritas low; (b) `index()` conversations N+1 query — usul optimasi eager-load; (c) endpoint mark-read massal; (d) chat read-only berdasar status claim + user terblokir masih bisa kirim pesan — usul di plan Claim Dua Arah / Fase 3; (e) FCM notifikasi pesan baru + deep link belum ada — usul Fase 3. (f) **`GET /api/search` belum punya `limit`/pagination** — usul tambahkan limit/pagination, prioritas low; (g) **`ConversationController::index` memakai `orWhere` tanpa group** — usul dibungkus satu grup `where()` (digabung dengan usulan (b) N+1 eager-load), prioritas low; (h) **dropdown "Laporan hilang kamu" di mobile hanya memuat 20 laporan pertama** (default `per_page`) — usul kirim `status=pending` (+ opsi `mine=1`/pagination), lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] item (ix). Rincian di [[Real-Time Chat - Lost&Found]].
+
+- **✅ Pagination & search laporan dibatasi + filter search diperbaiki (2026-10-18)** — branch `fix/api/report-pagination`, commit `36c32a7` ("fix(api): bound report pagination and scope search filters"), merge ke `develop` lewat PR squash. `LostReportController` & `FoundReportController`: `per_page` int default 20, clamp 1–50, nilai invalid → default (tanpa `422`); `search` dibungkus grup `where()`. `SearchController`: bug `orWhere` diperbaiki sehingga `status=pending` berlaku benar. Test baru `tests/Feature/ReportPaginationSearchTest.php` (6 test); `php artisan test`: **138 lulus** (sebelumnya 132). Tanpa kolom/tabel/dependensi baru; format respons tidak berubah.
+
+- **Chat — hasil tes manual (2026-10-18, laporan user):** chat diuji di **1 HP dengan 2 akun berbeda**; UI Flutter (list percakapan + kirim/terima) sudah dipakai; skenario **kirim/terima pesan realtime antar dua user berhasil**, belum menemukan bug. **Belum diuji:** dedup pengirim, mark-read (`PATCH /api/messages/{id}/read`), penolakan non-peserta (`403`), reconnect saat app dibuka kembali, dan tes dua perangkat. **Belum dikonfirmasi:** apakah broadcast benar-benar lewat **Pusher asli** — user sudah menyiapkan key/app Pusher tetapi belum yakin driver yang dipakai saat tes.
+
+- **Plan baru 2026-10-18 (USULAN/PLANNING, belum ada kode):**
+	- **Push Notification — [[Push Notification - Lost&Found]] (priority `high`):** melengkapi push di luar serah terima (claim diajukan, claim diterima/ditolak, chat baru + deep link, status laporan, pembekuan/kedaluwarsa claim). Daftar peristiwa ada di plan. Keputusan **Opsi A (FCM saja, tanpa tabel) vs Opsi B (tabel notifikasi ke-8, bertentangan dengan keputusan 7 tabel → perlu update [[ERD]]/`schema.dbml`/[[PRD]]/[[Design]])** masih menunggu user. Kegagalan FCM yang sekarang ditelan tanpa log diusulkan dicatat sebagai warning.
+	- **Nomor WhatsApp Pengguna — [[Nomor WhatsApp Pengguna - Lost&Found]] (priority `medium`):** tidak ada endpoint untuk **mengisi** `users.whatsapp`; yang ada hanya `PUT /users/me/wa-visibility` dan `PUT /users/me/fcm-token` (keduanya **belum terdaftar di §16**). Usul `PUT /users/me` khusus field `whatsapp` (+ normalisasi `62...`, boleh kosong) dan field di Edit Profil. **Wajib diverifikasi:** `LostReportController`/`FoundReportController` mengembalikan model mentah — cek relasi pelapor tidak membocorkan `whatsapp`/`nim`/`fcm_token`; nomor hanya boleh tampil bila `wa_visible = true` (pola di [[Security Hardening - Lost&Found]] §2, belum diterapkan).
+	- **Kartu konteks chat — usulan masuk [[Real-Time Chat - Lost&Found]] Fase 2/3 (bukan plan terpisah):** tambah field `context` (`claim {id,status}` + laporan terkait `{id,nama,foto,kode,status}`) di respons `GET /api/conversations` (**bukan skema DB**); kartu pinned di `ChatScreen`, tahap 1 read-only; tombol aksi menunggu endpoint [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]; alasan claim tidak ditampilkan.

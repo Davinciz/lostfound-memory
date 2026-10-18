@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-14
+updated: 2026-10-18
 summary: Upload foto bukti serah terima setelah admin terima claim untuk dokumentasi dan mencegah dispute
 ---
 
@@ -489,7 +489,7 @@ Oleh: Admin Kampus
 
 ## Related Files
 
-- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Project root:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Verifikasi via Chat:** [[Verifikasi via Chat - Lost&Found]]

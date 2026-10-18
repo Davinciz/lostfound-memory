@@ -2,9 +2,9 @@
 type: plan
 project: lost-found
 status: active
-priority: medium
-updated: 2026-10-13
-summary: Planning real-time chat in-app dengan Pusher (MVP) → Soketi migration path
+priority: high
+updated: 2026-10-18
+summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend merge, UI chat teruji 1 HP 2 akun; usulan kartu konteks chat
 ---
 
 # Real-Time Chat - Lost&Found
@@ -12,12 +12,20 @@ summary: Planning real-time chat in-app dengan Pusher (MVP) → Soketi migration
 **Tanggal:** 2026-09-30  
 **Project:** [[PBL]] Lost&Found  
 **Status:** Planning  
-**Priority:** Medium  
+**Priority:** High  
 
-> **Status implementasi (2026-10-12):** tabel `conversations`/`messages` sudah ada di DB; Model, API, Pusher, UI belum.
+> **Status implementasi (2026-10-18):**
+> - **Sudah ada:** tabel `conversations` & `messages` di DB; model `Conversation` & `Message` di `app/Models`. `Conversation` berelasi ke `user1`, `user2`, `claim`, `lostReport`, `foundReport` dan `hasMany` messages; `Message` berelasi ke conversation & sender.
+> - **Fase 1 backend SELESAI & merge (2026-10-18):** merge ke `develop` via PR #4 (squash), commit develop `fb256f9`; branch asal `feature/chat/realtime-api` (3 commit: `2367926`, `669466b`, `8141719`). `php artisan test` di develop: **132 lulus** (sebelumnya 108). Migration index ter-apply di DB dev. Paket baru `pusher/pusher-php-server`; factory baru `Claim`, `Conversation`, `FoundReport`, `LostReport`, `Message`. Rincian kontrak ada di §Backend API-as-built di bawah.
+> - **Tes manual 2026-10-18 (laporan user):** chat diuji di **1 HP dengan 2 akun berbeda**; UI Flutter (list percakapan + kirim/terima pesan) sudah dipakai; **kirim/terima pesan realtime antar dua user berhasil**; belum menemukan bug. Belum diuji: dedup pengirim, mark-read, penolakan non-peserta (403), reconnect saat app dibuka kembali, dan tes dua perangkat fisik.
+> - **Belum ada:** integrasi claim/FCM (Fase 3), evaluasi Pusher (Fase 4), dan kepastian broadcast lewat **Pusher asli** (key/app Pusher sudah disiapkan user, tetapi user belum yakin driver yang dipakai saat tes). Branch/commit/merge untuk UI Flutter belum dilaporkan.
 
 > [!note] Contoh kode ilustratif
 > Contoh kode di plan ini (mis. `Kernel.php`, `RouteServiceProvider`, `BROADCAST_DRIVER`) mengikuti struktur Laravel lama. Versi terpasang: **Laravel v13.32.0** dan **Filament 3.3.55**; contoh Filament harus memakai sintaks **Filament 3.x**. Verifikasi kompatibilitas via `composer.json`/`composer.lock`.
+>
+> Di Laravel 11+ nama env yang dipakai adalah **`BROADCAST_CONNECTION`** (bukan `BROADCAST_DRIVER`). **Terkonfirmasi 2026-10-18:** implementasi Fase 1 memakai `BROADCAST_CONNECTION`; `.env.example` default `log`, dev memakai `pusher`; `PUSHER_APP_CLUSTER=ap1`. Nilai key/secret tidak ditulis di dokumen ini.
+>
+> Otorisasi channel dari Flutter memakai Bearer token Sanctum, jadi endpoint `/broadcasting/auth` harus dilindungi middleware **`auth:sanctum`**.
 
 ---
 
@@ -66,6 +74,8 @@ User A (pemilik barang hilang) dan User B (penemu) bisa chat langsung dalam app 
 - Chat dengan admin (admin pakai Filament dashboard, bukan mobile)
 
 ### 2. Data Model
+
+> **Sudah ada** — tabel `conversations` & `messages` beserta model `Conversation` & `Message` sudah terpasang di DB/`app/Models` (lihat [[ERD]] / `schema.dbml`; diverifikasi user 2026-10-18). Skema di bawah adalah dokumentasi, **JANGAN diubah** di plan ini.
 
 **Tabel `conversations`:**
 ```sql
@@ -141,11 +151,13 @@ channel.bind('MessageSent', (event) {
 
 ### 1. Database Layer
 
-**Migrations:**
+> **Sudah selesai (2026-10-18):** migrasi `conversations` & `messages` dan model `Conversation`/`Message` beserta relasinya sudah ada. Yang belum: route, controller, event, channel auth, integrasi Pusher, UI Flutter.
+
+**Migrations (sudah ada):**
 - `create_conversations_table`
 - `create_messages_table`
 
-**Models:**
+**Models (sudah ada):**
 - `Conversation` — hasMany messages, belongsTo users (user1, user2), belongsTo claim/reports
 - `Message` — belongsTo conversation, belongsTo sender (User)
 
@@ -406,6 +418,23 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 
 ---
 
+## Open Items — USULAN (belum diputuskan, 2026-10-18)
+
+> Semua di bawah ini usulan, **belum diputuskan**. Tidak ada yang dikerjakan tanpa persetujuan user.
+
+1. **Route ganda `/broadcasting/auth`** — otomatis dari `withRouting(channels:)` + manual `Broadcast::routes` di `api.php`. Usul: rapikan dengan `withBroadcasting(prefix: 'api', middleware: ['api', 'auth:sanctum'])`. **Prioritas low.**
+2. **`index()` conversations N+1 query** — usul optimasi eager-load/agregat.
+3. **Endpoint mark-read massal** — sekarang satu panggilan per percakapan; usul satu endpoint massal.
+4. **Chat read-only berdasar status claim + user terblokir masih bisa kirim pesan** — usul dikerjakan di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] / Fase 3.
+5. **FCM notifikasi pesan baru + deep link** — belum ada; usul Fase 3.
+6. **`GET /api/search` belum punya `limit`/pagination** — usul tambahkan limit/pagination. **Prioritas low.**
+7. **`ConversationController::index` memakai `orWhere` tanpa group** — usul dibungkus satu grup `where()`; digabung dengan usulan (2) optimasi N+1. **Prioritas low.**
+8. **Dropdown "Laporan hilang kamu" di mobile hanya memuat 20 laporan pertama** (`GET /lost-reports` default `per_page`) — sebagian laporan hilang user tidak muncul di pilihan; usul kirim `status=pending` (+ opsi `mine=1`/pagination). **Prioritas low.** Lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] item (ix).
+9. **Tes manual lanjutan** — dedup pengirim, mark-read, penolakan non-peserta (403), reconnect saat app dibuka kembali, dan tes dua perangkat fisik (baru 1 HP 2 akun).
+10. **Kartu konteks di ruang chat** — usul menambah field `context` di respons `GET /api/conversations` dan kartu pinned di `ChatScreen` (lihat §Kartu Konteks di Ruang Chat). Bukan plan terpisah; masuk Fase 2/3 plan ini. **Belum diputuskan.**
+
+---
+
 ## Testing Strategy
 
 **Unit Test:**
@@ -421,6 +450,8 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 **Manual Test:**
 - Multi-device: User A (device 1) kirim, User B (device 2) terima real-time
 - Background/foreground: app background → message masuk → FCM notification → open app → sync message
+
+**Sudah dilakukan (2026-10-18):** 1 HP dengan 2 akun berbeda — pesan realtime antar dua user berhasil, belum ada bug. **Sisa:** dua perangkat fisik, background/foreground + FCM, dedup pengirim, mark-read, non-peserta (403).
 
 ---
 
@@ -439,21 +470,105 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 
 ## Next Steps
 
-1. ✅ Plan selesai
-2. ⬜ Setup Pusher account (free tier)
-3. ⬜ Implement backend (migrations, API, broadcasting)
-4. ⬜ Implement Flutter (Pusher SDK, chat UI)
-5. ⬜ Test multi-device real-time
-6. ⬜ Integrate dengan claim flow
-7. ⬜ Monitor Pusher usage → evaluate Soketi migration timing
+> Fase dikerjakan berurutan. Centang HANYA yang sudah terbukti selesai (commit/merge/hasil tes yang dilaporkan). Saat ini yang terbukti: plan, tabel, dan model.
+
+- [x] Plan + tabel `conversations`/`messages` + model `Conversation`/`Message` (diverifikasi user 2026-10-18).
+- [x] **Fase 0 — [Manual user] Setup Pusher:** user menyatakan **sudah menyiapkan key Pusher** (disimpan di `.env`/config lokal — nilai tidak ditulis di vault, cluster `ap1`). **Sisa:** memastikan tes benar-benar berjalan lewat **Pusher asli** (user belum yakin driver yang dipakai) dan tes dengan **dua HP** — tes 2026-10-18 hanya 1 HP dengan 2 akun.
+- [x] **Fase 1 — Backend SELESAI & merge (2026-10-18)** (branch `feature/chat/realtime-api` → merge ke `develop` via PR #4 squash, commit develop `fb256f9`; `php artisan test` di develop **132 lulus**, sebelumnya 108; migration index ter-apply di DB dev). Rincian kontrak ada di **§Backend API-as-built** di bawah.
+- [ ] **Fase 2 — Flutter** (branch `feature/chat/chat-ui`): `pusher_channels_flutter`; `ConversationListScreen`, `ChatScreen`; tab **Chats**; tombol "Chat dengan Pelapor"; reconnect + sinkron pesan saat app dibuka kembali.
+	- [x] **Teruji manual (user, 2026-10-18):** UI chat (list percakapan + kirim/terima pesan) berjalan; pesan realtime antar dua user berhasil di **1 HP, 2 akun berbeda**; belum ada bug.
+	- [ ] Belum dilaporkan: branch/commit/merge Flutter, tab **Chats**, tombol "Chat dengan Pelapor", reconnect + sinkron pesan saat app dibuka kembali.
+- [ ] **Fase 3 — Integrasi:** auto-create conversation by `claim_id` di `ClaimController::store()`; redirect ke chat setelah claim; FCM deep link → ChatScreen; banner tips verifikasi; test dua HP.
+	- [ ] **USULAN — Kartu konteks di ruang chat** (belum diputuskan): lihat §Kartu Konteks di Ruang Chat di bawah. Backend hanya menambah field `context` di respons `GET /api/conversations` (**bukan skema DB**); Flutter menampilkan kartu pinned. **Tahap 1 read-only**; tombol aksi menunggu endpoint [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
+- [ ] **Fase 4 — Evaluasi:** pantau usage Pusher free tier → tentukan timing migrasi Soketi.
+
+> [!note] Usulan alur integrasi (disetujui user 2026-10-18)
+> Auto-create conversation di `ClaimController::store()` cukup mendukung `claim_id` dulu; penyesuaian peran pengaju/penerima (claim dua arah) dikerjakan di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
+
+---
+
+## Backend API-as-built (Fase 1, merge 2026-10-18)
+
+> Fakta terkonfirmasi user. Semua endpoint **`auth:sanctum`**. Admin tidak punya akses isi chat.
+
+**Endpoint:**
+- `POST /api/conversations` — body: `claim_id` **ATAU** (`other_user_id` + tepat satu dari `lost_report_id`/`found_report_id`; `other_user_id` harus pelapor laporan itu; tidak boleh diri sendiri). Find-or-create: **201** baru, **200** sudah ada.
+- `GET /api/conversations` — daftar milik user: `id`, `other_user`, `last_message`, `unread_count`, `created_at`, `updated_at`.
+- `GET /api/conversations/{id}/messages` — `limit` (default 50, maks 100), `before_id`. Kursor = `created_at` pesan acuan + `id` pembeda (id UUID tidak berurutan). Urutan terbaru dulu.
+- `POST /api/conversations/{id}/messages` — body `message` (required, string, maks 2000); broadcast event.
+- `PATCH /api/messages/{id}/read` — hanya penerima pesan.
+- Non-peserta → **403**.
+- `POST /api/broadcasting/auth` — `auth:sanctum` Bearer token; body `socket_id` + `channel_name`.
+
+**Broadcasting:**
+- Event `MessageSent`, nama siaran `"MessageSent"`, channel `private-conversation.{conversation_id}`.
+- `implements ShouldBroadcastNow` — tanpa queue worker. Alasan: chat harus instan, MVP lebih sederhana; bisa diganti queue bila traffic besar.
+- Pengirim **juga** menerima event (tanpa `toOthers`) → klien dedup berdasarkan `id` pesan.
+- Payload: `id`, `conversation_id`, `sender_id`, `message`, `read_at`, `created_at`, `updated_at`, `sender{id,name,email}`.
+
+**Keputusan:**
+- Data user di response chat memakai **`UserResource`**: hanya `id`, `name`, `email` (`whatsapp`, `nim`, `role`, `blocked` tidak dikirim).
+- Cabang claim: `user1_id` = pelapor laporan hilang, `user2_id` = pelapor laporan temuan; **422** bila keduanya sama.
+- Chat langsung wajib menyertakan laporan (tepat satu `lost_report_id`/`found_report_id`).
+
+**Migration & dependensi:**
+- Migration baru `2026_10_18_071626_add_conversation_indexes` — partial unique index `conversations(claim_id) WHERE claim_id IS NOT NULL`; partial unique index `conversations(user1_id, user2_id) WHERE claim_id IS NULL` (pasangan user dinormalisasi min/max untuk chat langsung); index `messages(conversation_id, created_at)`. **Tidak ada kolom/tabel baru.**
+- Paket baru: `pusher/pusher-php-server`. Factory baru: `Claim`, `Conversation`, `FoundReport`, `LostReport`, `Message`.
+
+---
+
+## Kartu Konteks di Ruang Chat — USULAN (belum diputuskan, 2026-10-18)
+
+> Gaya "kartu konteks" seperti ruang chat Marketplace Facebook. **Usulan user, belum diputuskan**; belum ada kode, endpoint, atau skema yang dibuat.
+
+**Kenapa:** `GET /api/conversations` sekarang hanya mengembalikan `id`, `other_user`, `last_message`, `unread_count`, `created_at`, `updated_at`. User yang membuka chat tidak tahu ini percakapan soal barang apa dan sudah sejauh mana claim-nya.
+
+**Usulan backend (field respons, BUKAN skema DB):**
+
+Tambahkan objek `context` di respons `GET /api/conversations` (dan konsisten untuk `GET /api/conversations/{id}/messages` bila perlu):
+
+- `claim`: `{ id, status }` — `status` salah satu `pending | accepted | returned | rejected | withdrawn`
+- `laporan terkait`: `{ id, nama barang, foto, kode, status }` — kode `LST-YYMMDD-XXXX` / `FND-YYMMDD-XXXX`, `status` salah satu `pending | claimed | returned | closed`
+
+Tidak ada kolom/tabel baru; cukup eager-load relasi yang sudah ada (`claim`, `lostReport`, `foundReport`). Ini juga menghapus sebagian kebutuhan N+1 (open item 2).
+
+**Usulan Flutter:**
+
+- Kartu **pinned** di atas daftar pesan `ChatScreen`: foto kecil, nama barang, kode, badge status claim; tap → layar detail laporan/claim yang sudah ada.
+- Menimpa/memperluas "kartu mini barang terkait" di [[Design]] §5.15.
+
+**Batasan yang disepakati (untuk ditulis sebagai usulan):**
+
+- **Tahap 1 read-only** — kartu hanya menampilkan informasi; tahap 1 bisa masuk Fase 2 begitu `ChatScreen` stabil.
+- Tombol aksi (**"Barang Sudah Diserahkan"**, **"Batalkan Claim"**) **menunggu endpoint** di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] (Fase 3) — jangan dikerjakan di sini.
+- **Jangan tampilkan `reason`/alasan claim** di kartu (isi chat dianggap area privat antara dua pihak; admin pun tidak membacanya).
+
+**Belum diputuskan:** bentuk final payload `context`, siapa yang boleh melihat kartu (kedua pihak? penemu saja?), perilaku kartu saat claim `rejected`/`withdrawn`/dibekukan ([[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §3).
+
+---
+
+## Konvensi Git untuk Pengerjaan
+
+Merujuk [[TechnicalReference]] §15.3:
+
+- Mulai dari branch `develop` (bukan `main`).
+- Scope commit: `chat`.
+- Format commit: `feat(chat): ...` (perubahan backend & Flutter).
+- Merge ke `develop` lewat **PR squash**; branch fitur dihapus setelah merge.
+- Repo wajib di Gitea kampus (HTTPS, Private) — lihat [[Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found]].
 
 ---
 
 ## Related Files
 
-- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Project root:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
+- **Flutter mobile:** `C:\Project\lostfound-mobile` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS)
 - **PRD:** [[PRD]]
-- **Technical Reference:** [[TechnicalReference]]
+- **Technical Reference:** [[TechnicalReference]] — §15.3
+- **Claim Dua Arah:** [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] (dependency)
+- **Push Notification:** [[Push Notification - Lost&Found]] (FCM pesan baru + deep link)
+- **Nomor WhatsApp Pengguna:** [[Nomor WhatsApp Pengguna - Lost&Found]]
+- **Verifikasi via Chat:** [[Verifikasi via Chat - Lost&Found]]
 - **Master Buildings Plan:** [[Master Buildings + Auto Location - Lost&Found]]
 
 ---

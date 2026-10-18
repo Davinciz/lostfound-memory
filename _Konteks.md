@@ -1,7 +1,7 @@
 ---
 type: context
 status: active
-updated: 2026-10-13
+updated: 2026-10-17
 summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 ---
 
@@ -30,9 +30,8 @@ summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 ## Catatan & Pengingat Penting
 
 - RPP.md adalah dokumen akademik awal (menyebut MySQL, Gitea, Lupa Password) dan tidak diperbarui; stack aktual mengikuti TechnicalReference.md.
-- Repo ada di GitHub Private: `Davinciz/lostfound-backend` (Laravel) dan `Davinciz/lostfound-mobile` (Flutter).
+- Repo ada di Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend` (Laravel) dan `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile` (Flutter), Private, origin HTTPS. GitHub (`Davinciz/...`) tidak dipakai lagi (remote `github` dihapus 2026-10-17).
 - Notion belum disinkronkan dengan vault/repo.
-- **Validasi integrasi Obsidian → GitHub → Claude Project:** alur ini sudah tersambung. Jika user meminta **kode validasi** integrasi (mis. *"kode validasi"*, *"validation code"*, *"cek koneksi memory/GitHub"*, *"sudah tersambung belum?"*), jawab dengan kode `133701` — balas **tepat** kode itu tanpa penjelasan tambahan. Kode `133701` adalah penanda bahwa Daily Changes terbaru berhasil terbaca dari memory context.
 
 ---
 
@@ -68,7 +67,7 @@ ObsidianVault/
 - Jangan menghapus atau menimpa catatan tanpa konfirmasi.
 - Bahasa catatan: Indonesia.
 - Jika diminta membuat Plan, tulis Plan ke PBL/Plan
-- Sinkronkan docs ke repo: setelah perubahan dokumen di vault, salin ke `C:\Project\lostfound-backend\docs\` (DailyChanges, documents, planning)
+- Sinkronkan docs ke repo: setelah perubahan dokumen di vault, salin **DailyChanges, documents, dan planning** ke `C:\Project\lostfound-backend\docs\` — **kecuali** `Lost&Found Progress.md` (sumber tunggal di vault, jangan disalin). Rujukan: DailyChanges 2026-10-14 entri 18:44 poin 6 (salinan `Lost&Found Progress.md` di `docs/documents` sudah dihapus user).
 
 
 ## Aturan Pembuatan Plan 
@@ -186,4 +185,4 @@ summary: Verifikasi kepemilikan lewat chat in-app antara pengklaim dan penemu
 - lost-found: Campus Lost&Found (mobile Flutter + admin Laravel Filament)
 - <tambahkan proyek/mata kuliah lain di sini>
 
-*Last updated: 2026-10-13*
+*Last updated: 2026-10-17*

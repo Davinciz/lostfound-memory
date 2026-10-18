@@ -2,8 +2,8 @@
 type: design
 project: lost-found
 status: active
-updated: 2026-10-13
-summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO dan profil NIM opsional.
+updated: 2026-10-18
+summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; catatan plan WhatsApp, push notification, dan backlog UI redesign.
 ---
 
 # Campus Lost & Found (CLF) — Design Specification
@@ -120,8 +120,8 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 | **GPS & Gedung Kampus** | Lokasi dipilih lewat titik (pin) di peta (`flutter_map` + OpenStreetMap). Peta terbuka di tengah kampus tanpa pin; user menaruh pin di lokasi kehilangan/penemuan. Tombol "Lokasi saya" hanya menggeser peta ke posisi GPS, tidak menetapkan lokasi. Marker gedung dari `GET /api/buildings` tampil di peta; tap marker memilih gedung. Setelah pin ditaruh, muncul daftar saran gedung: maksimal 3 terdekat dalam radius ~75 m, urut jarak, tiap item menampilkan nama gedung dan jarak. User mengklik untuk memilih; tidak ada pilihan otomatis. Detail lokasi opsional. |
 | **Claim & Verifikasi via Chat** | Pemilik wajib membuat laporan hilang dulu, lalu mengajukan claim ke laporan temuan. Ruang chat dengan penemu terbuka otomatis; penemu memverifikasi kepemilikan lewat chat. Admin hanya menyetujui/menolak claim (admin tidak membaca isi chat). |
 | **Chat In-App** | Chat real-time antara pemilik dan penemu, dibuka otomatis saat claim diajukan atau lewat tombol "Chat dengan Pelapor" di detail laporan. |
-| **WhatsApp** | Tombol "Hubungi via WhatsApp" hanya muncul jika pelapor mengizinkan nomornya ditampilkan (default: disembunyikan). |
-| **Push Notification** | Notifikasi FCM: claim diajukan, claim diproses (diterima/ditolak), barang sudah diserahkan, pesan chat baru, update pada laporan milik user. Badge counter angka di ikon lonceng. Tap notifikasi → deep link ke detail laporan/claim/chat. |
+| **WhatsApp** | Tombol "Hubungi via WhatsApp" hanya muncul jika pelapor mengisi nomor **dan** mengizinkan nomornya ditampilkan (default: disembunyikan). **Bergantung pada plan [[Nomor WhatsApp Pengguna - Lost&Found]]** — saat ini belum ada cara user mengisi nomor. |
+| **Push Notification** | Notifikasi FCM: claim diajukan, claim diproses (diterima/ditolak), barang sudah diserahkan, pesan chat baru, update pada laporan milik user. Badge counter angka di ikon lonceng. Tap notifikasi → deep link ke detail laporan/claim/chat. **Daftar peristiwa + keputusan badge/daftar notifikasi ada di [[Push Notification - Lost&Found]] (opsi A/B belum diputuskan).** |
 
 ---
 
@@ -171,6 +171,10 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan layar pencarian mobile app, search bar besar di atas dengan auto-focus, di bawahnya chip "Pencarian Terakhir" (3-4 chip abu-abu), tombol filter di kanan search bar membuka bottom sheet berisi: jenis (Hilang/Ditemukan), kategori (chip multi-select, aktif bg kuning muda teks hitam), status (radio button), dropdown gedung, date range picker, tombol "Terapkan Filter" hitam penuh dan "Reset" outline hitam. Hasil pencarian tampil sebagai list card sama seperti home feed. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.8 Form Lapor Barang (Hilang/Ditemukan)
+
+> [!info] Sesuai kenyataan
+> Pin draggable **sudah berfungsi** (klarifikasi user 2026-10-18: "pin sudah bisa digeser, tidak ada masalah"). E-4 di [[Backlog UI Redesign - Lost&Found]] ditutup. Saran gedung (maks 3, radius ~75 m, dipilih user, tidak otomatis) juga sudah berjalan.
+
 **Elemen:**
 - Header: back + judul "Lapor Barang".
 - Toggle 2 opsi: "Hilang" | "Ditemukan" (aktif = bg hitam, teks putih).
@@ -193,7 +197,7 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 - Section "Dilaporkan oleh" (nama/inisial, bukan kontak langsung).
 - Riwayat status timeline vertikal sederhana.
 - Tombol "Chat dengan Pelapor" (outline, ikon chat) — selalu tersedia selama status masih aktif.
-- Tombol "Hubungi via WhatsApp" (outline, ikon WA) — **hanya tampil jika pelapor mengaktifkan tampilan nomor WhatsApp**.
+- Tombol "Hubungi via WhatsApp" (outline, ikon WA) — **hanya tampil jika pelapor sudah mengisi nomor dan mengaktifkan tampilan nomor WhatsApp**. Syarat "sudah mengisi nomor" baru bisa dipenuhi setelah [[Nomor WhatsApp Pengguna - Lost&Found]] dikerjakan; saat ini tombolnya masih stub ([[Backlog Perbaikan Lanjutan - Lost&Found]] open item x).
 - Tombol "Ajukan Claim" hitam penuh sticky bawah (hanya pada laporan **ditemukan** yang statusnya masih Pending; jika sudah Claimed/Returned, tombol diganti label status non-aktif). Jika user belum punya laporan hilang, menekan tombol ini menampilkan dialog "Buat laporan hilang dulu" yang mengarah ke form Lapor Barang.
 
 **Stitch prompt:** Buatkan layar detail barang mobile app. Galeri foto carousel di atas dengan dot indicator, badge status oranye "Pending" menempel di pojok foto, judul nama barang bold 20px di bawah foto dengan kode laporan kecil abu-abu, info lokasi (nama gedung) dan waktu dengan ikon pin abu-abu, section deskripsi paragraf, peta kecil dengan pin lokasi, dan riwayat status berbentuk timeline vertikal sederhana. Di bawah layar: tombol "Ajukan claim" hitam penuh (teks putih), di atasnya dua tombol outline berdampingan "Chat dengan Pelapor" dan "WhatsApp". Font Plus Jakarta Sans, palet hitam-kuning.
@@ -234,11 +238,21 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan layar daftar chat mobile app. Judul "Chat" di atas. List percakapan: avatar bulat inisial (gradasi hitam ke kuning) kiri, nama lawan bicara bold, preview pesan terakhir 1 baris abu-abu, label kecil nama barang terkait, waktu di kanan atas, badge bulat kuning dengan angka untuk pesan belum dibaca. Bottom navigation dengan tab Chat aktif. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.15 Ruang Chat
-**Elemen:** header (back, avatar + nama lawan bicara, kartu mini barang terkait yang bisa di-tap → detail barang), banner tips di atas pesan untuk **penemu** pada chat terkait claim ("Tanyakan ciri yang tidak terlihat di foto dan jangan sebut ciri barangnya lebih dulu"; bisa ditutup), daftar pesan (terbaru di bawah, pemisah tanggal), input pesan + tombol kirim (kuning/hitam), indikator "mengirim…"/gagal kirim dengan opsi coba lagi.
 
-**Stitch prompt:** Buatkan layar ruang chat mobile app. Header: tombol back, avatar inisial, nama lawan bicara, dan di bawahnya kartu mini barang terkait (foto kecil + nama barang). Banner kecil berlatar kuning muda berisi tips verifikasi untuk penemu dengan tombol tutup. Area pesan: bubble pesan sendiri di kanan berlatar hitam teks putih, bubble lawan bicara di kiri berlatar putih dengan border tipis, waktu kecil di bawah tiap bubble, pemisah tanggal "Hari Ini". Bawah: input teks bulat dengan tombol kirim bulat berwarna kuning dan ikon hitam. Font Plus Jakarta Sans, palet hitam-kuning.
+> [!warning] Akan berubah
+> Kartu konteks di bawah spesifikasi "kartu mini barang terkait" — usulan di [[Real-Time Chat - Lost&Found]] §Kartu Konteks di Ruang Chat (belum diputuskan). Tahap 1 read-only; tombol aksi menunggu endpoint plan [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
+
+**Elemen:** header (back, avatar + nama lawan bicara), **kartu konteks barang terkait (pinned, bukan hanya kartu mini)**: foto, nama barang, kode laporan, badge status claim — tap → detail barang/claim terkait; banner tips di atas pesan untuk **penemu** pada chat terkait claim ("Tanyakan ciri yang tidak terlihat di foto dan jangan sebut ciri barangnya lebih dulu"; bisa ditutup), daftar pesan (terbaru di bawah, pemisah tanggal), input pesan + tombol kirim (kuning/hitam), indikator "mengirim…"/gagal kirim dengan opsi coba lagi.
+
+**Stitch prompt:** Buatkan layar ruang chat mobile app. Header: tombol back, avatar inisial, nama lawan bicara, dan di bawahnya kartu konteks barang terkait yang menempel di atas daftar pesan (foto kecil + nama barang + kode laporan + badge status), bisa di-tap. Banner kecil berlatar kuning muda berisi tips verifikasi untuk penemu dengan tombol tutup. Area pesan: bubble pesan sendiri di kanan berlatar hitam teks putih, bubble lawan bicara di kiri berlatar putih dengan border tipis, waktu kecil di bawah tiap bubble, pemisah tanggal "Hari Ini". Bawah: input teks bulat dengan tombol kirim bulat berwarna kuning dan ikon hitam. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.16 Notifikasi
+
+> [!warning] Akan berubah
+> Apakah layar ini berisi daftar notifikasi (dengan riwayat + badge angka) atau hanya empty state **bergantung keputusan Opsi A/B** di [[Push Notification - Lost&Found]] — opsi A (FCM saja, tanpa tabel) berarti layar ini disembunyikan/di-empty-state dan ikon lonceng tanpa badge.
+>
+> Status implementasi (2026-10-18): layar ini **belum dikerjakan** dan masuk daftar prasyarat **F-4** di [[Backlog UI Redesign - Lost&Found]] (butuh keputusan Opsi A/B lebih dulu). Ikon lonceng di header Beranda saat ini belum punya sumber data notifikasi.
+
 **Elemen:** judul "Notifikasi" + "Tandai semua dibaca", list notifikasi (ikon jenis, judul, deskripsi 1 baris, waktu relatif, titik kuning jika belum dibaca), grouping "Hari Ini/Kemarin/Lebih Awal", empty state. Jenis: claim baru, claim diterima/ditolak, barang diserahkan, pesan chat baru, update laporan. Diakses lewat ikon lonceng di header Beranda.
 
 **Stitch prompt:** Buatkan layar notifikasi mobile app, header dengan tombol back, judul "Notifikasi" dan tombol kecil "Tandai semua dibaca" di kanan. List notifikasi dikelompokkan dengan label section "Hari Ini" dan "Kemarin". Tiap item: ikon bulat kecil (bg kuning muda, ikon hitam) kiri, judul bold 14px dan deskripsi 1 baris abu-abu, waktu relatif kanan atas, dot kuning kecil di kiri item yang belum dibaca. Font Plus Jakarta Sans, palet hitam-kuning.
@@ -249,14 +263,29 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan layar profil mobile app. Avatar bulat besar di tengah atas (background gradasi hitam ke kuning, inisial putih), nama lengkap bold di bawahnya, email abu-abu kecil, NIM hanya jika tersedia. Tombol outline "Edit Profil" di bawah. List menu vertikal dengan ikon kiri, label tengah, chevron kanan untuk tiap item (Laporan Saya, Claim Saya, Pengaturan, Bantuan, Tentang Aplikasi). Tombol "Keluar" teks merah di paling bawah tanpa background. Bottom navigation dengan tab Profil aktif. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.18 Edit Profil
-**Elemen:** back + judul, avatar dengan tombol ubah foto, input Nama Lengkap, NIM hanya-baca (sembunyikan bila kosong), No. WhatsApp, toggle "Tampilkan nomor WhatsApp ke pengguna lain" (default mati, dengan keterangan privasi), Email (hanya-baca, terikat Google SSO), tombol "Simpan Perubahan" hitam penuh.
+
+> [!warning] Akan berubah
+> Field "No. WhatsApp" belum punya jalur penyimpanan di backend — spesifikasinya bergantung pada plan [[Nomor WhatsApp Pengguna - Lost&Found]] (usul `PUT /users/me` untuk field `whatsapp`; nama & email tetap read-only karena Google SSO).
+>
+> Status implementasi (2026-10-18): **belum pasti.** Klarifikasi user: WhatsApp "sepertinya belum masuk implementasi / masih plan", tetapi ada laporan toggle "Tampilkan nomor WhatsApp ke pengguna lain" menampilkan **nilai stale** — dicatat sebagai **E-1 (tinggi)** di [[Backlog UI Redesign - Lost&Found]] dan masuk daftar "perlu verifikasi kode". Perbaikan apa pun tidak boleh menambah dependensi ke plan Nomor WhatsApp (endpoint pengisian nomor tetap belum ada).
+
+**Elemen:** back + judul, avatar dengan tombol ubah foto, input Nama Lengkap, NIM hanya-baca (sembunyikan bila kosong), No. WhatsApp (bisa diisi; format `62...`, normalisasi otomatis, boleh dikosongkan), toggle "Tampilkan nomor WhatsApp ke pengguna lain" (**default mati; aktif hanya bila nomor terisi**; bila nomor kosong toggle non-aktif dan nilainya dipaksa mati, dengan keterangan privasi), Email (hanya-baca, terikat Google SSO), tombol "Simpan Perubahan" hitam penuh.
 
 **Stitch prompt:** Buatkan layar edit profil mobile app, avatar bulat di atas dengan ikon kamera kecil overlay di pojok kanan bawah avatar (bg kuning, ikon hitam) untuk ganti foto, field Nama Lengkap/NIM hanya-baca (sembunyikan bila kosong)/No. WhatsApp tersusun vertikal, di bawahnya toggle switch hitam "Tampilkan nomor WhatsApp ke pengguna lain" dengan teks bantuan abu-abu, field Email (hanya-baca, terikat Google SSO) berstatus disabled (abu-abu), tombol "Simpan Perubahan" hitam penuh di bawah. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.19 Pengaturan (Settings)
+
+> [!warning] Akan berubah
+> Status implementasi (2026-10-18), perbaikan terkait di [[Backlog UI Redesign - Lost&Found]]:
+> - **Toggle "Notifikasi push" disembunyikan** sampai push benar-benar bisa dimatikan (**E-1**, tinggi) — lihat [[Push Notification - Lost&Found]]. Catatan: push **belum pernah diuji langsung** di HP (klarifikasi user 2026-10-18).
+> - Toggle "Tampilkan nomor WhatsApp" dilaporkan **nilai stale** (**E-1**), tetapi keberadaannya di app belum diverifikasi (user: WA belum masuk implementasi). Posisinya (tetap di sini atau hanya di Edit Profil §5.18) masih **belum diputuskan** ([[Nomor WhatsApp Pengguna - Lost&Found]]).
+> - **Versi aplikasi** masih hardcode `1.0.0`; usul memakai `package_info_plus` **menunggu persetujuan user** (dependensi baru).
+> - **Kebijakan privasi & Syarat & ketentuan** masih teks hasil agent — **wajib review manusia** sebelum dipakai.
+> - Bundel font Plus Jakarta Sans (§2.2) belum diterapkan di app — **E-5**, sedang.
+
 **Elemen:**
 - Grup "Tampilan": Tema aplikasi (Sistem/Terang/Gelap).
-- Grup "Notifikasi & Privasi": Notifikasi push (toggle), Izin lokasi (toggle), Tampilkan nomor WhatsApp (toggle, default mati).
+- Grup "Notifikasi & Privasi": Notifikasi push (toggle — **ditunda** sampai push benar-benar bisa dimatikan, lihat [[Push Notification - Lost&Found]]), Izin lokasi (toggle), Tampilkan nomor WhatsApp (toggle, default mati; statusnya perlu diputuskan apakah tetap di sini atau hanya di Edit Profil — lihat [[Nomor WhatsApp Pengguna - Lost&Found]]).
 - Grup "Lainnya": Kebijakan privasi, Syarat & ketentuan, Versi aplikasi.
 
 **Stitch prompt:** Buatkan layar pengaturan mobile app dengan grup-grup section: grup "Tampilan" (tema aplikasi dengan value+chevron kanan), grup "Notifikasi & privasi" (notifikasi push, izin lokasi, tampilkan nomor WhatsApp — masing-masing dengan toggle switch hitam), grup "Lainnya" (kebijakan privasi, syarat & ketentuan, versi aplikasi). Tiap grup berupa card putih dengan radius 12px di atas background abu muda. Font Plus Jakarta Sans, palet hitam-kuning.
@@ -341,7 +370,7 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 - Penyimpanan foto: Laravel Storage (disk public)
 - Push notification: FCM (`firebase_messaging` + `kreait/laravel-firebase`)
 - Chat real-time: Pusher (MVP) → Soketi
-- Repository: GitHub (Private). Issue/Milestone Gitea tidak ikut dimigrasi; monitoring: belum ditentukan.
+- Repository: Gitea kampus (Private): `git.informatikapolines.id/Daniel_Geovani/lostfound-backend` dan `lostfound-mobile` (HTTPS). Issue/Milestone Gitea: digunakan. Monitoring: belum ditentukan.
 
 ---
 *Dokumen ini siap dipakai sebagai brief untuk generate di Google Stitch. Generate satu layar (atau beberapa layar sejenis) per prompt, pakai teks "Stitch prompt" di tiap section secara langsung, supaya hasilnya tidak terpotong dan konsisten antar layar.*

@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-14
+updated: 2026-10-18
 summary: Verifikasi kepemilikan via real-time chat in-app, bukan pertanyaan keamanan
 ---
 
@@ -321,15 +321,16 @@ TextEntry::make('conversation.messages_count')
 3. ✅ Update backend: validasi `lost_report_id` + cek kepemilikan (403) — tercatat selesai di DailyChanges 2026-10-06
 4. ✅ Dropdown "Pilih Laporan Hilang Anda" di ClaimScreen — tercatat selesai di DailyChanges 2026-10-06
 5. ✅ Metadata chat di admin (ClaimResource, 2026-10-06; tidak membaca isi chat)
-6. ⬜ Banner tips + auto-create conversation + redirect ke chat (menunggu Real-Time Chat)
-7. ⬜ Test end-to-end: claim → chat → admin approve → serah terima
+6. ⬜ Banner tips + auto-create conversation + redirect ke chat — **backend auto-create tersedia** (Real-Time Chat Fase 1, merge `develop` 2026-10-18: `POST /api/conversations` find-or-create); sisa banner tips & redirect butuh UI Flutter (Fase 2)
+7. ⬜ Test end-to-end: claim → chat → admin approve → serah terima (butuh Fase 2 UI + Fase 3 integrasi claim)
 8. ⬜ Monitor fraud rate (compare dengan baseline)
 
 ---
 
 ## Related Files
 
-- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
+- **Project root:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
+- **Flutter mobile:** `C:\Project\lostfound-mobile` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]]
 - **Real-Time Chat Plan:** [[Real-Time Chat - Lost&Found]]

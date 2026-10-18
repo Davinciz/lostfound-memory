@@ -1,5 +1,5 @@
 // Lost & Found Database Schema
-// updated: 2026-10-14 (kolom baru claims: accepted_at, closed_reason, closed_by — disetujui, belum migration)
+// updated: 2026-10-18 (index chat partial unique + composite, migration 2026_10_18_071626; kolom baru claims: accepted_at, closed_reason, closed_by — disetujui, belum migration)
 // Skema PostgreSQL; struktur Google SSO diterapkan 2026-10-10 (user melaporkan migration selesai).
 // Catatan: photo_urls (lost/found_reports) & proof_of_transfer_photo_url (claims) menyimpan PATH RELATIF (mis. reports/uuid.jpg); URL lengkap dibangun di response API dari APP_URL.
 // Docs: https://dbml.dbdiagram.io/docs
@@ -137,6 +137,11 @@ Table conversations {
     user1_id
     user2_id
   }
+  // Partial unique index (DBML belum mendukung partial index native; dicatat di sini):
+  //   UNIQUE (claim_id) WHERE claim_id IS NOT NULL      -- satu chat per claim
+  //   UNIQUE (user1_id, user2_id) WHERE claim_id IS NULL -- satu chat langsung per pasangan user
+  //   Pasangan user dinormalisasi min/max saat pembuatan chat langsung.
+  // Migration: 2026_10_18_071626_add_conversation_indexes (2026-10-18)
 }
 
 Table messages {
@@ -153,6 +158,8 @@ Table messages {
     sender_id
     created_at
   }
+  // Composite index (2026-10-18): (conversation_id, created_at) untuk query urutan pesan.
+  // Migration: 2026_10_18_071626_add_conversation_indexes
 }
 
 // Relationships (semua sudah terverifikasi ada di database)

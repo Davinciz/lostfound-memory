@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-15
+updated: 2026-10-18
 summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari
 ---
 
@@ -622,7 +622,7 @@ $table->index('accepted_at'); // untuk query expire
 ## Ketergantungan
 
 **Bergantung pada:**
-- [[Real-Time Chat - Lost&Found]] — conversation auto-create, chat UI, banner tips
+- [[Real-Time Chat - Lost&Found]] — conversation auto-create, chat UI, banner tips. **Fase 1 backend tersedia** (endpoint `/api/conversations` + broadcast `MessageSent`, merge `develop` 2026-10-18); Fase 2 UI Flutter & Fase 3 (read-only per status claim) masih terbuka.
 - [[Foto Bukti Transfer - Lost&Found]] — upload foto saat serah terima (sudah partial done, lihat status 2026-10-13)
 - [[Verifikasi via Chat - Lost&Found]] — flow verifikasi kepemilikan via chat (sudah partial done)
 
@@ -638,8 +638,8 @@ $table->index('accepted_at'); // untuk query expire
 > **Status:** Keputusan user 2026-10-14 sudah dimasukkan ke plan. Skema disetujui. Open items 1, 2, 4 tertutup. Item 3 ditunda.
 
 1. ✅ Open items tertutup (1: foto wajib, 2: penerima yang konfirmasi, 4: skema disetujui)
-2. ⬜ Implementasi Real-Time Chat selesai (dependency)
-3. ⬜ Backend Phase 1 (migration + endpoint + policy + scheduler)
+2. ⬜ Implementasi Real-Time Chat (dependency) — **Fase 1 backend SELESAI** (merge `develop` 2026-10-18, PR #4 `fb256f9`, 132 tes lulus); sisa Fase 0/2/3/4
+3. ⬜ Backend Phase 1 (migration + endpoint + policy + scheduler) — sebagian bergantung pada Fase 3 chat (read-only per status claim, lihat Open Item (d) di [[Real-Time Chat - Lost&Found]])
 4. ⬜ Flutter Phase 2 (tombol verifikasi + serah terima + batalkan)
 5. ⬜ Filament Phase 3 (detail view + aksi override)
 6. ⬜ Test Phase 4 (unit + feature + integration + manual)
@@ -709,8 +709,8 @@ Lihat bagian "Perubahan Skema (Disetujui User 2026-10-14)" untuk detail migratio
 
 ## Related Files
 
-- **Project root:** `C:\Project\lostfound-backend` (GitHub: `Davinciz/lostfound-backend`, Private)
-- **Flutter mobile:** `C:\Project\lostfound-mobile` (GitHub: `Davinciz/lostfound-mobile`, Private)
+- **Project root:** `C:\Project\lostfound-backend` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-backend`, Private, HTTPS)
+- **Flutter mobile:** `C:\Project\lostfound-mobile` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS)
 - **PRD:** [[PRD]] — §3.D, §3.I, §4.2
 - **Technical Reference:** [[TechnicalReference]] — §12, §15.8
 - **Design:** [[Design]] — §6.5, §6.6
