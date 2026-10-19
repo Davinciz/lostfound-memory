@@ -138,6 +138,8 @@ Ditulis untuk **Backlog Item 5 (Riwayat Laporan Saya di Tab Profil)**, selesai 2
 
 > [!warning] Akan berubah
 > Peran admin berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: dari gerbang wajib menjadi pemantau & penengah. Penemu verifikasi lewat tombol "Cocok" di chat, user sendiri yang serah terima dengan foto bukti.
+>
+> **Revisi 2026-10-19 (disetujui, belum diimplementasi):** claim tidak lagi wajib punya laporan sendiri; detail claim admin harus tahan `lost_report_id`/`found_report_id` NULL.
 
 - **Overview:** kartu metrik, tabel laporan terbaru, tabel claim pending
 - **Laporan Admin:** filter status/kategori/tanggal/lokasi; kolom ID, pembuat, judul, kategori, lokasi, tanggal, status, aksi
@@ -618,7 +620,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <tr>
 <td>`lost_report_id`</td>
 <td>UUID (FK → lost_[reports.id](http://reports.id))</td>
-<td>Laporan barang hilang yang diklaim (NOT NULL, claimant wajib punya laporan hilang)</td>
+<td>Laporan barang hilang yang diklaim (NOT NULL; claimant wajib punya laporan hilang). **Rencana 2026-10-19 (belum ada migration): nullable** — claim langsung ke laporan target, laporan sendiri opsional.</td>
 </tr>
 <tr>
 <td>`found_report_id`</td>

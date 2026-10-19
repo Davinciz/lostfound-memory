@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-18
+updated: 2026-10-19
 summary: Verifikasi kepemilikan via real-time chat in-app, bukan pertanyaan keamanan
 ---
 
@@ -217,8 +217,12 @@ $this->notifyFinder($claim);
 **Migration:** Hapus kolom verifikasi (nanti dikerjakan Coding Agent, cukup catat di DailyChanges).
 
 ### 2. Flutter UI
+
+> [!warning] Akan berubah (revisi 2026-10-19, disetujui, belum diimplementasi)
+> Dropdown "Pilih Laporan Hilang Anda" **tidak wajib** lagi. Claim diajukan langsung ke laporan target; laporan milik sendiri opsional. Validasi `lost_report_id` di `ClaimController::store()` dihapus/dilonggarkan menjadi opsional (bila dikirim, harus milik pengaju). Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19.
+
 **ClaimFormScreen:**
-- Tambah dropdown "Pilih Laporan Hilang Anda":
+- Dropdown "Tautkan Laporan Hilang Anda (opsional)":
 ```dart
 DropdownButtonFormField<String>(
   items: myLostReports.map((r) => DropdownMenuItem(
@@ -226,7 +230,7 @@ DropdownButtonFormField<String>(
     child: Text('${r.title} (${r.lostDate})'),
   )).toList(),
   onChanged: (value) => setState(() => selectedLostReportId = value),
-  validator: (value) => value == null ? 'Pilih laporan hilang' : null,
+  // opsional: tanpa validator wajib (revisi 2026-10-19)
 )
 ```
 

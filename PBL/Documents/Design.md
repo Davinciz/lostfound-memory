@@ -324,6 +324,8 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 > [!warning] Akan berubah
 > Tabel berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: tambah kolom accepted_at, closed_reason, filter claim kedaluwarsa.
+>
+> **Revisi 2026-10-19 (disetujui, belum diimplementasi):** claim tidak lagi wajib punya laporan sendiri — kolom laporan asal pengklaim bisa NULL. Detail claim harus tahan sisi laporan kosong.
 
 **Elemen:** search + filter status claim; tabel kolom Foto Barang/Nama Barang/Nama Pengklaim/Tanggal Pengajuan/Status/Aksi (Lihat Detail, Terima, Tolak).
 
@@ -333,6 +335,8 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 > [!warning] Akan berubah
 > Aksi berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: tombol Terima jadi override (bukan jalur utama), tambah aksi Cabut Claim.
+>
+> **Revisi 2026-10-19 (disetujui, belum diimplementasi):** panel kiri/kanan (laporan hilang & temuan) boleh kosong bila pengaju tidak menautkan laporan sendiri; tampilkan "—" atau "Tidak ditautkan".
 
 **Elemen:** dua panel berdampingan untuk perbandingan: kiri = laporan temuan (foto, deskripsi, gedung, tanggal, penemu); kanan = laporan hilang milik pengklaim (foto, deskripsi, gedung, tanggal) + data pengklaim (nama, email, NIM) dan alasan claim. Tombol: Terima Claim (hijau), Tolak Claim (merah, wajib catatan admin). Setelah claim diterima: tombol "Serahkan Barang" dengan upload foto bukti serah terima; setelah selesai tampil foto bukti, waktu serah terima, dan nama petugas. Admin tidak melihat isi chat.
 

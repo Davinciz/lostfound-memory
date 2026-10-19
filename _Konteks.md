@@ -46,6 +46,7 @@ ObsidianVault/
 	├── Documents/          # Dokumentasi Project 
 	├── DailyChanges/       # Log harian (YYYY-MM-DD.md)
 	└── Plan/               # Planning & proposal fitur
+		└── Archive/           # Plan berstatus done yang sudah diarsipkan
 
 ## Arti Tiap Type
 
@@ -67,6 +68,7 @@ ObsidianVault/
 - Jangan menghapus atau menimpa catatan tanpa konfirmasi.
 - Bahasa catatan: Indonesia.
 - Jika diminta membuat Plan, tulis Plan ke PBL/Plan
+- Plan berstatus `done` dipindah ke `PBL/Plan/Archive/` **setelah konfirmasi user**; plan baru tetap dibuat di `PBL/Plan/`. Wikilink berbasis nama file tetap aman setelah dipindah.
 - Sinkronkan docs ke repo: setelah perubahan dokumen di vault, salin **DailyChanges, documents, dan planning** ke `C:\Project\lostfound-backend\docs\` — **kecuali** `Lost&Found Progress.md` (sumber tunggal di vault, jangan disalin). Rujukan: DailyChanges 2026-10-14 entri 18:44 poin 6 (salinan `Lost&Found Progress.md` di `docs/documents` sudah dihapus user).
 
 

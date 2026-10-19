@@ -15,7 +15,7 @@ kanban-plugin: board
 	Perlu verifikasi: apakah toggle/field WhatsApp sudah ada di kode (klarifikasi user: WA belum masuk implementasi).
 - [ ] 📝 **Belum diputuskan:** review manusia Kebijakan Privasi/S&K; persetujuan dependensi `package_info_plus` untuk versi aplikasi (saat ini hardcode `1.0.0`)
 - [ ] 🧭 **Rencana besar:** Real-Time Chat · Verifikasi via Chat · Security Hardening · Push Notification (FCM) · Nomor WhatsApp Pengguna
-- 📅 **Terakhir diperbarui:** 2026-10-18 (plan baru [[Backlog UI Redesign - Lost&Found]] `High`: Fase A–D redesign UI **sudah merge ke `develop`** + perbaikan UI terbuka E-1…E-6, QA HP, prasyarat B-1/F-1…F-6; B-1 IDOR `ClaimController` dicatat sebagai item (xiv) di [[Backlog Perbaikan Lanjutan - Lost&Found]]; sebelumnya dua plan dari review Fase D UI: Push Notification `High`, Nomor WhatsApp Pengguna `Medium`)
+- 📅 **Terakhir diperbarui:** 2026-10-19 (3 plan diarsipkan ke `PBL/Plan/Archive/`: Adopsi GitFlow-lite, Perbaikan Flow Claim, Master Buildings; revisi claim "langsung ke laporan target" disetujui & dicatat di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] — belum diimplementasi; 2 open item data gedung masuk [[Backlog Perbaikan Lanjutan - Lost&Found]] (xv, xvi); sebelumnya 2026-10-18 plan baru [[Backlog UI Redesign - Lost&Found]] `High`)
 
 
 ## 📋 To Do List
@@ -32,8 +32,8 @@ kanban-plugin: board
 	Baris 332 sudah diperbarui 2026-10-13: "Repository: Gitea kampus (Private): `git.informatikapolines.id/Daniel_Geovani/lostfound-backend` dan `lostfound-mobile` (HTTPS). Issue/Milestone Gitea: digunakan. Monitoring: belum ditentukan."
 - [ ] **Sinkronisasi Notion**
 	Belum dilakukan, menunggu perintah user.
-- [ ] **Konfirmasi status plan**
-	Plan "Perbaikan Flow Claim" tetap **In Progress** dan "Backlog Perbaikan Lanjutan" tetap **active** (belum di-set `done`).
+- [x] **Konfirmasi status plan**
+	Dikonfirmasi user 2026-10-19: **Perbaikan Flow Claim dan Form Laporan** → `done` + diarsipkan ke `PBL/Plan/Archive/`; **Adopsi GitFlow-lite & Migrasi ke Gitea** dan **Master Buildings + Auto Location** ikut diarsipkan. **Backlog Perbaikan Lanjutan** tetap `active` (masih menerima open item).
 
 
 ## 🧭 Rencana Fitur

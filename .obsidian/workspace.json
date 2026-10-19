@@ -11,14 +11,10 @@
             "id": "e04b699d74ce6242",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "PBL/Plan/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found"
+              "title": "New tab"
             }
           }
         ]
@@ -229,6 +225,12 @@
   },
   "active": "e04b699d74ce6242",
   "lastOpenFiles": [
+    "PBL/DailyChanges/2026-10-19.md",
+    "PBL/Plan/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
+    "PBL/Plan/Archive/Master Buildings + Auto Location - Lost&Found.md",
+    "PBL/Plan/Archive/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
+    "PBL/Plan/Archive/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
+    "PBL/Plan/Archive",
     "PBL/Plan/Security Hardening - Lost&Found.md",
     "PBL/DailyChanges/2026-10-18.md",
     "PBL/Plan/Push Notification - Lost&Found.md",
@@ -240,7 +242,6 @@
     "PBL/Plan/Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found.md",
     "PBL/Plan/Backlog UI Redesign - Lost&Found.md",
     "PBL/Plan/Backlog Perbaikan Lanjutan - Lost&Found.md",
-    "PBL/Plan/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
     "PBL/DailyChanges/2026-10-16.md",
     "PBL/DailyChanges/2026-10-15.md",
     "_Konteks.md",
@@ -251,11 +252,7 @@
     "PBL/Documents/PRD.md",
     "PBL/DailyChanges/2026-10-13.md",
     "PBL/DailyChanges/2026-10-12.md",
-    "PBL/DailyChanges/2026-10-11.md",
-    "PBL/Documents/TechnicalReference.md",
     "_Base/Index.base",
-    "PBL/DailyChanges/2026-10-05.md",
-    "PBL/DailyChanges/2026-09-30.md",
     "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
     "Untitled 1.canvas",
     "Untitled.canvas",
@@ -268,7 +265,6 @@
     "PBL/Attachments/ERD_lostfound.jpg",
     "DailyChanges",
     "PBL/Documents/campus-lostfound-schema.dbml",
-    "PBL/Documents/Unconfirmed 594758.crdownload",
     "PBL/ERD_lostfound.jpg"
   ]
 }

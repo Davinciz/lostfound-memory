@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-18
+updated: 2026-10-19
 summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend merge, UI chat teruji 1 HP 2 akun; usulan kartu konteks chat
 ---
 
@@ -19,6 +19,9 @@ summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend merge, UI chat t
 > - **Fase 1 backend SELESAI & merge (2026-10-18):** merge ke `develop` via PR #4 (squash), commit develop `fb256f9`; branch asal `feature/chat/realtime-api` (3 commit: `2367926`, `669466b`, `8141719`). `php artisan test` di develop: **132 lulus** (sebelumnya 108). Migration index ter-apply di DB dev. Paket baru `pusher/pusher-php-server`; factory baru `Claim`, `Conversation`, `FoundReport`, `LostReport`, `Message`. Rincian kontrak ada di §Backend API-as-built di bawah.
 > - **Tes manual 2026-10-18 (laporan user):** chat diuji di **1 HP dengan 2 akun berbeda**; UI Flutter (list percakapan + kirim/terima pesan) sudah dipakai; **kirim/terima pesan realtime antar dua user berhasil**; belum menemukan bug. Belum diuji: dedup pengirim, mark-read, penolakan non-peserta (403), reconnect saat app dibuka kembali, dan tes dua perangkat fisik.
 > - **Belum ada:** integrasi claim/FCM (Fase 3), evaluasi Pusher (Fase 4), dan kepastian broadcast lewat **Pusher asli** (key/app Pusher sudah disiapkan user, tetapi user belum yakin driver yang dipakai saat tes). Branch/commit/merge untuk UI Flutter belum dilaporkan.
+
+> [!warning] Akan berubah (revisi 2026-10-19, disetujui, belum diimplementasi)
+> Conversation dari claim harus dibuat **per `claim_id`**, bukan per pasangan user. Saat ini `ConversationController::store()` jalur `other_user_id` mencari per pasangan user (partial unique index `conversations_user_pair_unique`), sehingga chat ke penemu yang sama membuka percakapan lama dengan konteks laporan pertama — dugaan bug "tidak bisa claim ke akun yang sama meski beda laporan". Chat sebelum claim tetap per pasangan. Daftar chat wajib menampilkan kartu konteks laporan. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19 bagian B.
 
 > [!note] Contoh kode ilustratif
 > Contoh kode di plan ini (mis. `Kernel.php`, `RouteServiceProvider`, `BROADCAST_DRIVER`) mengikuti struktur Laravel lama. Versi terpasang: **Laravel v13.32.0** dan **Filament 3.3.55**; contoh Filament harus memakai sintaks **Filament 3.x**. Verifikasi kompatibilitas via `composer.json`/`composer.lock`.

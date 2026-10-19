@@ -78,6 +78,9 @@ Pengajuan klaim yang menghubungkan laporan hilang, laporan temuan, dan pengklaim
 - **Index:** status, `accepted_at` (kolom baru, untuk query expire)
 - **Relasi:** Many-to-one ke lost_reports, found_reports, users; 1 claim → N conversations (chat otomatis dibuat saat claim)
 
+> [!note] Rencana nullable (belum ada migration)
+> Revisi disetujui user 2026-10-19: `lost_report_id` dan `found_report_id` menjadi **nullable**, dengan CHECK minimal salah satu terisi. Claim diajukan langsung ke laporan target tanpa wajib punya laporan sendiri. Definisi di atas adalah **skema berjalan** (masih NOT NULL) sampai migration dibuat. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19.
+
 #### 6. `conversations`
 
 Ruang percakapan antara dua pengguna, biasanya terkait klaim atau laporan tertentu.

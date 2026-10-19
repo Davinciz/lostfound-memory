@@ -1,9 +1,9 @@
 ---
 type: plan
 project: lost-found
-status: active
+status: done
 priority: high
-updated: 2026-10-18
+updated: 2026-10-19
 summary: Perbaiki status claim, pemilihan foto, dan pemilihan lokasi di peta dengan saran gedung pada form laporan
 ---
 
@@ -13,10 +13,13 @@ summary: Perbaiki status claim, pemilihan foto, dan pemilihan lokasi di peta den
 > Flow claim akan diubah lebih lanjut di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: claim dua arah, verifikasi user-driven, auto-expire.
 
 **Tanggal:** 2026-10-06  
-**Updated:** 2026-10-14 (semua bug selesai & ter-merge ke main; usulan plan done menunggu konfirmasi user)  
+**Updated:** 2026-10-19  
 **Project:** [[PBL]] Lost&Found  
-**Status:** In Progress  
+**Status:** Done  
 **Priority:** High
+
+> [!success] Diarsipkan 2026-10-19
+> Semua pekerjaan terimplementasi dan merge; sisa open item dipindah ke [[Backlog Perbaikan Lanjutan - Lost&Found]].
 
 ---
 

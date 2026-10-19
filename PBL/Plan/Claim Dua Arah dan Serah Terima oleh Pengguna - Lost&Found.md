@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-18
+updated: 2026-10-19
 summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari
 ---
 
@@ -61,6 +61,9 @@ Mengubah alur claim dari **admin-centric** menjadi **user-driven**: penemu dan p
 - `claims.lost_report_id` dan `claims.found_report_id` sama-sama **NOT NULL**
 - Claimant harus pelapor salah satu dari dua laporan itu (lost atau found)
 - Tidak ada kolom peran baru (`claimant_role`); sistem tahu dari `claimant_id == lostReport.reporter_id` atau `== foundReport.reporter_id`
+
+> [!warning] Direvisi 2026-10-19
+> Constraint di atas **dibatalkan**. Claim kini langsung ke laporan target tanpa wajib punya laporan sendiri; `lost_report_id`/`found_report_id` menjadi nullable. Lihat [Revisi 2026-10-19: Claim Langsung ke Laporan Target](#revisi-2026-10-19-claim-langsung-ke-laporan-target).
 
 ---
 
@@ -469,6 +472,94 @@ $table->index('accepted_at'); // untuk query expire
 **Catatan:** 
 - Verdict tetap pakai `status` (accepted/rejected), bukan kolom `verdict` baru
 - Chat read-only dihitung dari kondisi claim (`rejected`, `withdrawn`, `returned`) atau laporan (`claimed` oleh claim lain), **BUKAN dari kolom tersimpan**
+
+---
+
+## Revisi 2026-10-19: Claim Langsung ke Laporan Target
+
+> **Status keputusan:** DISETUJUI user 2026-10-19. **Belum diimplementasi** — belum ada migration, belum ada perubahan kode. Section ini **membalik** keputusan lama "claim wajib punya laporan sendiri" (`claims.lost_report_id` NOT NULL) yang tercatat di §1 Claim Dua Arah, [[Verifikasi via Chat - Lost&Found]] §1, [[PRD]] §3.D/§4.2/§5, dan [[ERD]]/`schema.dbml` (skema saat ini masih NOT NULL).
+
+### A. Claim langsung ke laporan target
+
+**Perubahan keputusan (eksplisit):**
+- Keputusan lama: pemilik wajib punya laporan hilang; `claims.lost_report_id` NOT NULL; claim tanpa `lost_report_id` ditolak API.
+- Keputusan baru (**disetujui 2026-10-19**): claim diajukan **langsung ke laporan target**, tanpa wajib punya laporan sendiri.
+  - Target laporan temuan → pengaju = pemilik barang (tidak perlu laporan hilang).
+  - Target laporan hilang → pengaju = penemu (tidak perlu laporan temuan).
+  - Laporan milik sendiri **OPSIONAL** (boleh ditautkan bila ada), bukan syarat.
+
+**Perubahan skema (rencana):**
+- `claims.lost_report_id` → **NULLABLE**
+- `claims.found_report_id` → **NULLABLE**
+- **CHECK constraint**: minimal salah satu terisi — `CHECK (lost_report_id IS NOT NULL OR found_report_id IS NOT NULL)`
+- Tetap: `claimant_id` NOT NULL, `status` default `pending`, `code` claim tidak ada, tanpa kolom `claimant_role`.
+- Migration belum dibuat; direncanakan masuk **Phase 1** bersama `accepted_at`, `closed_reason`, `closed_by`.
+
+**Peran pengaju/penerima:** dihitung dari laporan target, bukan disimpan di kolom.
+- Target = laporan temuan (`found_report_id` terisi) → penerima = `found_report.reporter_id` (penemu), pengaju = pemilik.
+- Target = laporan hilang (`lost_report_id` terisi) → penerima = `lost_report.reporter_id` (pemilik), pengaju = penemu.
+- Helper `ClaimPolicy::isPenerima()` cukup membaca pelapor target yang **bukan** `claimant_id`; sisi yang NULL dilewati.
+
+**Validasi `ClaimController::store()`:**
+1. Pengaju bukan pelapor laporan target (tidak boleh claim laporan sendiri).
+2. Laporan target berstatus `pending`.
+3. Tidak ada claim aktif ganda per (`claimant_id`, laporan target).
+4. Maksimal 5 claim pending aktif per laporan (aturan §3 tidak berubah).
+5. `lost_report_id`/`found_report_id` yang dikirim opsional; bila dikirim harus milik `claimant_id` dan uuid valid.
+
+**Perubahan status laporan:** hanya berlaku untuk laporan yang **terisi**. Sisi NULL dilewati (tidak ada laporan untuk diubah statusnya).
+- `accept` → laporan target (dan laporan milik pengaju bila ditautkan) jadi `claimed`.
+- `markTransferred` → laporan yang terisi jadi `returned`.
+- `withdraw`/`expire` setelah accepted → laporan yang terisi kembali `pending`.
+
+**Dampak Flutter:**
+- Tombol **"Aku Menemukan Barang Ini"** di detail laporan hilang **tidak lagi** redirect ke form Lapor Temuan; langsung buka form claim.
+- Dropdown "laporan sendiri" jadi **opsional** (boleh kosong / "Tidak ada").
+- **E-3** di [[Backlog UI Redesign - Lost&Found]] menyesuaikan: dropdown `mine=1&status=pending` hanya muncul bila user memilih menautkan laporan sendiri.
+- Perbaikan IDOR open item **(xiv)** di [[Backlog Perbaikan Lanjutan - Lost&Found]] harus memakai aturan baru ini — otorisasi berbasis **penerima laporan target**, bukan `lost_report_id` milik pengguna.
+
+**Test yang wajib ada:**
+- Claim ke laporan temuan tanpa `lost_report_id` → 201, conversation terbuat, penerima = penemu.
+- Claim ke laporan hilang tanpa `found_report_id` → 201, penerima = pemilik.
+- Keduanya NULL → 422.
+- Claim laporan sendiri → 422.
+- Claim ke laporan target yang sudah `claimed`/`returned`/`closed` → 422.
+- Accept/transfer/withdraw tidak error saat salah satu sisi NULL.
+
+### B. Bug dugaan: claim dari akun yang sama ke dua laporan penemu yang sama
+
+> **Status:** **DUGAAN** dari pembacaan kode, **belum direproduksi**. Perlu user memverifikasi.
+
+**Gejala:** user tidak bisa claim ke akun yang sama meski beda laporan — langsung masuk ke chat lama.
+
+**Dugaan penyebab:**
+- `ClaimController::store()` hanya memblokir claim ganda per `found_report_id` (per laporan), bukan per pasangan user. Jadi claim ke laporan kedua **dibuat**.
+- `ConversationController::store()` jalur `other_user_id` mencari percakapan per **PASANGAN USER** (partial unique index `conversations_user_pair_unique`, `claim_id IS NULL`). Akibatnya tombol Chat ke penemu yang sama membuka percakapan lama dengan konteks laporan pertama — terlihat seolah claim kedua gagal.
+
+**Rencana perbaikan (lewat plan ini):**
+1. Conversation dibuat **per `claim_id`** (unique index per `claim_id` sudah ada), bukan per pasangan.
+2. Chat **sebelum** claim tetap per pasangan user (tidak berubah).
+3. Daftar chat wajib menampilkan konteks laporan (kartu konteks — lihat [[Real-Time Chat - Lost&Found]] Fase 3 / §Kartu Konteks).
+4. Test: dua claim dari satu akun ke dua laporan berbeda milik penemu yang sama → **dua conversation** berbeda.
+
+### Dampak ke Phase yang sudah tertulis
+
+| Phase | Dampak |
+|---|---|
+| Phase 1 (backend) | Migration nullable + CHECK; `store()` validasi baru; `accept`/`reject`/`withdraw`/`markTransferred` lewati sisi NULL; conversation per `claim_id` |
+| Phase 2 (Flutter) | "Aku Menemukan Barang Ini" tanpa redirect ke form Lapor; dropdown laporan sendiri opsional; E-3 menyesuaikan |
+| Phase 3 (Filament) | Detail claim harus tahan sisi laporan NULL (panel kiri/kanan bisa kosong) |
+| Phase 4 (test) | Tambah test claim tanpa laporan sendiri + dua claim satu akun ke penemu sama |
+
+### Langkah Implementasi tambahan (Coding Agent)
+
+1. Migration: `lost_report_id` & `found_report_id` nullable + CHECK minimal satu terisi.
+2. `ClaimController::store()`: validasi A di atas; hapus syarat "wajib punya lost_report".
+3. `ClaimPolicy`: `isPenerima()` dari pelapor laporan target; `markTransferred` izinkan pengaju & penerima.
+4. `ClaimAcceptService`/`markTransferred`: guard `if ($claim->lost_report_id)`, `if ($claim->found_report_id)`.
+5. `ConversationController::store()`: cabang claim selalu `firstOrCreate(['claim_id' => $claim->id])`.
+6. Flutter: hapus redirect ke form Lapor, dropdown opsional, sesuaikan pesan error.
+7. Test sesuai daftar A + B.
 
 ---
 

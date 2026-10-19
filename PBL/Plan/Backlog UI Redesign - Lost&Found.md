@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-18
+updated: 2026-10-19
 summary: Fase A–D redesign UI (sudah merge ke develop) + perbaikan UI terbuka E-1…E-6, QA HP, dan prasyarat B-1/F-1…F-6
 ---
 
@@ -69,7 +69,10 @@ Mencatat satu tempat untuk pekerjaan UI Flutter Campus Lost&Found: apa yang **su
 
 ### E-3 (Sedang) — Dropdown claim & filter Claim Saya
 
-- [ ] Dropdown "Laporan hilang kamu" di `claim_screen.dart` memakai **`mine=1&status=pending`** (endpoint Item 3 [[Backlog Perbaikan Lanjutan - Lost&Found]], sudah selesai) — menggantikan `GET /lost-reports?status=pending` dan filter klien.
+> [!warning] Akan berubah (revisi 2026-10-19, disetujui, belum diimplementasi)
+> Claim tidak lagi wajib punya laporan sendiri. Dropdown "Laporan hilang kamu" jadi **opsional** dan hanya muncul bila user memilih menautkan laporan sendiri. Tombol "Aku Menemukan Barang Ini" tidak redirect ke form Lapor. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19.
+
+- [ ] Dropdown "Laporan hilang kamu" di `claim_screen.dart` memakai **`mine=1&status=pending`** (endpoint Item 3 [[Backlog Perbaikan Lanjutan - Lost&Found]], sudah selesai) — menggantikan `GET /lost-reports?status=pending` dan filter klien. **Opsional** setelah revisi 2026-10-19: hanya dipanggil bila user memilih menautkan laporan sendiri.
 - [ ] Hapus filter sisi klien di layar Claim Saya **setelah** backend claim diperbaiki. Prasyarat: lihat **B-1** di bawah.
 - Sumber: Backlog open item (ix); [[TechnicalReference]] §17 item (h); [[Real-Time Chat - Lost&Found]] open item 8.
 

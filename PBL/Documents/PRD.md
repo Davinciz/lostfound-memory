@@ -2,7 +2,7 @@
 type: prd
 project: lost-found
 status: active
-updated: 2026-10-14
+updated: 2026-10-19
 summary: Kebutuhan Campus Lost&Found untuk pelaporan barang, pencarian, claim, dan autentikasi Google SSO
 ---
 
@@ -75,8 +75,10 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 
 > [!warning] Akan berubah
 > Flow claim akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: claim dua arah (pemilik & penemu), chat otomatis tanpa tunggu admin, **penerima claim** (pihak yang tidak mengajukan claim) yang menekan "Cocok" / "Ya, ini barang saya", serah terima oleh pengguna sendiri, kedaluwarsa 7 hari.
+>
+> **Revisi 2026-10-19 (disetujui, belum diimplementasi):** claim diajukan **langsung ke laporan target**, tanpa wajib punya laporan sendiri. `claims.lost_report_id` dan `claims.found_report_id` menjadi **nullable** (minimal salah satu terisi); laporan milik sendiri opsional. Lihat section "Revisi 2026-10-19" di plan tersebut.
 
-- **Ajukan claim** — pemilik barang wajib punya laporan hilang, pilih laporan hilangnya, isi alasan claim. Sistem otomatis buat conversation antara pengklaim dan penemu untuk verifikasi kepemilikan via chat. Notifikasi ke penemu: "Ada claim baru, chat untuk verifikasi."
+- **Ajukan claim** — pengaju membuka detail laporan target (temuan → pemilik, hilang → penemu), isi alasan claim. Laporan milik sendiri **opsional** (dulu wajib: pemilik harus punya laporan hilang dan memilihnya). Sistem otomatis buat conversation per claim antara pengklaim dan penerima untuk verifikasi kepemilikan via chat. Notifikasi ke penerima: "Ada claim baru, chat untuk verifikasi."
 - **Verifikasi kepemilikan** — dilakukan via real-time chat antara penemu dan pengklaim. Penemu tanya detail yang tidak terlihat di foto. Admin tidak membaca chat.
 - **Proses claim (admin)** — admin lihat foto, alasan claim, metadata. Admin trust bahwa penemu sudah verifikasi via chat. Aksi: terima (→ `accepted` + laporan jadi `claimed`), tolak (→ `rejected` + alasan). Notifikasi ke pemilik + penemu. Setelah admin terima, serah terima fisik → upload foto bukti → status `returned`.
 ### E. Integrasi WhatsApp
@@ -115,9 +117,11 @@ Splash → Login → Home Feed → "Lapor Hilang" → Kamera/Foto → Detail For
 
 > [!warning] Akan berubah
 > Flow akan diubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: chat terbuka langsung tanpa tunggu admin, **penerima claim** (pihak yang tidak mengajukan claim) menekan "Cocok" / "Ya, ini barang saya" untuk approve.
+>
+> **Revisi 2026-10-19 (disetujui, belum diimplementasi):** langkah "Pilih Laporan Hilang" tidak wajib lagi — claim diajukan langsung ke laporan target, laporan milik sendiri opsional.
 
 ```javascript
-Search → Cari Laporan → Lihat Detail → "Ajukan Claim" → Pilih Laporan Hilang + Alasan → Submit → Notifikasi ke Penemu → Admin Review → Admin Terima → Status claimed (laporan) + accepted (claim) → Serah Terima → Upload Foto Bukti → Status returned
+Search → Cari Laporan → Lihat Detail → "Ajukan Claim" → (Opsional: Tautkan Laporan Sendiri) + Alasan → Submit → Chat Terbuka + Notifikasi ke Penerima Claim → Penerima "Cocok"/"Ya, ini barang saya" → Status claimed (laporan target) + accepted (claim) → Serah Terima → Upload Foto Bukti → Status returned
 ```
 ### 4.3 Admin Proses Claim
 ```javascript
@@ -134,7 +138,7 @@ LostReport: id(UUID), reporter_id→User, code(unique, LST-YYMMDD-XXXX), title, 
 
 FoundReport: id(UUID), reporter_id→User, code(unique, FND-YYMMDD-XXXX), title, description, category[same as LostReport], found_date(timestamp), building_id→Building(nullable), latitude(decimal 10,8), longitude(decimal 11,8), location_name(nullable), photo_urls(json), status[pending|claimed|returned|closed], created_at, updated_at
 
-Claim: id(UUID), lost_report_id→LostReport(NOT NULL), found_report_id→FoundReport(NOT NULL), claimant_id→User, status[pending|accepted|returned|rejected|withdrawn], reason(text), admin_note(nullable), accepted_at(nullable, disetujui 2026-10-14), closed_reason(nullable, disetujui 2026-10-14), closed_by→User(nullable, disetujui 2026-10-14), proof_of_transfer_photo_url(nullable), transferred_at(nullable), transferred_by→User(nullable), created_at, updated_at
+Claim: id(UUID), lost_report_id→LostReport(nullable, rencana 2026-10-19; saat ini NOT NULL di DB), found_report_id→FoundReport(nullable, rencana 2026-10-19; saat ini NOT NULL di DB), claimant_id→User, status[pending|accepted|returned|rejected|withdrawn], reason(text), admin_note(nullable), accepted_at(nullable, disetujui 2026-10-14), closed_reason(nullable, disetujui 2026-10-14), closed_by→User(nullable, disetujui 2026-10-14), proof_of_transfer_photo_url(nullable), transferred_at(nullable), transferred_by→User(nullable), created_at, updated_at
 
 Conversation: id(UUID), user1_id→User, user2_id→User, lost_report_id→LostReport(nullable), found_report_id→FoundReport(nullable), claim_id→Claim(nullable), created_at, updated_at
 
@@ -146,7 +150,7 @@ Message: id(UUID), conversation_id→Conversation, sender_id→User, message(tex
 - NIM opsional + unique; mahasiswa dapat mengisinya otomatis dari pola email bila cocok. Panjang NIM masih perlu dikonfirmasi; login tidak bergantung pada NIM.
 - User mobile masuk melalui Google SSO; email Google terverifikasi. Password nullable untuk user SSO, tetap diperlukan admin Filament.
 - Status disimpan lowercase di database; label UI boleh kapital
-- `claims.lost_report_id` NOT NULL — pemilik wajib punya laporan hilang sebelum bisa claim
+- `claims.lost_report_id` NOT NULL — pemilik wajib punya laporan hilang sebelum bisa claim. **⚠ Rencana berubah (disetujui 2026-10-19, belum ada migration):** `lost_report_id` dan `found_report_id` menjadi **nullable** dengan CHECK minimal salah satu terisi — lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19. Skema berjalan tetap NOT NULL sampai migration dibuat.
 - Verifikasi kepemilikan via chat (bukan pertanyaan keamanan); admin tidak membaca isi chat
 - `withdrawn` disediakan di enum; belum ada aksi yang memakainya. Opsi masa depan: pengklaim membatalkan claim sendiri (butuh plan terpisah, belum disetujui)
 ---
@@ -296,7 +300,7 @@ Base URL: `https://api.kampus-lostfound.id/v1` (rencana domain; belum ada deploy
 </tr>
 <tr>
 <td>Claim</td>
-<td>Permintaan pemilik barang untuk mengklaim barang ditemukan</td>
+<td>Permintaan untuk memperoleh barang yang dilaporkan. Sejak revisi 2026-10-19 (disetujui, belum diimplementasi), claim diajukan langsung ke laporan target (temuan → pemilik, hilang → penemu) tanpa wajib punya laporan sendiri; laporan milik pengaju opsional.</td>
 </tr>
 <tr>
 <td>WhatsApp Integration</td>

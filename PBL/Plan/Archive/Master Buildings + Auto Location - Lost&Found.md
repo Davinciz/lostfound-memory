@@ -1,10 +1,10 @@
 ---
 type: plan
 project: lost-found
-status: active
+status: done
 priority: high
 created: 2026-09-29
-updated: 2026-10-18
+updated: 2026-10-19
 summary: Master buildings + pilih lokasi di peta dengan saran gedung terdekat (Haversine lokal Flutter); jumlah gedung dinetralkan (plan 22 nama vs DB 23 entri, menunggu konfirmasi)
 ---
 
@@ -12,9 +12,12 @@ summary: Master buildings + pilih lokasi di peta dengan saran gedung terdekat (H
 
 **Created:** 2026-09-29  
 **Project:** [[PBL]] Lost&Found  
-**Updated:** 2026-10-13 (merge ke main dikonfirmasi user; sisa: data buildings via Filament)  
-**Status:** Active  
+**Updated:** 2026-10-19  
+**Status:** Done  
 **Priority:** High
+
+> [!success] Diarsipkan 2026-10-19
+> Semua pekerjaan terimplementasi dan merge; sisa open item dipindah ke [[Backlog Perbaikan Lanjutan - Lost&Found]] (item xv, xvi).
 
 ---
 
