@@ -1,5 +1,5 @@
 // Lost & Found Database Schema
-// updated: 2026-10-18 (index chat partial unique + composite, migration 2026_10_18_071626; kolom baru claims: accepted_at, closed_reason, closed_by — disetujui, belum migration)
+// updated: 2026-10-23 (claims.lost_report_id & found_report_id NULLABLE + CHECK claims_target_report_check, migration 2026_10_23_000001; accepted_at, closed_reason, closed_by ikut diterapkan; index chat partial unique + composite 2026-10-18)
 // Skema PostgreSQL; struktur Google SSO diterapkan 2026-10-10 (user melaporkan migration selesai).
 // Catatan: photo_urls (lost/found_reports) & proof_of_transfer_photo_url (claims) menyimpan PATH RELATIF (mis. reports/uuid.jpg); URL lengkap dibangun di response API dari APP_URL.
 // Docs: https://dbml.dbdiagram.io/docs
@@ -10,7 +10,8 @@
 // - Tabel bawaan Laravel (cache, jobs, sessions, personal_access_tokens, dll.) tidak dimasukkan
 // - NIM opsional; mahasiswa dapat memperoleh NIM otomatis dari email bila pola cocok. Role aplikasi: user | admin.
 // - Google SSO diterapkan: email 3 domain Polines; password nullable untuk user SSO dan tetap dipakai admin.
-// - 2026-10-14: Tiga kolom baru di claims disetujui (accepted_at, closed_reason, closed_by). Belum ada migration.
+// - 2026-10-14: Tiga kolom baru di claims disetujui (accepted_at, closed_reason, closed_by) — DITERAPKAN 2026-10-23 (migration 2026_10_23_000001, merge develop PR #6).
+// - 2026-10-23: claims.lost_report_id & found_report_id nullable (claim langsung ke laporan target, laporan sendiri opsional).
 
 Table users {
   id uuid [primary key]
@@ -100,19 +101,20 @@ Table found_reports {
 }
 
 Table claims {
-  // Skema berjalan: lost_report_id & found_report_id masih NOT NULL.
-  // RENCANA 2026-10-19 (belum ada migration): keduanya nullable + CHECK minimal salah satu terisi.
-  // DBML tidak mendukung CHECK; aturan ditulis sebagai catatan.
+  // 2026-10-23: lost_report_id & found_report_id NULLABLE (migration 2026_10_23_000001_make_claim_reports_nullable).
+  // Teks lama (riwayat, tidak dihapus): "RENCANA 2026-10-19 (belum ada migration): keduanya nullable + CHECK minimal salah satu terisi."
+  // DBML tidak mendukung CHECK; aturan ditulis sebagai catatan:
+  //   CHECK claims_target_report_check: (lost_report_id IS NOT NULL OR found_report_id IS NOT NULL)
   id uuid [primary key]
-  lost_report_id uuid [not null]
-  found_report_id uuid [not null]
+  lost_report_id uuid [note: 'Nullable sejak 2026-10-23. Claim langsung ke laporan target; laporan sendiri opsional']
+  found_report_id uuid [note: 'Nullable sejak 2026-10-23. Claim langsung ke laporan target; laporan sendiri opsional']
   claimant_id uuid [not null, note: 'Pengaju claim (pemilik atau penemu)']
   status varchar [default: 'pending', note: 'pending | accepted | returned | rejected | withdrawn (huruf kecil)']
   reason text [note: 'Alasan pengajuan claim']
   admin_note text [note: 'Catatan admin']
-  accepted_at timestamp [note: 'Waktu konfirmasi diterima oleh penerima (untuk hitung kedaluwarsa 7 hari) — KOLOM BARU 2026-10-14']
-  closed_reason text [note: 'Alasan penutupan (rejected/withdrawn/expired) — KOLOM BARU 2026-10-14']
-  closed_by uuid [note: 'User yang menutup (pengaju/penerima/admin), NULL = sistem — KOLOM BARU 2026-10-14']
+  accepted_at timestamp [note: 'Waktu konfirmasi diterima oleh penerima (untuk hitung kedaluwarsa 7 hari) — ada sejak migration 2026_10_23_000001']
+  closed_reason text [note: 'Alasan penutupan (rejected/withdrawn/expired) — ada sejak migration 2026_10_23_000001']
+  closed_by uuid [note: 'User yang menutup (pengaju/penerima/admin), NULL = sistem — ada sejak migration 2026_10_23_000001']
   proof_of_transfer_photo_url varchar [note: 'Path relatif foto bukti serah terima (mis. claims/proof/uuid.jpg); URL dibangun di response dari APP_URL']
   transferred_at timestamp [note: 'Waktu barang diserahkan']
   transferred_by uuid [note: 'User yang menandai transfer (admin/finder/claimant)']
@@ -121,7 +123,7 @@ Table claims {
 
   indexes {
     status
-    accepted_at [note: 'Untuk query expire — INDEX BARU 2026-10-14']
+    accepted_at [note: 'Untuk query expire — index ada sejak migration 2026-10-23']
   }
 }
 
@@ -178,6 +180,9 @@ Ref building_found_reports: found_reports.building_id > buildings.id [delete: se
 
 // Foto Bukti Transfer
 Ref claim_transferred_by: claims.transferred_by > users.id [delete: set null]
+
+// Penutup claim
+Ref claim_closed_by: claims.closed_by > users.id [delete: set null]
 
 // Real-Time Chat
 Ref conversation_user1: conversations.user1_id > users.id [delete: cascade]

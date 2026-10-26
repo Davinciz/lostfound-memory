@@ -2,8 +2,8 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-18
-summary: ERD 7 tabel Lost&Found; skema Google SSO diterapkan, NIM opsional, password nullable; kolom baru claims disetujui 2026-10-14; index chat partial unique ditambah 2026-10-18
+updated: 2026-10-23
+summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18
 ---
 
 # ERD Lost & Found
@@ -65,21 +65,23 @@ Laporan barang temuan.
 
 #### 5. `claims`
 
-> [!note] Kolom baru disetujui 2026-10-14
-> Tiga kolom baru disetujui user: `accepted_at`, `closed_reason`, `closed_by`. Belum ada migration. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
+> [!note] Kolom baru disetujui 2026-10-14 — migration ada 2026-10-23
+> Tiga kolom baru disetujui user: `accepted_at`, `closed_reason`, `closed_by`. **DILURUSKAN 2026-10-23:** migration `2026_10_23_000001_make_claim_reports_nullable` menerapkannya (dengan guard `hasColumn`). Kalimat lama "Belum ada migration" tidak lagi berlaku. Lihat [[Claim Langsung ke Laporan Target - Lost&Found]].
 
 Pengajuan klaim yang menghubungkan laporan hilang, laporan temuan, dan pengklaim.
 
 - **PK:** `id` (UUID)
-- **FK:** `lost_report_id` → lost_reports.id (NOT NULL), `found_report_id` → found_reports.id (NOT NULL), `claimant_id` → users.id, `transferred_by` → users.id (nullable), `closed_by` → users.id (nullable, kolom baru)
+- **FK:** `lost_report_id` → lost_reports.id (**nullable** sejak 2026-10-23), `found_report_id` → found_reports.id (**nullable** sejak 2026-10-23), `claimant_id` → users.id, `transferred_by` → users.id (nullable), `closed_by` → users.id (nullable, kolom baru)
 - **Kolom klaim:** status (default `pending`), reason (text), admin_note (text), `accepted_at` (timestamp nullable, kolom baru), `closed_reason` (text nullable, kolom baru)
 - **Kolom serah terima:** proof_of_transfer_photo_url (**path relatif** mis. `claims/proof/uuid.jpg`; URL dibangun di response dari `APP_URL`), transferred_at, transferred_by
-- **Check constraint:** status ∈ `pending`, `accepted`, `returned`, `rejected`, `withdrawn`
-- **Index:** status, `accepted_at` (kolom baru, untuk query expire)
+- **Check constraint:** status ∈ `pending`, `accepted`, `returned`, `rejected`, `withdrawn`; **`claims_target_report_check`** (2026-10-23): `lost_report_id IS NOT NULL OR found_report_id IS NOT NULL`
+- **Index:** status, `accepted_at` (untuk query expire; ada sejak migration 2026-10-23)
 - **Relasi:** Many-to-one ke lost_reports, found_reports, users; 1 claim → N conversations (chat otomatis dibuat saat claim)
 
-> [!note] Rencana nullable (belum ada migration)
-> Revisi disetujui user 2026-10-19: `lost_report_id` dan `found_report_id` menjadi **nullable**, dengan CHECK minimal salah satu terisi. Claim diajukan langsung ke laporan target tanpa wajib punya laporan sendiri. Definisi di atas adalah **skema berjalan** (masih NOT NULL) sampai migration dibuat. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19.
+> [!note] Nullable — DILURUSKAN 2026-10-23 (migration sudah ada)
+> Revisi disetujui user 2026-10-19: `lost_report_id` dan `found_report_id` menjadi **nullable**, dengan CHECK minimal salah satu terisi. Claim diajukan langsung ke laporan target tanpa wajib punya laporan sendiri.
+>
+> Teks lama di bawah (riwayat, **tidak dihapus**) menyebut "belum ada migration" dan "Definisi di atas adalah **skema berjalan** (masih NOT NULL) sampai migration dibuat" — **sudah tidak berlaku**. Migration `2026_10_23_000001_make_claim_reports_nullable` diterapkan 2026-10-23 (merge `develop`, PR #6). Sumber tunggal: [[Claim Langsung ke Laporan Target - Lost&Found]].
 
 #### 6. `conversations`
 
@@ -135,6 +137,7 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **Unique constraint:** users.nim, users.email, lost_reports.code, found_reports.code
 - **Index** untuk pencarian dan filter: category, status, role, nim, type, koordinat `(latitude, longitude)` pada `buildings`, serta kolom FK pada `conversations` dan `messages`.
 - **Index chat (2026-10-18):** migration `2026_10_18_071626_add_conversation_indexes` menambah partial unique index `conversations(claim_id) WHERE claim_id IS NOT NULL` (satu chat per claim), partial unique index `conversations(user1_id, user2_id) WHERE claim_id IS NULL` (satu chat langsung per pasangan user), dan composite index `messages(conversation_id, created_at)`. Tidak ada kolom/tabel baru.
+- **Check `claims_target_report_check` (2026-10-23):** `lost_report_id IS NOT NULL OR found_report_id IS NOT NULL` — minimal satu laporan terisi pada `claims`.
 
 ## Perubahan dari Versi ERD Sebelumnya
 
@@ -151,3 +154,4 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **2026-10-14:** Tiga kolom baru di `claims` disetujui: `accepted_at` (timestamp, untuk hitung kedaluwarsa 7 hari), `closed_reason` (text, alasan rejected/withdrawn/expired), `closed_by` (uuid FK users, null = sistem). Belum ada migration. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]. Chat read-only dihitung dari kondisi claim atau laporan, bukan dari kolom tersimpan.
 - **2026-10-14 (lanjutan):** `photo_urls` (lost_reports & found_reports) dan `proof_of_transfer_photo_url` (claims) kini menyimpan **path relatif** (mis. `reports/uuid.jpg`, `claims/proof/uuid.jpg`); URL lengkap dibangun di response API dari `APP_URL`. Struktur kolom **tidak berubah** (Backlog Item 4, selesai 2026-10-14).
 - **2026-10-18:** Real-Time Chat Fase 1 backend merge ke `develop` (commit `fb256f9`). Migration `2026_10_18_071626_add_conversation_indexes` menambah partial unique index + composite index (lihat bagian Index chat). **Struktur kolom/tabel tidak berubah.**
+- **2026-10-23:** `claims.lost_report_id` & `claims.found_report_id` jadi **nullable** + CHECK `claims_target_report_check` (minimal satu terisi); kolom `accepted_at`, `closed_reason`, `closed_by` (disetujui 2026-10-14) ikut diterapkan. Migration `2026_10_23_000001_make_claim_reports_nullable`; merge ke `develop` PR #6 (commit squash `d1ef1eb`). Sumber tunggal: [[Claim Langsung ke Laporan Target - Lost&Found]].

@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-18
-summary: Plan push notification FCM (claim, serah terima, chat); keputusan tabel notifikasi opsi A/B masih usulan
+updated: 2026-10-25
+summary: Plan push notification FCM (claim, serah terima, chat); keputusan tabel notifikasi opsi A/B masih usulan. 2026-10-25: pengiriman FCM + log kegagalan sudah ada (API v8, token diredaksi) + DeadFcmTokenCleaner (token mati) — terlihat di TechnicalReference §11. Retry/backoff & FCM jalur admin sengaja tidak dibuat.
 ---
 
 # Push Notification - Lost&Found
@@ -24,15 +24,15 @@ Melengkapi push notification FCM yang saat ini hanya dipakai untuk satu peristiw
 
 ## Fakta saat ini (dibaca dari kode, dikonfirmasi user 2026-10-18)
 
-Semua fakta di bawah hasil pembacaan kode read-only; belum diverifikasi ulang setelah perubahan terakhir di repo.
+Semua fakta di bawah hasil pembacaan kode read-only; tabel diperbarui **2026-10-25** mengikuti laporan Bob-03…06 ([[Bob-261025-03-fcm-api-audit]], [[Bob-261025-04-claim-uuid-patch]], [[Bob-261025-05-fcm-token-cleanup]], [[Bob-261025-06-uuid-route-constraint]]); `routes/api.php` dikonfirmasi langsung, service/test hanya dari laporan — belum diverifikasi ulang penuh ke repo.
 
 | Hal | Kondisi sekarang |
 |---|---|
 | Token perangkat | Sudah ada: `PUT /users/me/fcm-token` menyimpan token ke `users.fcm_token` ([[ERD]], [[TechnicalReference]] §8.3) |
-| Pengiriman | Hanya **satu** tempat: `ClaimTransferService::notifyClaimant` (peristiwa **barang diserahkan**) |
-| Ketahanan kirim | Kegagalan kirim **ditelan diam-diam** (tanpa log) → kegagalan tidak terlihat saat debugging |
+| Pengiriman | **Sejak 2026-10-25:** dua tempat — `ClaimTransferService::notifyClaimant` (barang diserahkan) dan `ClaimNotificationService` (accepted/rejected → pengaju; withdrawn → penerima). Keduanya API v8 `CloudMessage::new()->withToken()`; **audit Bob-03 (2026-10-25): tidak ada API FCM usang di `app/`** |
+| Ketahanan kirim | **Sejak 2026-10-25:** kegagalan kirim dicatat `Log::warning` dengan **token FCM diredaksi** dari pesan exception; tidak menggagalkan request. **Bob-05:** `DeadFcmTokenCleaner` mengosongkan `users.fcm_token` untuk `NotFound`/`SenderIdMismatch` **hanya bila token di DB masih sama**; `ServerUnavailable`/error lain → token tetap. **Retry/backoff untuk `ServerUnavailable` sengaja tidak dibuat** (keputusan 2026-10-25) |
 | Claim diajukan | **Belum ada** push ke penerima claim |
-| Claim diterima/ditolak | **Belum ada** push — `AdminController::acceptClaim`/`rejectClaim` tidak memanggil FCM |
+| Claim diterima/ditolak | Push **sudah ada di endpoint user** (`ClaimNotificationService`, 1.2c `23d0be6` — PR belum merge); **tidak ada FCM di jalur admin/Filament** (audit Bob-03) — keputusan user 2026-10-25: FCM admin tidak diperlukan sekarang |
 | Pesan chat baru | **Belum ada** push + deep link (open item Fase 3 [[Real-Time Chat - Lost&Found]]) |
 | Daftar notifikasi di app | **Belum ada** — tidak ada tabel, tidak ada endpoint. Layar Notifikasi ([[Design]] §5.16) dan badge lonceng (§5.6) belum punya sumber data |
 | Paket | `kreait/laravel-firebase` terpasang ([[TechnicalReference]] §15.1); Flutter `firebase_messaging` terpasang |
@@ -81,12 +81,13 @@ Keputusan ini memengaruhi [[ERD]] / `schema.dbml` / [[PRD]] / [[Design]] §5.16,
 
 ## USULAN — hal teknis lain (belum diputuskan)
 
-1. **Log kegagalan FCM** — `ClaimTransferService` menelan error; usul ganti jadi `Log::warning` (tanpa mengubah perilaku user). Mandiri, bisa dikerjakan lebih dulu.
+1. **Log kegagalan FCM** — **sudah ada sejak 2026-10-25** (`Log::warning` di `ClaimTransferService` + `ClaimNotificationService`), tanpa mengubah perilaku user. **Bob-03:** token FCM **diredaksi** dari pesan exception sebelum masuk log. API FCM yang dipakai sudah v8 (`withToken`), jadi usulan lama "ganti `withTarget`" sekaligus terpenuhi.
 2. **Payload & deep link standar** — usul format tetap: `data: { type, id, ... }` dengan `type` ∈ `claim | chat | report`; Flutter memetakan `type` → layar tujuan.
 3. **Judul/isi notifikasi** — ambil dari [[Design]] §5.16 (jenis notifikasi) agar konsisten.
 4. **Toggle push di Pengaturan ([[Design]] §5.19)** — **ditunda** sampai push benar-benar bisa dimatikan. Mematikan push butuh keputusan: hapus `fcm_token` perangkat, atau tambah kolom preferensi di `users`. Belum diputuskan.
-5. **Kirim ke token mati** — usul: bersihkan `fcm_token` bila FCM menjawab token tidak valid (`UNREGISTERED`). Belum diputuskan.
+5. **Kirim ke token mati** — **DISETUJUI & DIPUTUSKAN 2026-10-25 (Bob-05):** `app/Services/DeadFcmTokenCleaner.php` mengosongkan `users.fcm_token` untuk `NotFound`/`SenderIdMismatch` **hanya bila token di DB masih sama** dengan token yang gagal (token yang baru di-refresh aman); `ServerUnavailable`/error lain → token tetap. `test_fcm.php` (file debug lama) **dihapus**.
 6. **Antrian** — kirim FCM langsung (sinkron, seperti sekarang) atau lewat queue. Usul tetap sinkron untuk MVP; ubah bila traffic besar.
+7. **Retry/backoff untuk `ServerUnavailable`** — **DITOLAK / sengaja tidak dibuat (keputusan 2026-10-25):** kegagalan tetap `Log::warning`, request tetap 2xx. Bila nanti perlu, kegagalan transien bisa dikirim ulang oleh worker, bukan menahan request user.
 
 ---
 
@@ -116,6 +117,9 @@ Keputusan ini memengaruhi [[ERD]] / `schema.dbml` / [[PRD]] / [[Design]] §5.16,
 - [ ] Keputusan pengiriman sinkron vs queue — usul sinkron untuk MVP.
 - [ ] Urutan pengerjaan: 1 titik, yaitu setelah plan Claim Dua Arah & Fase 3 chat — belum ditetapkan user.
 - [ ] Prioritas plan ini `high` (ditetapkan user 2026-10-18).
+- [x] **Retry/backoff `ServerUnavailable` — TIDAK dibuat** (keputusan 2026-10-25); kegagalan tetap `Log::warning`, request tetap 2xx.
+- [x] **FCM jalur admin/Filament — tidak diperlukan sekarang** (keputusan 2026-10-25; audit Bob-03: tidak ada FCM di jalur admin, `Notification::make()` Filament bukan FCM).
+- [x] **Token mati dibersihkan** (2026-10-25, Bob-05: `DeadFcmTokenCleaner`; `test_fcm.php` dihapus) — 247 test lulus.
 
 ---
 

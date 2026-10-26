@@ -2,7 +2,7 @@
 type: design
 project: lost-found
 status: active
-updated: 2026-10-18
+updated: 2026-10-19
 summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; catatan plan WhatsApp, push notification, dan backlog UI redesign.
 ---
 
@@ -48,6 +48,9 @@ Palet brand: **hitam-kuning**. Warna status (Pending/Returned/Rejected/Closed) t
 
 ### 2.2 Tipografi
 Font: **Plus Jakarta Sans**.
+
+> [!success] Status implementasi 2026-10-19 — **sudah dibundel** (E-5, PR #5, repo `lostfound-mobile`) — status dikonfirmasi user
+> 4 TTF (Regular/Medium/SemiBold/Bold) dibundel di app, terdaftar di `pubspec.yaml`, dan `GoogleFonts.config.allowRuntimeFetching = false` (app gagal keras bila asset hilang, tidak lagi mengambil font saat runtime). Lokasi file: `assets/images/google_fonts/` — menyimpang dari usulan `assets/fonts` di plan; lihat open item di [[TechnicalReference]] §17. **Verifikasi uji mode pesawat di HP belum dilakukan** → E-5 berstatus *selesai di kode*, bukan selesai penuh.
 
 | Style | Ukuran | Weight |
 | --- | --- | --- |
@@ -174,6 +177,8 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 > [!info] Sesuai kenyataan
 > Pin draggable **sudah berfungsi** (klarifikasi user 2026-10-18: "pin sudah bisa digeser, tidak ada masalah"). E-4 di [[Backlog UI Redesign - Lost&Found]] ditutup. Saran gedung (maks 3, radius ~75 m, dipilih user, tidak otomatis) juga sudah berjalan.
+>
+> **2026-10-19:** E-4 **dibatalkan** — pin peta berfungsi tanpa masalah selama pengujian dan perilaku tap tetap dipakai; tidak ada branch/kode. Alasan: tidak ada kerusakan yang perlu diperbaiki, sehingga item ditutup tanpa pekerjaan. Spesifikasi di bawah (tap untuk menaruh pin, pin bisa digeser, "Lokasi saya" hanya menggeser peta) **tetap berlaku** — dokumen ini bukan konflik, hanya spesifikasi yang memang sudah terpenuhi.
 
 **Elemen:**
 - Header: back + judul "Lapor Barang".
@@ -188,8 +193,12 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan form "Lapor Barang" mobile app. Di atas: toggle 2 opsi "Hilang"/"Ditemukan" (yang aktif bg hitam teks putih, yang tidak aktif outline). Bagian upload foto: 3 kotak 64px, kotak pertama sudah terisi foto (background kuning muda, ikon kamera hitam), dua kotak sisanya kosong bergaris putus-putus dengan ikon plus. Form fields: nama barang, kategori (dropdown), tanggal, deskripsi (textarea). Section lokasi: peta interaktif yang menempati sebagian layar (border gelap, rounded corners) dengan pin di tengah kampus, tombol kecil "Lokasi saya" (ikon my-location) di pojok kanan atas peta yang hanya menggeser view ke posisi GPS. Marker kecil gedung tampil di peta. Di bawah peta, daftar saran gedung vertikal — tiap item card putih dengan nama gedung dan jarak ("Gedung Sekolah A · 45 m"), item terpilih berlatar kuning muda. Input "Detail lokasi (opsional)" di bawah daftar. Tombol "Kirim laporan" hitam penuh (teks putih) menempel di bawah layar. Gaya minimalis, banyak whitespace, radius kecil 8px di semua elemen form, font Plus Jakarta Sans.
 
 ### 5.9 Detail Barang
+
+> [!note] Implementasi 2026-10-19 (E-1, PR #6, `lostfound-mobile`)
+> **Ikon share dihapus** dari header detail barang karena fungsinya belum ada — baris "ikon share" di daftar elemen bawah sudah tidak berlaku.
+
 **Elemen:**
-- Header: back + ikon share.
+- Header: back ~~+ ikon share~~ (**ikon share dihapus 2026-10-19**, lihat callout di atas).
 - Galeri foto carousel (dot indicator).
 - Badge status di atas judul, nama barang (H1), kode laporan kecil (mis. LST-261001-A3F9 / FND-261001-B7K2), lokasi (gedung + detail) + waktu laporan.
 - Peta kecil pin lokasi.
@@ -268,6 +277,8 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 > Field "No. WhatsApp" belum punya jalur penyimpanan di backend — spesifikasinya bergantung pada plan [[Nomor WhatsApp Pengguna - Lost&Found]] (usul `PUT /users/me` untuk field `whatsapp`; nama & email tetap read-only karena Google SSO).
 >
 > Status implementasi (2026-10-18): **belum pasti.** Klarifikasi user: WhatsApp "sepertinya belum masuk implementasi / masih plan", tetapi ada laporan toggle "Tampilkan nomor WhatsApp ke pengguna lain" menampilkan **nilai stale** — dicatat sebagai **E-1 (tinggi)** di [[Backlog UI Redesign - Lost&Found]] dan masuk daftar "perlu verifikasi kode". Perbaikan apa pun tidak boleh menambah dependensi ke plan Nomor WhatsApp (endpoint pengisian nomor tetap belum ada).
+>
+> **Pembaruan 2026-10-19 (E-1, PR #6):** toggle/field WhatsApp **ada** di app dan nilai stale **sudah diperbaiki** — `User.copyWith` + `ApiClient.saveCachedUser` (penyebab: cache user hanya ditulis saat `googleLogin`). Test `wa_visibility_persist_test.dart`. Yang **tetap belum ada** adalah jalur pengisian nomor di backend ([[Nomor WhatsApp Pengguna - Lost&Found]]).
 
 **Elemen:** back + judul, avatar dengan tombol ubah foto, input Nama Lengkap, NIM hanya-baca (sembunyikan bila kosong), No. WhatsApp (bisa diisi; format `62...`, normalisasi otomatis, boleh dikosongkan), toggle "Tampilkan nomor WhatsApp ke pengguna lain" (**default mati; aktif hanya bila nomor terisi**; bila nomor kosong toggle non-aktif dan nilainya dipaksa mati, dengan keterangan privasi), Email (hanya-baca, terikat Google SSO), tombol "Simpan Perubahan" hitam penuh.
 
@@ -278,10 +289,16 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 > [!warning] Akan berubah
 > Status implementasi (2026-10-18), perbaikan terkait di [[Backlog UI Redesign - Lost&Found]]:
 > - **Toggle "Notifikasi push" disembunyikan** sampai push benar-benar bisa dimatikan (**E-1**, tinggi) — lihat [[Push Notification - Lost&Found]]. Catatan: push **belum pernah diuji langsung** di HP (klarifikasi user 2026-10-18).
-> - Toggle "Tampilkan nomor WhatsApp" dilaporkan **nilai stale** (**E-1**), tetapi keberadaannya di app belum diverifikasi (user: WA belum masuk implementasi). Posisinya (tetap di sini atau hanya di Edit Profil §5.18) masih **belum diputuskan** ([[Nomor WhatsApp Pengguna - Lost&Found]]).
+> - Toggle "Tampilkan nomor WhatsApp" dilaporkan **nilai stale** (**E-1**), tetapi keberadaannya di app belum diverifikasi (user: WA belum masuk implementasi). Posisinya (tetap di sini atau hanya di Edit Profil §5.18) masih **belum diputuskan** ([[Nomor WhatsApp Pengguna - Lost&Found]]). **2026-10-19:** toggle **terbukti ada** dan nilai stale sudah diperbaiki (PR #6). Posisi toggle **masih** belum diputuskan.
 > - **Versi aplikasi** masih hardcode `1.0.0`; usul memakai `package_info_plus` **menunggu persetujuan user** (dependensi baru).
 > - **Kebijakan privasi & Syarat & ketentuan** masih teks hasil agent — **wajib review manusia** sebelum dipakai.
-> - Bundel font Plus Jakarta Sans (§2.2) belum diterapkan di app — **E-5**, sedang.
+> - ~~Bundel font Plus Jakarta Sans (§2.2) belum diterapkan di app — **E-5**, sedang.~~ **Sudah diterapkan 2026-10-19** (PR #5).
+
+> [!info] Pembaruan implementasi 2026-10-19 (E-1 & E-5, PR #5 & #6, `lostfound-mobile`)
+> - **Bundel font sudah diterapkan** — E-5 selesai di kode (lihat §2.2). Baris "belum diterapkan" di atas sudah tidak berlaku.
+> - **Toggle push sudah disembunyikan** — flag `_showPushToggle = false` (bertanda `TODO(ui-gap)`, dipulihkan saat FCM bisa unsubscribe). Jadi grup "Notifikasi & Privasi" saat ini **tidak menampilkan** toggle notifikasi push.
+> - **Toggle WhatsApp kini persisten** — nilai tidak stale lagi (`User.copyWith` + `ApiClient.saveCachedUser`); penyebab lama: cache user hanya ditulis saat `googleLogin`. Endpoint pengisian nomor tetap belum ada ([[Nomor WhatsApp Pengguna - Lost&Found]]).
+> - **Teks "Tema gelap belum tersedia." dihapus.** Pilihan tema gelap masih belum tersedia.
 
 **Elemen:**
 - Grup "Tampilan": Tema aplikasi (Sistem/Terang/Gelap).

@@ -219,7 +219,7 @@ $this->notifyFinder($claim);
 ### 2. Flutter UI
 
 > [!warning] Akan berubah (revisi 2026-10-19, disetujui, belum diimplementasi)
-> Dropdown "Pilih Laporan Hilang Anda" **tidak wajib** lagi. Claim diajukan langsung ke laporan target; laporan milik sendiri opsional. Validasi `lost_report_id` di `ClaimController::store()` dihapus/dilonggarkan menjadi opsional (bila dikirim, harus milik pengaju). Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19.
+> Dropdown "Pilih Laporan Hilang Anda" **tidak wajib** lagi. Claim diajukan langsung ke laporan target; laporan milik sendiri opsional. Validasi `lost_report_id` di `ClaimController::store()` dihapus/dilonggarkan menjadi opsional (bila dikirim, harus milik pengaju). Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19. **Sumber tunggal, termasuk kontrak request:** [[Claim Langsung ke Laporan Target - Lost&Found]].
 
 **ClaimFormScreen:**
 - Dropdown "Tautkan Laporan Hilang Anda (opsional)":

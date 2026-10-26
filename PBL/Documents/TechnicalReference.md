@@ -2,8 +2,8 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-18
-summary: Referensi teknis lengkap Lost&Found; endpoint, autentikasi, storage, skema, Filament, chat realtime, usulan push notification & WhatsApp
+updated: 2026-10-25
+summary: Referensi teknis lengkap Lost&Found; endpoint, autentikasi, storage, skema, Filament, chat realtime, baseUrl dart-define & kebijakan logging mobile. 2026-10-23: claim langsung ke laporan target as-built (Phase 1a PR #6 d1ef1eb 155 test, Phase 1b-i PR #7 cdae742 179 test); reject hanya untuk claim pending (T-261023-05). 2026-10-24: plan Fase 1.2 (accept/reject/withdraw pengguna) status Planning → as-built Fase 1.2: endpoint user accept/reject/withdraw, ClaimWithdrawService + ClaimNotificationService (1.2a `2bafdb5` & 1.2b `9faee99` merged, 1.2c `23d0be6` PR pending). 2026-10-25: fix transfer claim merge develop — FCM API v8 (`new()->withToken()`), guard status `accepted` di dalam `DB::transaction` + `lockForUpdate`, kegagalan FCM di-log `Log::warning` (235 test). 2026-10-25 (Bob-03…06): audit FCM v8 bersih (tidak ada API usang di `app/`), token FCM diredaksi dari log kegagalan, `PATCH /api/claims/{id}` dihapus, `whereUuid` di seluruh route API ber-param ID (non-UUID → 404), `test_fcm.php` dihapus + `DeadFcmTokenCleaner` (token mati), 252 test lulus
 ---
 
 > Dokumentasi teknis: arsitektur, ERD, migration, Filament resources, AI onboarding context.
@@ -116,7 +116,7 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 - **Setup:** Firebase project → daftarkan iOS+Android → `google-services.json` / `GoogleService-Info.plist` → server: `kreait/laravel-firebase` + service account key
 - **Notifikasi:** judul pendek + body deskriptif
 - **Deep link:** ke halaman detail laporan/claim
-- **Status implementasi (2026-10-18, hasil pembacaan kode oleh user, read-only):** token disimpan via `PUT /users/me/fcm-token`; pengiriman FCM **hanya** di `ClaimTransferService::notifyClaimant` (barang diserahkan) dan kegagalan kirim ditelan tanpa log. **Belum ada:** push claim diajukan / diterima / ditolak, push pesan chat + deep link, daftar notifikasi (tidak ada endpoint/tabel). Rencana & opsi A/B ada di [[Push Notification - Lost&Found]].
+- **Status implementasi (2026-10-18, diverifikasi ulang 2026-10-25):** token disimpan via `PUT /users/me/fcm-token`; pengiriman FCM ada di `ClaimTransferService::notifyClaimant` (barang diserahkan) dan `ClaimNotificationService` (accept/reject oleh penerima → pengaju; withdraw oleh pengaju → penerima). **Sejak 2026-10-25:** keduanya memakai API v8 `kreait/firebase-php 8.5.0` (`CloudMessage::new()->withToken()`; `withTarget` sudah dihapus) dan kegagalan kirim **dicatat `Log::warning`** (dulu ditelan tanpa log) — **token FCM diredaksi** dari pesan exception sebelum masuk log (audit Bob-03: tidak ada API FCM usang di `app/`; `routes/`, `database/`, `config/firebase.php` bersih; Filament `ClaimResource`/`UserResource` memakai `Notification::make()` milik Filament, bukan FCM; `AdminController` tidak mengirim FCM). **Sejak 2026-10-25 (Bob-05):** helper `app/Services/DeadFcmTokenCleaner.php` dipakai kedua jalur — `NotFound`/`SenderIdMismatch` (token permanen mati) → `users.fcm_token` di-NULL **hanya bila token di DB masih sama** dengan token yang gagal (token yang baru di-refresh aman); `ServerUnavailable`/error lain → token tetap, tetap `Log::warning`, request tetap 2xx. **Retry/backoff untuk `ServerUnavailable` SENGAJA tidak dibuat** (keputusan 2026-10-25). **Belum ada:** push claim diajukan, push pesan chat + deep link, daftar notifikasi (tidak ada endpoint/tabel). Rencana & opsi A/B ada di [[Push Notification - Lost&Found]].
 ---
 
 ## 11.1 Fitur Riwayat Laporan (MyReportsScreen) — Detail Teknis
@@ -133,18 +133,32 @@ Ditulis untuk **Backlog Item 5 (Riwayat Laporan Saya di Tab Profil)**, selesai 2
   4. Layar detail tampil **bar bawah** (Chat WhatsApp / "Ini laporan Anda" yang terpotong) untuk pemilik laporan → untuk pemilik, **bar bawah** disembunyikan di `lost_report_detail_screen.dart` & `found_report_detail_screen.dart`, diganti chip kecil "Laporan Anda" di samping `StatusBadge`. Bukan pemilik: perilaku tidak berubah.
 - **Status:** ✅ Selesai (2026-10-16). Lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] Item 5, DailyChanges 2026-10-16, Progres.
 
+### 11.2 Konfigurasi ApiClient Mobile — `baseUrl` & Logging (2026-10-19)
+
+Sumber: E-2 ([[Backlog UI Redesign - Lost&Found]]), PR #4 branch `chore/repo/client-config-hardening`, **merge `develop`** repo `lostfound-mobile` 2026-10-19 (squash).
+
+- **`baseUrl` via `--dart-define`:** `flutter run --dart-define=API_BASE_URL=http://<host>:8000/api`. Nilai default lama tetap dipakai sebagai **fallback** bila `--dart-define` tidak diberikan, sehingga build dev tanpa flag tidak berubah perilaku. Tidak ada file konfigurasi/secret baru.
+- **Kebijakan logging `LogInterceptor`:**
+  - Aktif **hanya** di `kDebugMode`; build release/profile tidak mencetak apa pun.
+  - Header request/respons **tidak** dicetak (termasuk `Authorization`).
+  - Body request/respons **tidak** dicetak (`requestBody = false`, `responseBody = false` — diverifikasi).
+  - Ini menutup Backlog open item (xiii) dan catatan keamanan [[Security Hardening - Lost&Found]] §5.2.
+- **`print` → `debugPrint`:** diterapkan di `main.dart`, `fcm_service.dart`, `upload_service.dart` (Backlog (vii)).
+- **Catatan:** `ApiClient` diambil via Provider baru di `settings_screen` dan `edit_profile_screen` (E-1). Di **11 layar lain** masih `ApiClient()` per layar — sisa pekerjaan, belum ada Plan.
+
 ---
 ## 12. Dashboard Admin — Rincian
 
 > [!warning] Akan berubah
 > Peran admin berubah di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]: dari gerbang wajib menjadi pemantau & penengah. Penemu verifikasi lewat tombol "Cocok" di chat, user sendiri yang serah terima dengan foto bukti.
 >
-> **Revisi 2026-10-19 (disetujui, belum diimplementasi):** claim tidak lagi wajib punya laporan sendiri; detail claim admin harus tahan `lost_report_id`/`found_report_id` NULL.
+> **Revisi 2026-10-19 — BERLAKU sejak 2026-10-23:** claim tidak lagi wajib punya laporan sendiri; detail claim admin tahan `lost_report_id`/`found_report_id` NULL (as-built: `AdminController` NULL-safe, aksi Filament `ClaimResource` NULL-safe, otorisasi `ClaimPolicy` berbasis penerima laporan target). Sumber tunggal: [[Claim Langsung ke Laporan Target - Lost&Found]].
 
 - **Overview:** kartu metrik, tabel laporan terbaru, tabel claim pending
 - **Laporan Admin:** filter status/kategori/tanggal/lokasi; kolom ID, pembuat, judul, kategori, lokasi, tanggal, status, aksi
 - **Claim Admin:** filter status; tabel ID, pemilik, barang hilang, barang ditemukan, tanggal, status, aksi; detail view foto side-by-side + peta + alasan + catatan admin
-- **Aksi:** Terima (→ `accepted` + laporan jadi `claimed` + notifikasi), Tolak (→ `rejected` + alasan + notifikasi). Setelah admin terima, serah terima fisik → upload foto bukti via markTransferred → `returned`.
+- **Aksi:** Terima (→ `accepted` + laporan **terisi** jadi `claimed` + notifikasi), Tolak (→ `rejected` + alasan + notifikasi) — logika terpusat di `ClaimDecisionService` (dipakai `AdminController` dan aksi Filament `ClaimResource`). Setelah admin terima, serah terima fisik → upload foto bukti via `markTransferred` → `returned`. Sisi laporan yang NULL dilewati.
+- **Sejak 2026-10-25 (fix transfer claim, sudah merge `develop`):** `markTransferred` menjalankan guard status `accepted` **di dalam** `DB::transaction` dengan `lockForUpdate` (urutan lock claim → laporan hilang → laporan temuan), menyimpan foto bukti **setelah** guard lolos, dan notifikasi serah terima memakai API FCM v8 (`CloudMessage::new()->withToken()`); kegagalan kirim dicatat `Log::warning`.
 ---
 ## 13. Non-Functional Requirements
 - **Performance:** feed \< 2 detik (3G), upload foto max 2MB (compressed), API response \< 500ms
@@ -322,6 +336,7 @@ Struktur direktori internal mengikuti struktur standar Flutter dan Laravel masin
 - **CONTRIBUTING.md:** ada di branch `chore/gitflow-docs` **sudah di-merge ke `develop`** (backend & mobile).
 - **Status branch backend:** `fix/photo-delete-ownership` & `refactor/laravel-storage` **dihapus** (2026-10-17), karena sudah ter-merge ke `main` & `develop` (SHA ujung: `367ed2738ea5b9ba93a463e3cbb459edba87e15f` dan `8ed0348261e96bd750ce7ff6be43479823f2c6dc`).
 - **Real-Time Chat Fase 1 backend:** branch `feature/chat/realtime-api` (3 commit: `2367926`, `669466b`, `8141719`) → **merge ke `develop` via PR #4 (squash), commit develop `fb256f9`** (2026-10-18). `php artisan test` di develop: **132 lulus** (sebelumnya 108).
+- **Backlog UI Redesign E-1…E-6 (mobile, 2026-10-19):** lima PR squash ke `develop` repo `lostfound-mobile`, semuanya 2026-10-19 — **#4** `chore/repo/client-config-hardening` (E-2, **selesai**), **#5** `chore/ui/bundle-font` (E-5, **selesai di kode**), **#6** `fix/ui/wa-visibility-inert-controls` (E-1, **sebagian**), **#7** `fix/claim/claim-form-lost-report-list` (E-3, **sebagian**), **#8** `chore/ui/polish-low` (E-6, **selesai**). E-4 **dibatalkan** (pin peta sudah berfungsi; tidak ada branch/kode). **Status final dikonfirmasi user 2026-10-19.** Hash branch **bukan** hash `develop` — hash `develop` tidak dicatat. Detail: [[Backlog UI Redesign - Lost&Found]] §Hasil Pengerjaan 2026-10-19.
 - **Tag baseline:** v0.1 **sudah dibuat** di kedua repo (sinkron): backend `72c7de1` (ujung `main`), mobile `69ed4c4`.
 ### 15.4 Filament Admin — Screen & Fitur
 Filament akan digunakan untuk dashboard admin dengan fitur:
@@ -620,17 +635,17 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <tr>
 <td>`lost_report_id`</td>
 <td>UUID (FK → lost_[reports.id](http://reports.id))</td>
-<td>Laporan barang hilang yang diklaim (NOT NULL; claimant wajib punya laporan hilang). **Rencana 2026-10-19 (belum ada migration): nullable** — claim langsung ke laporan target, laporan sendiri opsional.</td>
+<td>**Nullable** sejak 2026-10-23 (migration `2026_10_23_000001`; CHECK `claims_target_report_check`: `lost_report_id IS NOT NULL OR found_report_id IS NOT NULL`). Claim langsung ke laporan target, laporan sendiri opsional. Teks lama menyebut NOT NULL + "rencana" — sudah tidak berlaku.</td>
 </tr>
 <tr>
 <td>`found_report_id`</td>
 <td>UUID (FK → found_[reports.id](http://reports.id))</td>
-<td>Laporan barang ditemukan yang diklaim</td>
+<td>Laporan barang ditemukan yang diklaim — **nullable** sejak 2026-10-23; sisi NULL dilewati semua query/otorisasi</td>
 </tr>
 <tr>
 <td>`claimant_id`</td>
 <td>UUID (FK → [users.id](http://users.id))</td>
-<td>User yang mengajukan claim (pemilik barang)</td>
+<td>User yang mengajukan claim (pengaju: pemilik **atau** penemu — dihitung dari laporan target, bukan kolom)</td>
 </tr>
 <tr>
 <td>`status`</td>
@@ -650,17 +665,17 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <tr>
 <td>`accepted_at`</td>
 <td>Timestamp (nullable)</td>
-<td>Waktu konfirmasi diterima oleh penerima — untuk hitung kedaluwarsa 7 hari (KOLOM BARU, disetujui 2026-10-14, belum ada migration)</td>
+<td>Waktu konfirmasi diterima oleh penerima — untuk hitung kedaluwarsa 7 hari (ada sejak migration 2026-10-23)</td>
 </tr>
 <tr>
 <td>`closed_reason`</td>
 <td>Text (nullable)</td>
-<td>Alasan penutupan (rejected/withdrawn/expired) (KOLOM BARU, disetujui 2026-10-14, belum ada migration)</td>
+<td>Alasan penutupan (rejected/withdrawn/expired) (ada sejak migration 2026-10-23)</td>
 </tr>
 <tr>
 <td>`closed_by`</td>
 <td>UUID (FK → users.id, nullable)</td>
-<td>User yang menutup (pengaju/penerima/admin), NULL = sistem (KOLOM BARU, disetujui 2026-10-14, belum ada migration)</td>
+<td>User yang menutup (pengaju/penerima/admin), NULL = sistem (ada sejak migration 2026-10-23; FK `users.id` on delete set null)</td>
 </tr>
 <tr>
 <td>`proof_of_transfer_photo_url`</td>
@@ -675,7 +690,7 @@ Sistem menggunakan 7 tabel utama: `users`, `buildings`, `lost_reports`, `found_r
 <tr>
 <td>`transferred_by`</td>
 <td>UUID (FK → users.id, nullable)</td>
-<td>Admin/penemu yang menyerahkan barang</td>
+<td>Admin **atau pelapor laporan target** yang menyerahkan barang (2026-10-23)</td>
 </tr>
 <tr>
 <td>`created_at`</td>
@@ -877,8 +892,8 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 **Alur Utama:**
 1. User A kehilangan jaket → masuk dengan Google SSO → buka Flutter app → "Lapor Hilang" → foto + GPS + deskripsi → kirim ke Laravel API
 2. User B menemukan jaket → masuk dengan Google SSO → buka Flutter app → "Lapor Temuan" → foto + GPS + deskripsi → kirim
-3. Mahasiswa A lihat laporan temuan → ajukan claim (wajib pilih laporan hilangnya) → chat otomatis dengan penemu → penemu verifikasi kepemilikan via chat
-4. Admin di Filament dashboard lihat claim pending → review foto + lokasi → terima/tolak claim → notifikasi ke kedua pihak (FCM)
+3. Mahasiswa A lihat laporan temuan → ajukan claim **langsung ke laporan target** (laporan sendiri opsional, `POST /api/claims`) → chat otomatis **per `claim_id`** dengan pelapor target → pelapor target verifikasi kepemilikan via chat
+4. Admin di Filament dashboard lihat claim pending → review foto + lokasi → terima/tolak claim → notifikasi ke kedua pihak (FCM) — **as-built 2026-10-24:** notifikasi FCM hanya lewat endpoint user (`accept`/`reject`/`withdraw`); jalur admin/Filament **tidak** mengirim FCM. **Keputusan 2026-10-25 (audit Bob-03): FCM jalur admin tidak diperlukan** — `AdminController` tidak mengirim FCM dan `Notification::make()` di Filament bukan FCM.
 5. Setelah admin terima, koordinasi serah terima → upload foto bukti → status jadi `returned`
 **Tech Stack Final:**
 - **Mobile:** Flutter (Dart) — `google_sign_in ^7.2.0`, `image_picker` (kamera + galeri), `camera` (kemungkinan tidak terpakai), `location`, `flutter_map` + `latlong2` (peta OSM), `firebase_messaging`, `dio`/`http`, `url_launcher` (untuk WhatsApp deep-link)
@@ -891,18 +906,24 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - `User` — role `user` untuk mahasiswa/dosen/karyawan, `admin` untuk administrator. Mobile login Google SSO pada domain `mhs.polines.ac.id`, `dsn.polines.ac.id`, `polines.ac.id`; NIM opsional; password nullable untuk user SSO dan tetap dipakai admin; punya `fcm_token`, `email_verified_at`, `blocked`
 - `LostReport` — laporan barang hilang (dibuat pemilik) — status: pending → claimed → returned/closed
 - `FoundReport` — laporan barang ditemukan (dibuat penemu) — status: pending → claimed → returned/closed
-- `Claim` — pengajuan pemilik ke barang ditemukan — status: pending → accepted → returned / rejected / withdrawn
+- `Claim` — pengajuan **langsung ke laporan target** (temuan → pemilik, hilang → penemu); `lost_report_id`/`found_report_id` nullable, CHECK minimal satu terisi — status: pending → accepted → returned / rejected / withdrawn
 **Endpoint API Penting:**
 - `POST /api/auth/google` — verifikasi Google ID token, audience, email_verified, dan allowlist domain di backend; tolak blocked (403 + blocked_reason); terbitkan Sanctum token 7 hari
 - `POST /api/lost-reports` — buat laporan hilang (file upload foto + GPS data)
 - `POST /api/found-reports` — buat laporan ditemukan
 - `GET /api/lost-reports` & `GET /api/found-reports` — daftar laporan (paginasi). Sejak 2026-10-15 ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 3) index mendukung **`?mine=1`**: hanya mengembalikan laporan milik user login (`auth()->id()` dari Sanctum); format respons & pagination **sama** seperti index biasa, urutan terbaru dulu; **tanpa `mine` / `mine=0` perilaku lama tidak berubah**; kombinasi `mine=1&status=pending` bekerja; `mine=1` tanpa token → `401`. Sejak 2026-10-18 index juga menerima **`per_page`**: integer, **default 20**, di-clamp ke rentang **1–50**; nilai kosong/invalid → default 20 **tanpa `422`**. Semua filter **`search`** dibungkus satu grup `where()`, sehingga filter lain (`status`, `mine`) tetap berlaku. Bug `orWhere` di `SearchController` diperbaiki — sebelumnya permintaan `status=pending` masih bisa memunculkan laporan berstatus lain. Format respons tidak berubah.
-- `POST /api/claims` — ajukan claim (dengan alasan)
-- `PATCH /api/claims/{id}` — admin proses claim (terima/tolak) — perlu admin role *(verifikasi ke routes aktual; kemungkinan tidak sinkron)*
+- `POST /api/claims` — ajukan claim (as-built 2026-10-23, merge `develop` PR #6 `d1ef1eb`, **155 test lulus**). Field `lost_report_id` & `found_report_id` **keduanya nullable**, `reason` wajib. Aturan 1–9: (1) tepat satu laporan **TARGET** = milik orang lain dan `pending`; (2) laporan satunya opsional, bila ada wajib milik pengaju; (3) `lost_report_id` target → pengaju penemu; `found_report_id` target → pengaju pemilik; (4) keduanya kosong → **422**; (5) keduanya milik orang lain → **422**; (6) keduanya milik pengaju → **422**; (7) target bukan `pending`, id tidak ada / bukan UUID → **422**; (8) sudah ada claim aktif per (`claimant_id`, target) → **422**, dan target sudah punya 5 claim `pending` → **422**; (9) laporan sendiri ditautkan wajib milik pengaju **dan** `pending`, selain itu **422**. Sukses → **201**; `Claim::create()` + pembuatan `Conversation` per `claim_id` dalam satu `DB::transaction` (gagal → rollback penuh, klien **422**). Status laporan **tetap `pending`** saat claim dibuat.
+- `PATCH /api/claims/{id}` — **DIHAPUS 2026-10-25 (Bob-04, commit `b1059d5`)**: `ClaimController::update` dihapus, route kini **405**; sebelumnya no-op dan tidak dipakai Flutter. **`ClaimPolicy::update` TETAP dipertahankan** karena dipakai aksi Filament `ClaimResource` (EditAction). **Teks lama (tidak dihapus):** ~~hanya memuat + otorisasi `ClaimPolicy::update` (**admin saja**) lalu mengembalikan claim~~. Terima/tolak admin lewat `AdminController::acceptClaim`/`rejectClaim` (satu logika di `ClaimDecisionService`). **Reject as-built 2026-10-23 (T-261023-05, commit `a262255`, 182 test lulus, merge `develop`):** hanya claim `pending` (selain itu **422**), **tidak mengubah status laporan**; `lockForUpdate` + `ClaimNotPendingException::reject()`; `AdminController::rejectClaim` dan aksi Tolak Filament menangkap exception.
+- `POST /api/claims/{id}/accept` — terima claim (as-built 2026-10-24; 1.2a commit `0f41270`, merge `develop` squash `2bafdb5`, 199 test lulus). Hanya **admin ATAU penerima** (`ClaimPolicy::accept`); wajib claim `pending` dan laporan target `pending` (selain itu **422**); bukan admin/penerima → **403**; id tidak ada → **404**. Efek: status `accepted`, `accepted_at = now()` (via `ClaimDecisionService::accept()`), laporan terisi → `claimed`.
+- `POST /api/claims/{id}/reject` — tolak claim oleh **admin ATAU penerima** (`ClaimPolicy::reject`); body `reason` wajib string → **422** bila kosong; claim non-`pending` → **422**; bukan admin/penerima → **403**. Efek: status `rejected`, `closed_reason` = alasan, `closed_by` = id penerima; **status laporan tidak diubah**. Jalur admin lama (`AdminController::rejectClaim`) tetap menulis `admin_note`, **tidak** mengisi `closed_reason`/`closed_by`.
+- `POST /api/claims/{id}/withdraw` — cabut claim oleh **pengaju saja** (`ClaimPolicy::withdraw`; admin/penerima/outsider → **403**; body `reason` wajib → **422** bila kosong; status hanya `pending`/`accepted`, selain itu **422**). Efek: status `withdrawn`, `closed_reason`, `closed_by` = claimant; bila sebelumnya `accepted`, laporan terisi yang masih `claimed` → `pending` (sisi NULL dilewati); bila `pending`, laporan tidak diubah; `accepted_at` dibiarkan sebagai jejak.
+- **Constraint UUID route (2026-10-25, Bob-04 + Bob-06):** semua route API ber-param ID kini `->whereUuid('id')` — `GET /api/claims/{id}`, `accept`/`reject`/`withdraw`, `PATCH /api/claims/{claim}/mark-transferred`, `POST /api/admin/claims/{id}/accept|reject`, `GET /api/lost-reports/{id}`, `GET /api/found-reports/{id}`, `GET|POST /api/conversations/{id}/messages`, `PATCH /api/messages/{id}/read`. **ID non-UUID → `404`, bukan `500`** (sebelumnya `SQLSTATE[22P02] invalid input syntax for type uuid`). Route Filament `{record}` bukan bagian `routes/api.php` — tidak diubah. 252 test lulus / 675 assertion.
+- Service claim (as-built 2026-10-24; notifikasi FCM diselaraskan 2026-10-25): `ClaimDecisionService` (`accept()` mengisi `accepted_at`; `reject()` punya parameter opsional `closedReason`/`closedBy` — jalur admin tidak berubah, tetap `admin_note`), `ClaimWithdrawService` (**baru**; transaction + `lockForUpdate`), `ClaimNotificationService` (**baru**; FCM best-effort ke pengaju saat accepted/rejected dan ke penerima saat withdrawn; payload `type` + `claim_id`; gagal kirim **tidak** menggagalkan request dan dicatat `Log::warning` dengan `claim_id`/`type`). Tidak ada notifikasi di jalur admin/Filament.
+- `GET /api/claims` — daftar claim, **ter-scope per peserta** (as-built 2026-10-23): admin melihat semua; non-admin hanya claim yang ia ajukan (`claimant_id`) **atau** laporan yang ia laporkan (`lostReport.reporter_id` / `foundReport.reporter_id`). Filter `status` opsional; `paginate(20)` tanpa `per_page` (lihat §17).
 - `GET /api/buildings` — daftar master gedung untuk marker peta + saran gedung
 - `POST /api/photos/upload` — upload foto (jpg/jpeg/png/webp, maks 2 MB); mengembalikan `{url, path}` (201) — `path` = path relatif yang disimpan (2026-10-14). Sejak 2026-10-15 upload **mencatat kepemilikan**: Cache `photo-owner:{path}` → `user_id`, **TTL 24 jam** (`CACHE_STORE=database`).
 - `POST /api/photos/delete` — hapus foto; menerima URL lengkap atau path relatif, dinormalisasi, wajib berawalan `reports/` atau `claims/proof/`. Sejak 2026-10-15 ([[Backlog Perbaikan Lanjutan - Lost&Found]] Item 9, Opsi C) menerapkan cek kepemilikan + rujukan: **`403`** bila foto tidak tercatat sebagai milik peminta (termasuk foto lama pra-fitur), **`409`** bila foto masih dirujuk (`lost_reports.photo_urls`, `found_reports.photo_urls`, `claims.proof_of_transfer_photo_url`), **`422`** bila domain asing/path traversal.
-- `PATCH /api/claims/{claim}/mark-transferred` — tandai barang diserahkan (admin atau penemu)
+- `PATCH /api/claims/{claim}/mark-transferred` — tandai barang diserahkan. **DISETUJUI user 2026-10-23:** boleh oleh **admin ATAU pelapor laporan target** (`ClaimPolicy::markTransferred` → `Claim::receiverId()` + `Claim::isReceiver()`); wajib status `accepted` (selain itu **422**), `proof_photo` wajib (image jpg/jpeg/png/webp, maks 5 MB). Sisi laporan yang NULL dilewati. **Sejak 2026-10-25 (fix transfer claim, sudah merge `develop`):** guard `accepted` dijalankan **di dalam** `DB::transaction` dengan `lockForUpdate` (urutan lock claim → laporan hilang → laporan temuan); foto bukti disimpan **setelah** guard lolos dan dihapus dari disk `public` bila terjadi exception; notifikasi serah terima (`ClaimTransferService::notifyClaimant`) memakai API FCM v8 `CloudMessage::new()->withToken()` (`withTarget` sudah tidak ada di `kreait/firebase-php 8.5.0`) dengan kegagalan dicatat `Log::warning`. 235 test lulus.
 - `GET /api/admin/*` — endpoint admin
 **Endpoint Chat (Real-Time Chat Fase 1, merge `develop` 2026-10-18)** — semua `auth:sanctum`; admin tidak berakses isi chat:
 - `POST /api/conversations` — body `claim_id` **ATAU** (`other_user_id` + tepat satu dari `lost_report_id`/`found_report_id`; `other_user_id` harus pelapor laporan itu; tidak boleh diri sendiri). Find-or-create: **201** baru, **200** sudah ada
@@ -922,7 +943,7 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - Admin: hanya role `admin` yang bisa akses endpoint admin dan Filament dashboard; admin tidak baca isi chat
 - Filament: digunakan khusus untuk admin dashboard web, bukan replacement untuk mobile app
 - Google OAuth client Web digunakan sebagai audience ID token; client Android memerlukan SHA-1 tiap mesin developer. Jangan simpan credential di dokumen.
-- Chat (2026-10-18): env broadcasting memakai `BROADCAST_CONNECTION` (di `.env.example` default `log`; dev memakai `pusher`, cluster `ap1`) — nilai `PUSHER_*` tidak ditulis di dokumen. Chat langsung wajib menyertakan laporan (tepat satu `lost_report_id`/`found_report_id`); cabang claim `user1_id` = pelapor laporan hilang, `user2_id` = pelapor laporan temuan, **422** bila keduanya sama.
+- Chat (2026-10-18): env broadcasting memakai `BROADCAST_CONNECTION` (di `.env.example` default `log`; dev memakai `pusher`, cluster `ap1`) — nilai `PUSHER_*` tidak ditulis di dokumen. Chat langsung wajib menyertakan laporan (tepat satu `lost_report_id`/`found_report_id`); cabang claim `user1_id` = `claimant_id`, `user2_id` = **pelapor laporan target** (**DISETUJUI user 2026-10-23**; teks lama menyebut `user1_id` = pelapor laporan hilang — sudah tidak berlaku), **422** bila keduanya sama.
 ---
 
 ## 17. Open Items
@@ -936,13 +957,47 @@ Lost & Found adalah aplikasi mobile (Flutter) + web dashboard admin (Laravel Fil
 - **Wajib `php artisan storage:link` di setiap setup/clone baru (2026-10-14)** — symlink `public/storage` dan isi `storage/app/public` tidak ikut Git.
 - **Job pembersih foto yatim terjadwal — KEPUTUSAN 2026-10-15: DITUNDA** — foto yatim lama (tanpa catatan owner di Cache; pra-fitur Item 9) selalu `403` saat delete oleh user dan tidak dirujuk laporan. Dampaknya hanya ruang disk, dan sejak Item 1 foto yatim baru tidak muncul lagi (rollback berjalan). Cukup dibuat plan **hanya bila penyimpanan mulai jadi masalah**; tidak ada plan sekarang.
 - **Audit rollback foto bukti serah terima (`claims/proof`) — KEPUTUSAN 2026-10-15: dikerjakan bersama [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]** — foto bukti serah terima wajib di plan tersebut, jadi alur upload-nya akan disentuh lagi; mengaudit sekarang = mengaudit dua kali.
-- **Chat — open items (USULAN, belum diputuskan, 2026-10-18):** (a) route ganda `/broadcasting/auth` (otomatis `withRouting(channels:)` + manual `Broadcast::routes` di `api.php`) — usul rapikan via `withBroadcasting(prefix: 'api', middleware: ['api','auth:sanctum'])`, prioritas low; (b) `index()` conversations N+1 query — usul optimasi eager-load; (c) endpoint mark-read massal; (d) chat read-only berdasar status claim + user terblokir masih bisa kirim pesan — usul di plan Claim Dua Arah / Fase 3; (e) FCM notifikasi pesan baru + deep link belum ada — usul Fase 3. (f) **`GET /api/search` belum punya `limit`/pagination** — usul tambahkan limit/pagination, prioritas low; (g) **`ConversationController::index` memakai `orWhere` tanpa group** — usul dibungkus satu grup `where()` (digabung dengan usulan (b) N+1 eager-load), prioritas low; (h) **dropdown "Laporan hilang kamu" di mobile hanya memuat 20 laporan pertama** (default `per_page`) — usul kirim `status=pending` (+ opsi `mine=1`/pagination), lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] item (ix). Rincian di [[Real-Time Chat - Lost&Found]].
+- **Chat — open items (USULAN, belum diputuskan, 2026-10-18):** (a) route ganda `/broadcasting/auth` (otomatis `withRouting(channels:)` + manual `Broadcast::routes` di `api.php`) — usul rapikan via `withBroadcasting(prefix: 'api', middleware: ['api','auth:sanctum'])`, prioritas low; (b) `index()` conversations N+1 query — usul optimasi eager-load; (c) endpoint mark-read massal; (d) chat read-only berdasar status claim + user terblokir masih bisa kirim pesan — usul di plan Claim Dua Arah / Fase 3; (e) FCM notifikasi pesan baru + deep link belum ada — usul Fase 3. (f) **`GET /api/search` belum punya `limit`/pagination** — usul tambahkan limit/pagination, prioritas low; (g) **`ConversationController::index` memakai `orWhere` tanpa group** — usul dibungkus satu grup `where()` (digabung dengan usulan (b) N+1 eager-load), prioritas low; (h) **dropdown "Laporan hilang kamu" di mobile hanya memuat 20 laporan pertama** (default `per_page`) — usul kirim `status=pending` (+ opsi `mine=1`/pagination), lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] item (ix). Rincian di [[Real-Time Chat - Lost&Found]]. **Pembaruan 2026-10-19:** mobile kini mengirim `mine: true&status=pending&per_page=50` + loop halaman sampai `lastPage` (E-3, PR #7) — batas 20 laporan di dropdown **teratasi di sisi mobile**; `per_page` backend untuk claim (`ClaimController::index`) masih hardcode `paginate(20)`.
 
 - **✅ Pagination & search laporan dibatasi + filter search diperbaiki (2026-10-18)** — branch `fix/api/report-pagination`, commit `36c32a7` ("fix(api): bound report pagination and scope search filters"), merge ke `develop` lewat PR squash. `LostReportController` & `FoundReportController`: `per_page` int default 20, clamp 1–50, nilai invalid → default (tanpa `422`); `search` dibungkus grup `where()`. `SearchController`: bug `orWhere` diperbaiki sehingga `status=pending` berlaku benar. Test baru `tests/Feature/ReportPaginationSearchTest.php` (6 test); `php artisan test`: **138 lulus** (sebelumnya 132). Tanpa kolom/tabel/dependensi baru; format respons tidak berubah.
 
 - **Chat — hasil tes manual (2026-10-18, laporan user):** chat diuji di **1 HP dengan 2 akun berbeda**; UI Flutter (list percakapan + kirim/terima) sudah dipakai; skenario **kirim/terima pesan realtime antar dua user berhasil**, belum menemukan bug. **Belum diuji:** dedup pengirim, mark-read (`PATCH /api/messages/{id}/read`), penolakan non-peserta (`403`), reconnect saat app dibuka kembali, dan tes dua perangkat. **Belum dikonfirmasi:** apakah broadcast benar-benar lewat **Pusher asli** — user sudah menyiapkan key/app Pusher tetapi belum yakin driver yang dipakai saat tes.
 
+- **Ketergantungan backend dari E-3 (2026-10-19):** `ClaimController::index` di `develop` masih `paginate(20)` **tanpa scope `claimant_id`** → `per_page=50` dari mobile tidak berpengaruh dan filter sisi klien di `my_claims_screen.dart` **harus tetap ada**. Branch `fix/claim/scope-claims-access` dan `fix/api/report-pagination` **tidak ada** di repo `lostfound-backend` → perlu dijadwalkan sebelum filter klien dihapus. Terkait Backlog (ix) & (xiv) dan [[Backlog UI Redesign - Lost&Found]] E-3/B-1.
+- **DIPERBARUI 2026-10-23 (anotasi, teks lama di atas tidak dihapus):** `ClaimController::index` di `develop` (`cdae742`) **sudah** ter-scope per peserta — admin = semua; non-admin hanya `claimant_id` **atau** reporter laporan hilang **atau** reporter laporan ditemukan (lihat §16). Jadi filter sisi klien di `my_claims_screen.dart` bisa dihapus; sisa E-3 hanya `per_page` claim (masih `paginate(20)`). 
+
+- **Open item aset & build mobile (2026-10-19, temuan E-5):**
+  - (a) `assets/images/` ada di `.gitignore` sementara `pubspec.yaml` mendeklarasikannya. Font E-5 di-commit di dalam folder itu, aset lain di dalamnya belum ter-track → **perlu keputusan:** track aset (longgarkan `.gitignore`) atau pindahkan font ke path lain (mis. `assets/fonts/`).
+  - (b) Pernah terjadi **drift `pubspec.lock`** (entri `google_fonts` hilang saat build lokal); **belum terbukti** di git.
+  - (c) **Warning KGP** dari plugin `location` dan `pusher_channels_flutter` → perlu upgrade plugin.
+  - (d) Stash lokal `client-config-hardening` dan worktree `lostfound-mobile-claim` sudah tidak diperlukan (info saja).
+
 - **Plan baru 2026-10-18 (USULAN/PLANNING, belum ada kode):**
 	- **Push Notification — [[Push Notification - Lost&Found]] (priority `high`):** melengkapi push di luar serah terima (claim diajukan, claim diterima/ditolak, chat baru + deep link, status laporan, pembekuan/kedaluwarsa claim). Daftar peristiwa ada di plan. Keputusan **Opsi A (FCM saja, tanpa tabel) vs Opsi B (tabel notifikasi ke-8, bertentangan dengan keputusan 7 tabel → perlu update [[ERD]]/`schema.dbml`/[[PRD]]/[[Design]])** masih menunggu user. Kegagalan FCM yang sekarang ditelan tanpa log diusulkan dicatat sebagai warning.
 	- **Nomor WhatsApp Pengguna — [[Nomor WhatsApp Pengguna - Lost&Found]] (priority `medium`):** tidak ada endpoint untuk **mengisi** `users.whatsapp`; yang ada hanya `PUT /users/me/wa-visibility` dan `PUT /users/me/fcm-token` (keduanya **belum terdaftar di §16**). Usul `PUT /users/me` khusus field `whatsapp` (+ normalisasi `62...`, boleh kosong) dan field di Edit Profil. **Wajib diverifikasi:** `LostReportController`/`FoundReportController` mengembalikan model mentah — cek relasi pelapor tidak membocorkan `whatsapp`/`nim`/`fcm_token`; nomor hanya boleh tampil bila `wa_visible = true` (pola di [[Security Hardening - Lost&Found]] §2, belum diterapkan).
 	- **Kartu konteks chat — usulan masuk [[Real-Time Chat - Lost&Found]] Fase 2/3 (bukan plan terpisah):** tambah field `context` (`claim {id,status}` + laporan terkait `{id,nama,foto,kode,status}`) di respons `GET /api/conversations` (**bukan skema DB**); kartu pinned di `ChatScreen`, tahap 1 read-only; tombol aksi menunggu endpoint [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]]; alasan claim tidak ditampilkan.
+
+- **✅ Claim Langsung ke Laporan Target — Phase 1a SELESAI (2026-10-23, dikonfirmasi user)** — PR #6 squash ke `develop` (`d1ef1eb`), branch `feature/claim/direct-target-claim`; **155 test lulus**. Migration `2026_10_23_000001_make_claim_reports_nullable` (`lost_report_id`/`found_report_id` nullable + CHECK `claims_target_report_check`; `accepted_at`, `closed_reason`, `closed_by` dengan guard `hasColumn`), `ClaimController::store()` kontrak aturan 1–9 + `DB::transaction`, `ClaimConversationService::forClaim()` (conversation per `claim_id`, NULL-safe, exception → 422), `ClaimTransferService` NULL-safe. Lihat [[Claim Langsung ke Laporan Target - Lost&Found]].
+- **✅ Claim Langsung — Phase 1b-i SELESAI (2026-10-23, dikonfirmasi user)** — PR #7 squash ke `develop` (`cdae742`), branch `fix/claim/null-safe-claim-access` (`2897503`); **179 test lulus**. `ClaimPolicy` (`view`/`update`/`markTransferred` berbasis `Claim::receiverId()` + `Claim::isReceiver()`), `ClaimDecisionService` (accept/reject, `lockForUpdate`, hanya laporan terisi), `AdminController::acceptClaim`/`rejectClaim` NULL-safe, aksi Filament `ClaimResource` NULL-safe. **Sisa Phase 1b:** endpoint user accept/reject/withdraw + test dua `accept` bersamaan.
+- **✅ Semantik `reject` — SELESAI 2026-10-23 (dikonfirmasi user; T-261023-05, commit `a262255`, 182 test lulus, sudah merge `develop`)** — `reject` hanya untuk claim `pending` (selain itu **422**) dan **tidak mengubah status laporan**; `ClaimDecisionService::reject` memakai `lockForUpdate` + `ClaimNotPendingException::reject()`; `AdminController::rejectClaim` dan aksi Tolak Filament menangkap exception. **Teks lama (tidak dihapus):** "`ClaimDecisionService::reject()` menerima claim dalam status apa pun dan menyetel laporan terkait kembali `pending`; berbeda dari `accept()` yang melempar `ClaimNotPendingException` (→ 422). USULAN: `reject` hanya untuk claim `pending` dan tidak mengubah status laporan." — **sudah tidak berlaku**.
+- **⚠ Respons claim membocorkan model `User` mentah** — `ClaimController::index`/`show`/`update` memuat relasi `claimant` (dan `transferredBy`) tanpa `UserResource` → ikut mengirim `nim`, `whatsapp`, `email`, `blocked_reason`. Terkait plan [[Nomor WhatsApp Pengguna - Lost&Found]] dan aturan [[Security Hardening - Lost&Found]] §2 (belum diterapkan); tercatat di [[Backlog Perbaikan Lanjutan - Lost&Found]] item (xiv). **Keputusan user 2026-10-23:** diperbaiki **sekarang** lewat tugas backend terpisah (`UserResource`), setelah Ajax cek model `Claim` Flutter — bukan menunggu plan [[Nomor WhatsApp Pengguna - Lost&Found]].
+- **⚠ Batas 5 pending & cek claim ganda di luar `DB::transaction`** — `ClaimController::store()` menghitung `$pendingCount` dan `$alreadyClaimed` **sebelum** transaction, sehingga dua request bersamaan bisa sama-sama lolos (risiko rendah). Usul: pindahkan ke dalam transaction dengan `lockForUpdate`.
+- **⚠ Filament `ClaimResource` belum punya test otomatis** — aksi Terima/Tolak di Filament diuji lewat `ClaimDecisionService` (test service), bukan test fitur Filament.
+- **⚠ Admin tidak bisa menolak claim `accepted` (2026-10-23):** setelah T-261023-05, `reject` hanya untuk `pending` (422 selain itu) dan tidak mengubah status laporan. Alur batal/tutup setelah `accepted` (`withdraw`, `closed_reason`, `closed_by`) menunggu Phase 1.2 plan lama; claim `accepted` yang macet hanya bisa dibuka lewat form **Edit Filament** (tidak mengembalikan status laporan). **Diperbarui 2026-10-24:** pengaju kini bisa `withdraw` claim `accepted` (1.2b); admin tetap tidak bisa menolak `accepted` dan hanya bisa lewat **Edit Filament**.
+- **⚠ Form Edit Filament `ClaimResource` membiarkan admin mengubah `status`, `lost_report_id`, `found_report_id` bebas** (melewati aturan status) — belum dibatasi (Phase 3 Filament).
+- **⚠ Aksi Tolak Filament mewajibkan `admin_note` sedangkan API `admin_note` nullable** — prioritas low.
+- **✅ Fase 1.2 — accept/reject oleh penerima + withdraw oleh pengaju — SELESAI (kode), 2026-10-24** — plan [[Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found]] `High`. 1.2a (commit `0f41270`, merge `develop` squash `2bafdb5`; 182 → 199 test lulus): `Claim::#[Fillable]` + cast `accepted_at` => `datetime`; `ClaimDecisionService::accept()` mengisi `accepted_at`; `ClaimPolicy::accept`/`reject` (admin ATAU `Claim::receiverId()`); endpoint `POST /api/claims/{id}/accept` & `/reject` (body `reason` wajib). 1.2b (commit `97d49c7`, merge `develop` squash `9faee99`; 199 → 215 test lulus): `ClaimPolicy::withdraw` (hanya claimant), `POST /api/claims/{id}/withdraw`, `ClaimWithdrawService` baru (`lockForUpdate`; `accepted` → laporan `claimed` kembali `pending`, `pending` → laporan tidak diubah; `accepted_at` dibiarkan sebagai jejak). 1.2c (commit `23d0be6`, **push, PR belum dibuat/merge**; 215 → 230 test lulus): `ClaimNotificationService` baru (FCM best-effort ke pengaju saat accepted/rejected, ke penerima saat withdrawn; payload `type` + `claim_id`) + `ClaimConcurrencyTest`. `route:list --path=claims` 12 → 14 → 15 → 15. **Tidak ada migration baru.** Jalur admin/Filament tidak diubah. Lihat [[Bob-261024-02-claim-user-accept-reject]], [[Bob-261024-03-claim-user-withdraw]], [[Bob-261024-04-claim-fcm-concurrency]].
+
+- **✅ BUG firebase-php 8.5.0 — notifikasi serah terima tidak pernah terkirim — SELESAI (2026-10-25, sudah merge `develop`):** `ClaimTransferService::notifyClaimant` memakai API v8 `CloudMessage::new()->withToken()` (commit `a0226b4`), guard status `accepted` masuk `DB::transaction` + `lockForUpdate`, foto disimpan setelah guard lolos; 235 test lulus. **Teks lama (tidak dihapus):** ~~`ClaimTransferService::notifyClaimant` masih memakai `CloudMessage::withTarget('token', ...)`; method itu **dihapus** di firebase-php 8.5.0 (sekarang `CloudMessage::new()->withToken()`). Exception ditelan try/catch kosong → notifikasi FCM serah terima **diam-diam gagal**. Ditemukan saat 1.2c (Bob-261024-04); `ClaimNotificationService` baru memakai API v8 yang benar; `ClaimTransferService` sengaja tidak diubah (di luar lingkup 1.2c).~~
+- **⏳ Fase 1.2c menunggu PR:** branch `feature/notification/claim-decision-fcm` (`23d0be6`) sudah push, PR belum dibuat/merge ke `develop`.
+- **✅ FCM jalur admin/Filament — audit Bob-03 (2026-10-25):** audit membuktikan **tidak ada FCM di jalur admin** — `AdminController` tidak mengirim FCM; `Notification::make()` di Filament `ClaimResource`/`UserResource` adalah notifikasi **Filament**, bukan FCM; `ConversationController` juga tanpa FCM. Audit FCM v8 **bersih** (tidak ada API usang di `app/`). **Keputusan user 2026-10-25: FCM admin tidak diperlukan sekarang** (notifikasi admin tetap lewat Filament).
+
+- **✅ Open items transfer claim — SELESAI 2026-10-25 (Bob-03/04/06):**
+  - (a) ~~**FCM jalur admin/Filament belum diaudit**~~ → **selesai**: tidak ada FCM di jalur admin (lihat di atas).
+  - (b) ~~**`UserResource` belum ditinjau**~~ → **selesai (ditinjau Bob-03)**: `UserResource` hanya memakai `Notification::make()` Filament, bukan FCM. Sisa masalah `User` mentah di respons claim tetap open (item (xiv)).
+  - (c) ~~**`PATCH /api/claims/{id}` mengembalikan `200` tanpa perubahan**~~ → **selesai (Bob-04)**: route dihapus, kini **405**; `ClaimPolicy::update` tetap untuk Filament.
+  - (d) ~~**ID non-UUID menghasilkan `500`**~~ → **selesai (Bob-04 + Bob-06)**: `whereUuid` di semua route API ber-param ID → **404**.
+
+- **⚠ Open items baru (2026-10-25, prioritas rendah, BELUM diputuskan):**
+  - (a) **Chore Pint:** `vendor/bin/pint --test` gagal di **6 file lama** (`ListClaims.php`, `EditUser.php`, `ListUsers.php`, `AdminMiddleware.php`, `GoogleTokenVerifier.php`, `bootstrap/providers.php`) — sudah begitu di `develop`, tidak disentuh Bob-04/06 (`test_fcm.php` sudah dihapus Bob-05). Dikerjakan di branch terpisah `chore/pint-cleanup`, prioritas **rendah**.
+  - (b) **Keputusan sengaja dilewati: retry/backoff untuk `ServerUnavailable`** — tidak dibuat (keputusan 2026-10-25); kegagalan tetap `Log::warning` dan request tetap 2xx.

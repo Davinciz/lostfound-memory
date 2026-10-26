@@ -1,7 +1,7 @@
 ---
 type: context
 status: active
-updated: 2026-10-17
+updated: 2026-10-23
 summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 ---
 
@@ -45,8 +45,13 @@ ObsidianVault/
 	├── Attachments/        # Gambar, diagram, file pendukung
 	├── Documents/          # Dokumentasi Project 
 	├── DailyChanges/       # Log harian (YYYY-MM-DD.md)
-	└── Plan/               # Planning & proposal fitur
-		└── Archive/           # Plan berstatus done yang sudah diarsipkan
+	├── Plan/               # Planning & proposal fitur
+	│   └── Archive/           # Plan berstatus done yang sudah diarsipkan
+	└── Inbox/              # Laporan antar-agent (alur tugas via prompt chat)
+	    ├── tasks/           # TIDAK DIPAKAI (alur lama)
+	    ├── reports/         # Laporan aktif: <Agent>-YYMMDD-NN-<slug>.md (format lama: R-YYMMDD-NN-<slug>.md — tetap valid sebagai riwayat)
+	    ├── Archive/         # TIDAK DIPAKAI (alur lama)
+	    └── _Templates/      # laporan.md (template laporan)
 
 ## Arti Tiap Type
 
@@ -58,6 +63,8 @@ ObsidianVault/
 | `technical` | Dokumentasi teknis (ERD, API, arsitektur) | TechnicalReference.md, ERD.md |
 | `plan` | Planning & proposal fitur | Master Buildings + Auto Location - Lost&Found.md |
 | `context` | Konteks meta (tentang vault/project) | _Konteks.md |
+| `task` | TIDAK DIPAKAI (alur lama, tidak dipakai lagi) | PBL/Inbox/tasks/ |
+| `report` | Laporan hasil tugas antar-agent | PBL/Inbox/reports/ |
 
 ## Aturan Kerja
 
@@ -66,6 +73,7 @@ ObsidianVault/
 - Setiap selesai tugas, tulis ringkasan ke D:\ObsidianVault\PBL\DailyChanges\<tanggal>.md.
 - Perbarui `status` dan `updated` di catatan yang diubah.
 - Jangan menghapus atau menimpa catatan tanpa konfirmasi.
+- Tugas diberikan user langsung lewat prompt di chat (header `ID: T-YYMMDD-NN | target: ...`); laporan hasil tugas ditulis ke PBL/Inbox/reports/ dan mengikuti PBL/Inbox/README.md
 - Bahasa catatan: Indonesia.
 - Jika diminta membuat Plan, tulis Plan ke PBL/Plan
 - Plan berstatus `done` dipindah ke `PBL/Plan/Archive/` **setelah konfirmasi user**; plan baru tetap dibuat di `PBL/Plan/`. Wikilink berbasis nama file tetap aman setelah dipindah.
@@ -187,4 +195,4 @@ summary: Verifikasi kepemilikan lewat chat in-app antara pengklaim dan penemu
 - lost-found: Campus Lost&Found (mobile Flutter + admin Laravel Filament)
 - <tambahkan proyek/mata kuliah lain di sini>
 
-*Last updated: 2026-10-17*
+*Last updated: 2026-10-23*

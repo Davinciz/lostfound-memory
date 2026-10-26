@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-19
-summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari
+updated: 2026-10-25
+summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari. 2026-10-25: mark-transferred (fix transfer claim) sudah merge develop — FCM API v8 + guard di dalam transaction + lockForUpdate
 ---
 
 # Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found
@@ -13,6 +13,9 @@ summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima 
 **Project:** [[PBL]] Lost&Found  
 **Status:** Planning  
 **Priority:** High  
+
+> [!warning] Beberapa bagian digantikan oleh [[Claim Langsung ke Laporan Target - Lost&Found]]
+> Lihat tabel **"Teks Lama yang Digantikan"** di plan itu sebelum implementasi. Bagian lain plan ini (verifikasi via chat, serah terima, kedaluwarsa, pembekuan claim, Filament) tetap berlaku.
 
 ---
 
@@ -478,6 +481,8 @@ $table->index('accepted_at'); // untuk query expire
 ## Revisi 2026-10-19: Claim Langsung ke Laporan Target
 
 > **Status keputusan:** DISETUJUI user 2026-10-19. **Belum diimplementasi** — belum ada migration, belum ada perubahan kode. Section ini **membalik** keputusan lama "claim wajib punya laporan sendiri" (`claims.lost_report_id` NOT NULL) yang tercatat di §1 Claim Dua Arah, [[Verifikasi via Chat - Lost&Found]] §1, [[PRD]] §3.D/§4.2/§5, dan [[ERD]]/`schema.dbml` (skema saat ini masih NOT NULL).
+>
+> **Sumber tunggal A1/A2:** [[Claim Langsung ke Laporan Target - Lost&Found]]. Section ini menjadi riwayat keputusan; aturan yang berlaku ada di plan baru itu.
 
 ### A. Claim langsung ke laporan target
 
@@ -574,6 +579,9 @@ $table->index('accepted_at'); // untuk query expire
 - `POST /api/claims/:id/accept` (penerima claim, bukan pengaju)
 - `POST /api/claims/:id/reject` (body: `reason` wajib)
 - `POST /api/claims/:id/withdraw` (body: `reason` wajib)
+
+> [!warning] 2026-10-24 — accept/reject/withdraw pindah ke [[Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found]]
+> Bagian ini (§1.2) dan §1.4 policy `accept`/`reject`/`withdraw` **tidak lagi** menjadi sumber tunggal; plan Fase 1.2 menetapkan bentuk endpoint, policy, dan pengisian `accepted_at`/`closed_reason`/`closed_by`. §1.3, §1.5–1.8 (endpoint existing, pembekuan, kedaluwarsa, FCM, test) tetap berlaku untuk tahap berikutnya.
 
 **1.3 Update Endpoint Existing**
 - `ClaimController::store()` — validasi pengaju peran + maksimal 5 pending
@@ -680,6 +688,7 @@ $table->index('accepted_at'); // untuk query expire
 
 **4.3 Notifikasi FCM**
 - Test semua trigger: claim dibuat, accepted, rejected, withdrawn, expire H-1, expire final
+- Catatan 2026-10-25: FCM serah terima (`ClaimTransferService`) + accepted/rejected/withdrawn (`ClaimNotificationService`) sudah ada dengan API v8 dan `Log::warning`; yang belum ada: FCM saat claim dibuat (ke penerima), FCM jalur admin/Filament, pengingat expire, daftar notifikasi (lihat [[Push Notification - Lost&Found]])
 
 ---
 
@@ -696,7 +705,7 @@ $table->index('accepted_at'); // untuk query expire
 - `POST /api/claims/:id/accept` — laporan → `claimed`, claim lain → freezed
 - `POST /api/claims/:id/reject` — claim → `rejected`, chat read-only
 - `POST /api/claims/:id/withdraw` — claim → `withdrawn`, laporan → `pending` jika sebelumnya accepted
-- `PATCH /api/claims/:id/mark-transferred` — pengaju & penerima boleh, foto wajib, side effect tutup claim lain
+- `PATCH /api/claims/:id/mark-transferred` — pengaju & penerima boleh, foto wajib, side effect tutup claim lain. **Sejak 2026-10-25 (fix transfer claim, sudah merge `develop`):** guard status `accepted` dijalankan di dalam `DB::transaction` + `lockForUpdate` (lock claim → lost → found), foto disimpan setelah guard lolos, FCM serah terima pakai API v8 `CloudMessage::new()->withToken()` dengan kegagalan di-log `Log::warning`
 
 **Integration Test (Flutter + Laravel):**
 - Claim dibuat → conversation auto-created → chat terbuka
