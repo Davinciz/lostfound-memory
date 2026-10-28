@@ -11,10 +11,21 @@
             "id": "e04b699d74ce6242",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "New tab"
+              "type": "kanban",
+              "state": {
+                "file": "PBL/Documents/Lost&Found Progress.md",
+                "kanbanViewState": {
+                  "kanban-plugin": "board",
+                  "list-collapse": [
+                    false,
+                    false,
+                    false,
+                    false
+                  ]
+                }
+              },
+              "icon": "lucide-trello",
+              "title": "Lost&Found Progress"
             }
           }
         ]
@@ -115,7 +126,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "PBL/DailyChanges/2026-10-06.md",
+                "file": "PBL/Documents/Lost&Found Progress.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -172,7 +183,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       },
       {
         "id": "c4a69a0de2802d51",
@@ -225,46 +236,46 @@
   },
   "active": "e04b699d74ce6242",
   "lastOpenFiles": [
+    "PBL/Documents/PRD.md",
+    "PBL/Documents/RPP.md",
+    "PBL/Documents/TechnicalReference.md",
+    "PBL/Plan/Archive/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
+    "PBL/Plan/Archive/Master Buildings + Auto Location - Lost&Found.md",
+    "PBL/Plan/Archive/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
+    "PBL/Plan/Verifikasi via Chat - Lost&Found.md",
+    "PBL/Plan/Nomor WhatsApp Pengguna - Lost&Found.md",
+    "PBL/Plan/Push Notification - Lost&Found.md",
+    "PBL/Plan/Foto Bukti Transfer - Lost&Found.md",
+    "PBL/Plan/Claim Langsung ke Laporan Target - Lost&Found.md",
+    "PBL/Plan/Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found.md",
+    "PBL/Plan/Security Hardening - Lost&Found.md",
+    "_Konteks.md",
+    "PBL/Documents/ERD.md",
+    "PBL/Attachments/Unconfirmed 419286.crdownload",
+    "PBL/Documents/~WRL0004.tmp",
+    "PBL/Documents/~WRD0003.tmp",
+    "PBL/Documents/~WRD0002.tmp",
+    "PBL/Documents/~WRL0001.tmp",
+    "PBL/Documents/~WRD0000.tmp",
+    "PBL/Documents/~$P_LnF_Kelompok4_IK2B.docx",
+    "PBL/Documents/Design.md",
+    "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
+    "PBL/Documents/Lost&Found Progress.md",
     "PBL/DailyChanges/2026-10-19.md",
     "PBL/Plan/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
-    "PBL/Plan/Archive/Master Buildings + Auto Location - Lost&Found.md",
-    "PBL/Plan/Archive/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
-    "PBL/Plan/Archive/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
     "PBL/Plan/Archive",
-    "PBL/Plan/Security Hardening - Lost&Found.md",
     "PBL/DailyChanges/2026-10-18.md",
-    "PBL/Plan/Push Notification - Lost&Found.md",
     "PBL/Plan/Real-Time Chat - Lost&Found.md",
     "PBL/Plan/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
-    "PBL/Plan/Nomor WhatsApp Pengguna - Lost&Found.md",
     "PBL/Plan/Master Buildings + Auto Location - Lost&Found.md",
-    "PBL/Plan/Foto Bukti Transfer - Lost&Found.md",
     "PBL/Plan/Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found.md",
     "PBL/Plan/Backlog UI Redesign - Lost&Found.md",
     "PBL/Plan/Backlog Perbaikan Lanjutan - Lost&Found.md",
-    "PBL/DailyChanges/2026-10-16.md",
-    "PBL/DailyChanges/2026-10-15.md",
-    "_Konteks.md",
-    "Auto Location Grouping - Lost&Found.md",
-    "PBL/Documents/Lost&Found Progress.md",
-    "PBL/DailyChanges/2026-10-14.md",
-    "PBL/Plan/Verifikasi via Chat - Lost&Found.md",
-    "PBL/Documents/PRD.md",
-    "PBL/DailyChanges/2026-10-13.md",
-    "PBL/DailyChanges/2026-10-12.md",
     "_Base/Index.base",
-    "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
     "Untitled 1.canvas",
     "Untitled.canvas",
     "PBL/Attachments/ERD-lostfound.png",
-    "PBL.rar",
-    "PBL/Documents/Unconfirmed 607876.crdownload",
-    "PBL/Documents/Unconfirmed 5036.crdownload",
-    "PBL/Documents/RPP_LnF_Kelompok4_IK2B.docx.crswap",
-    "PBL/Documents/RPP_LnF_Kelompok4_IK2B.docx",
     "PBL/Attachments/ERD_lostfound.jpg",
-    "DailyChanges",
-    "PBL/Documents/campus-lostfound-schema.dbml",
     "PBL/ERD_lostfound.jpg"
   ]
 }

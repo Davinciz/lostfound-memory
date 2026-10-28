@@ -5,13 +5,10 @@ status: active
 updated: 2026-10-23
 summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18
 ---
-
+https://erd.dbdesigner.net/designer/schema/1790822912-lostfound
 # ERD Lost & Found
 
 ![ERD Lost & Found](../Attachments/ERD-lostfound.png)
-
-> [!warning] Gambar mungkin belum diperbarui
-> Gambar ERD mungkin belum mencerminkan 7 tabel dan skema SSO terbaru; deskripsi teks di bawah yang berlaku sampai gambar diperbarui.
 
 ## Deskripsi Tabel & Relasi
 
