@@ -81,8 +81,8 @@ Firebase Cloud Messaging                         Firebase Admin SDK (server-side
 </tr>
 <tr>
 <td>**Deployment**</td>
-<td>Backend: Railway/Render/AWS; Mobile: Flutter build (APK/IPA)</td>
-<td></td>
+<td>Backend: Dokploy (VPS) via Cloudflare Tunnel; Mobile: Flutter build (APK/IPA)</td>
+<td>Backend ter-deploy 2026-10-27 di `https://lostandfound.nandasaptra.my.id`</td>
 </tr>
 </table>
 ### 8.3 Flow Notifikasi (FCM)
@@ -192,6 +192,26 @@ https://api.domain.com/storage/reports/uuid-1.jpg
 ```
 
 > **Catatan (2026-10-14):** DB menyimpan **path relatif** (`reports/uuid-1.jpg`), bukan URL absolut. URL di atas dibangun di response API dari `APP_URL` + `/storage/` + path (lewat accessor model). Ganti IP/domain cukup ubah `APP_URL`, tanpa migrasi data.
+
+### 13.2 Deployment Aktual (2026-10-27)
+
+**Platform:** Dokploy (VPS teman), diakses via Cloudflare Tunnel di `https://lostandfound.nandasaptra.my.id`.
+
+**Container:** php:8.3-fpm-alpine + nginx + supervisor, satu container, port 80, HEALTHCHECK `/up`.
+
+**Database:** PostgreSQL internal Dokploy (diimpor dari dump 2026-10-26).
+
+**Storage:** Volume persisten `lostfound-storage` di `/var/www/html/storage/app/public`. `entrypoint.sh` menjalankan `storage:link --force` dan `chown -R www-data:www-data storage` tiap startup.
+
+**Firebase:** Service account di-mount sebagai file Dokploy di `/etc/lostfound/firebase-service-account.json`; env `FIREBASE_CREDENTIALS` menunjuk ke path itu.
+
+**`APP_URL`:** Wajib `https://lostandfound.nandasaptra.my.id` (menentukan URL foto). `trustProxies('*')` aktif untuk Cloudflare.
+
+**Branch:** `chore/repo/dockerize` merge `develop` (squash). Dockerfile: [[Bob-261026-01-dockerize-backend]], [[Bob-261026-02-fix-dockerfile-libpq]].
+
+**Flutter:** Butuh `--dart-define API_BASE_URL=https://lostandfound.nandasaptra.my.id/api` dan `GOOGLE_SERVER_CLIENT_ID` (nilai tidak dicatat). Token lama dari server lokal → 401 sampai data app dihapus dan login ulang.
+
+**Foto lama:** Tidak dimigrasi; laporan testing dihapus via Filament.
 ---
 ## 14. Milestone & Roadmap
 **Phase 1: MVP (4-6 minggu)** — Google SSO mobile + admin Filament ✓, CRUD laporan ✓ (kamera/galeri + pin peta), feed ✓, search dasar ✓, FCM setup ✓, dashboard admin dasar ✓, Laravel Storage ✓
