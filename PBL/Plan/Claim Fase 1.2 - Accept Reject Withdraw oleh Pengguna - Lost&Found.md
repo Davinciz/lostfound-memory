@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-25
-summary: Sumber tunggal Fase 1.2 claim: accept/reject penerima, withdraw pengaju, concurrency test + FCM (1.2a, 1.2b, 1.2c). 2026-10-25: PATCH /claims/{id} dihapus, constraint UUID route (405/404), audit FCM v8 bersih, token mati dibersihkan — open items baru (chore Pint, retry/backoff dilewati).
+updated: 2026-10-29
+summary: Sumber tunggal Fase 1.2 claim: accept/reject penerima, withdraw pengaju, concurrency test + FCM (1.2a, 1.2b, 1.2c). 2026-10-25: PATCH /claims/{id} dihapus, constraint UUID route (405/404), audit FCM v8 bersih, token mati dibersihkan — open items baru (chore Pint, retry/backoff dilewati). 2026-10-29: koreksi — 1.2c sudah merge develop (PR #11 squash `18c85d4`).
 ---
 
 # Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found
@@ -39,7 +39,7 @@ Menjadi **sumber tunggal** Fase 1.2 backend claim — 1.2a (accept & reject oleh
 | Exception domain | `ClaimNotPendingException` (factory `claim()`/`report()`/`reject()`), `InvalidClaimParticipantException` |
 | Notifikasi FCM | best-effort; **2026-10-25:** token diredaksi dari `Log::warning` (Bob-03) + `DeadFcmTokenCleaner` mengosongkan token mati `NotFound`/`SenderIdMismatch` bila token di DB masih sama (Bob-05) |
 
-**Selesai 2026-10-24 (as-built):** endpoint user `accept`/`reject`/`withdraw` ada; `Claim::#[Fillable]` + cast `accepted_at` terisi; `ClaimDecisionService::accept()` mengisi `accepted_at`; `ClaimWithdrawService` + `ClaimNotificationService` baru; test balapan + FCM best-effort ada. Merge `develop`: 1.2a `2bafdb5`, 1.2b `9faee99`; **1.2c `23d0be6` sudah push, PR belum dibuat/merge**.
+**Selesai 2026-10-24 (as-built):** endpoint user `accept`/`reject`/`withdraw` ada; `Claim::#[Fillable]` + cast `accepted_at` terisi; `ClaimDecisionService::accept()` mengisi `accepted_at`; `ClaimWithdrawService` + `ClaimNotificationService` baru; test balapan + FCM best-effort ada. Merge `develop`: 1.2a `2bafdb5`, 1.2b `9faee99`, **1.2c `23d0be6` → PR #11 squash `18c85d4` (dikoreksi 2026-10-29)**.
 
 ---
 
@@ -146,7 +146,7 @@ Menutup risiko yang dicatat Bob di R-261023-05: claim `accepted` yang macet kini
 - **✅ SELESAI 2026-10-25 (audit FCM v8, [[Bob-261025-03-fcm-api-audit]]):** audit **bersih — tidak ada API FCM usang di `app/`** (`CloudMessage::new()->withToken()->withNotification()->withData()` + `Messaging::send`, valid di firebase-php 8.5.0); `routes/`, `database/`, `config/firebase.php` tidak memakai API FCM. **Tidak ada FCM di jalur admin:** `AdminController` tidak mengirim FCM, `Notification::make()` di Filament `ClaimResource`/`UserResource` adalah notifikasi Filament (bukan FCM), `ConversationController` tanpa FCM. **Keputusan user 2026-10-25: FCM admin tidak diperlukan sekarang** (celah konsistensi di atas ditutup dengan keputusan ini). Commit `3b65f5d` juga meredaksi token FCM dari log kegagalan (`ClaimNotificationService`, `ClaimTransferService`).
 - **✅ SELESAI 2026-10-25 (Bob-05):** `test_fcm.php` dihapus; helper `DeadFcmTokenCleaner` mengosongkan `users.fcm_token` untuk `NotFound`/`SenderIdMismatch` **hanya bila token di DB masih sama** dengan token gagal (refresh token aman). 239 → 247 test lulus.
 - **✅ SELESAI 2026-10-25 (Bob-06):** `whereUuid('id')` di `lost-reports/{id}`, `found-reports/{id}`, `conversations/{id}/messages` (GET+POST), `messages/{id}/read` — **non-UUID → 404, bukan 500**. 247 → 252 test lulus (675 assertion).
-- **⏳ MENUNGGU:** PR 1.2c (`feature/notification/claim-decision-fcm`, `23d0be6`) belum dibuat/merge ke `develop` — status PR tidak diubah tanpa konfirmasi user.
+- **✅ SELESAI 2026-10-29 (koreksi status PR):** PR 1.2c (`feature/notification/claim-decision-fcm`, `23d0be6`) **SUDAH merge `develop`** lewat **PR #11**, squash commit `18c85d4` (2026-10-24). Diverifikasi dengan `git fetch --all --prune` + `git ls-tree -r --name-only origin/develop` (file `ClaimNotificationService.php`, `ClaimConcurrencyTest.php`, `ClaimNotificationTest.php` ada di `develop`). Kesalahan sebelumnya berasal dari ref lokal basi (`git branch --contains` tanpa fetch). **Teks lama:** ~~⏳ MENUNGGU: PR 1.2c (`feature/notification/claim-decision-fcm`, `23d0be6`) belum dibuat/merge ke `develop` — status PR tidak diubah tanpa konfirmasi user.~~
 - **🆕 OPEN (2026-10-25, prioritas rendah, BELUM diputuskan):**
   - (a) **Chore Pint:** `vendor/bin/pint --test` gagal di **6 file lama** (`ListClaims.php`, `EditUser.php`, `ListUsers.php`, `AdminMiddleware.php`, `GoogleTokenVerifier.php`, `bootstrap/providers.php`) — sudah gagal di `develop`, tidak disentuh Bob-04/06 (`test_fcm.php` sudah dihapus Bob-05). Branch terpisah `chore/repo/pint-cleanup`.
   - (b) **Keputusan sengaja dilewati: retry/backoff untuk `ServerUnavailable`** — tidak dibuat (2026-10-25); kegagalan tetap `Log::warning` dan request tetap 2xx.
