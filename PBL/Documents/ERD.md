@@ -2,13 +2,14 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-23
-summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18
+updated: 2026-10-29
+summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18. 2026-10-28: gambar ERD + tautan dbdesigner diperbarui (banner "gambar mungkin belum diperbarui" dihapus)
 ---
-https://erd.dbdesigner.net/designer/schema/1790822912-lostfound
 # ERD Lost & Found
 
 ![ERD Lost & Found](../Attachments/ERD-lostfound.png)
+
+Sumber gambar: <https://erd.dbdesigner.net/designer/schema/1790822912-lostfound>
 
 ## Deskripsi Tabel & Relasi
 
