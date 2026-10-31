@@ -419,6 +419,12 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 3. **Delete message?** — Soft delete atau hard delete? (Phase 2)
 4. **Chat history retention?** — Hapus message older than 30 hari? (Discuss dengan stakeholder)
 
+## Backlog (2026-10-30)
+
+1. **Hapus chat manual** — user bisa hapus satu pesan atau seluruh conversation (soft delete `deleted_at`). Backend: `DELETE /api/messages/{id}`, `DELETE /api/conversations/{id}`. Flutter: long-press menu hapus.
+2. **Auto-delete retention policy** — backend job hapus message/conversation > N hari (30/90). Laravel command + cron. Bisa per status claim (closed/returned → auto-delete lebih cepat).
+3. **Pagination lebih ketat** — turunkan limit dari 50 ke 20 per load untuk kurangi beban awal.
+
 ---
 
 ## Open Items — USULAN (belum diputuskan, 2026-10-18)

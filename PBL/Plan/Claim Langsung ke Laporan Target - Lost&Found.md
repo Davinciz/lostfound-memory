@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-24
-summary: Claim langsung ke laporan target, laporan sendiri opsional, conversation per claim_id. 2026-10-23: Phase 1a & 1b-i SELESAI + merge develop (PR #6 d1ef1eb 155 test, PR #7 cdae742 179 test); reject hanya untuk claim pending (T-261023-05, merge develop); sisa endpoint user accept/reject/withdraw (kini plan Fase 1.2: [[Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found]])
+updated: 2026-10-30
+summary: Claim langsung ke laporan target, laporan sendiri opsional, conversation per claim_id. Backend Phase 1a & 1b-i merge develop (PR #6 d1ef1eb, PR #7 cdae742). Flutter Phase 2 merge develop 2026-10-30 (Ajax-261030-03, PR #12 cdc223e): redirect dihapus, dropdown opsional switch OFF, model nullable, error 422 Indonesia. Sisa: kartu konteks chat (butuh Bob).
 ---
 
 # Claim Langsung ke Laporan Target - Lost&Found
@@ -288,11 +288,11 @@ Urutan: migration nullable + CHECK → `store()` + transaction + service convers
 
 ### Phase 2 — Flutter
 
-- [ ] Hapus redirect "Aku Menemukan Barang Ini" ke form Lapor; langsung form claim.
-- [ ] Dropdown laporan sendiri opsional (E-3: `mine=1&status=pending` hanya bila menautkan).
-- [ ] Model `Claim` Flutter: `lostReport`/`foundReport` menjadi **nullable**; sesuaikan layar daftar & detail claim yang saat ini menganggap keduanya selalu ada (hindari null crash).
-- [ ] Sesuaikan pesan error 422 dengan aturan kontrak request.
-- [ ] Kartu konteks laporan di daftar/ruang chat ([[Real-Time Chat - Lost&Found]] §Kartu Konteks — masih USULAN).
+- [x] Hapus redirect "Aku Menemukan Barang Ini" ke form Lapor; langsung form claim. ✅ 2026-10-30 Ajax-261030-03 — `_openClaim` tidak lagi pre-check `getLostReports`, dialog redirect dihapus.
+- [x] Dropdown laporan sendiri opsional (E-3: `mine=1&status=pending` hanya bila menautkan). ✅ 2026-10-30 Ajax-261030-03 — switch default OFF, lazy load hanya bila ON.
+- [x] Model `Claim` Flutter: `lostReport`/`foundReport` menjadi **nullable**; sesuaikan layar daftar & detail claim yang saat ini menganggap keduanya selalu ada (hindari null crash). ✅ 2026-10-30 Ajax-261030-03 — `lostReportId`/`foundReportId` nullable, `toJson` hanya kirim non-null, layar daftar/detail sudah null-safe.
+- [x] Sesuaikan pesan error 422 dengan aturan kontrak request. ✅ 2026-10-30 Ajax-261030-03 — `api_error.dart` ekstrak `errors` dulu lalu `message`, fallback koneksi Indonesia.
+- [ ] Kartu konteks laporan di daftar/ruang chat ([[Real-Time Chat - Lost&Found]] §Kartu Konteks — masih USULAN, butuh Bob dulu).
 
 
 ### Phase 3 — Filament

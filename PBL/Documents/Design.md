@@ -2,8 +2,8 @@
 type: design
 project: lost-found
 status: active
-updated: 2026-10-19
-summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; catatan plan WhatsApp, push notification, dan backlog UI redesign.
+updated: 2026-10-30
+summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; catatan plan WhatsApp, push notification, backlog UI redesign, dan logo baru (§2.7).
 ---
 
 # Campus Lost & Found (CLF) — Design Specification
@@ -108,12 +108,26 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 | Bottom navigation | bg `surface`, ikon aktif `primary` + label `primary`, ikon nonaktif `text-secondary` |
 | Bubble chat | Pesan sendiri: bg `primary`, teks kontras (lihat aturan kontras). Pesan lawan bicara: bg `surface` + border `border`, teks `text` |
 
+### 2.7 Logo & Aset Brand
+
+**Varian tersedia:**
+- **Wordmark terang** (`lostfound-logo-simple.svg` / `.png`): teks hitam `#111111` + aksen kuning `#F5C400`. Kaca pembesar menggantikan huruf "o" di "Lost" (berisi pin lokasi di dalamnya), tanda "&" berwarna kuning, garis ornamen + diamond di bawah teks. Rasio sekitar 5:1 (horizontal). Untuk login, layar landing, dan konteks latar terang ukuran besar.
+- **Wordmark gelap** (`lostfound-logo-dark-simple.svg` / `.png`): teks putih + aksen kuning `#F5C400`. **Belum dipakai di app** karena tema gelap belum tersedia; PNG perlu dicek ulang (tepi teks terlihat bergerigi/ada efek shadow di pratinjau — mungkin perlu export ulang tanpa shadow bila memang ada di file).
+- **Ikon persegi** (kaca pembesar + pin saja, tanpa teks): untuk launcher icon, favicon, avatar, dan logo kecil di header app bar Beranda. File terpisah dari wordmark (sudah dimiliki user).
+
+**Aturan pakai:**
+- Garis ornamen + diamond hanya untuk ukuran besar (login/landing); jangan dipakai di app bar atau ukuran kecil (pakai ikon persegi).
+- SVG = sumber utama; PNG = hasil export.
+- Jangan memakai wordmark penuh di bawah lebar sekitar 160 px (pakai ikon persegi).
+
+**Lokasi aset:** `assets/images/logo/` di repo `lostfound-mobile` (ditetapkan di Ajax-261030-02).
+
 ---
 
 ## 3. Role Pengguna
 | Role | Akses |
 | --- | --- |
-| **User** (mahasiswa, dosen, karyawan) | Login dengan Google SSO; hanya email `@mhs.polines.ac.id`, `@dsn.polines.ac.id`, `@polines.ac.id` (domain harus cocok persis). Melaporkan barang hilang/ditemukan (foto, deskripsi, lokasi lewat pin di peta + saran gedung), mencari & memfilter laporan, mengajukan claim (wajib punya laporan hilang), chat dengan penemu/pemilik, menerima notifikasi. |
+| **User** (mahasiswa, dosen, karyawan) | Login dengan Google SSO; hanya email `@mhs.polines.ac.id`, `@dsn.polines.ac.id`, `@polines.ac.id` (domain harus cocok persis). Melaporkan barang hilang/ditemukan (foto, deskripsi, lokasi lewat pin di peta + saran gedung), mencari & memfilter laporan, mengajukan claim **langsung ke laporan target** (laporan sendiri opsional), chat dengan penemu/pemilik, menerima notifikasi. |
 | **Administrator** | Dashboard web (Filament): melihat semua laporan, memverifikasi claim (terima/tolak), mencatat serah terima barang dengan foto bukti, memperbarui status, memblokir/membuka blokir pengguna, mengelola master data gedung. |
 
 ## 4. Fitur Utama
@@ -121,8 +135,8 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 | --- | --- |
 | **Kamera** | Ambil foto langsung dari kamera perangkat (bukan hanya galeri). Minimal 1, maksimal 3 foto, dikompres otomatis (maks 2 MB per foto). Preview thumbnail sebelum submit, bisa dihapus/diganti. |
 | **GPS & Gedung Kampus** | Lokasi dipilih lewat titik (pin) di peta (`flutter_map` + OpenStreetMap). Peta terbuka di tengah kampus tanpa pin; user menaruh pin di lokasi kehilangan/penemuan. Tombol "Lokasi saya" hanya menggeser peta ke posisi GPS, tidak menetapkan lokasi. Marker gedung dari `GET /api/buildings` tampil di peta; tap marker memilih gedung. Setelah pin ditaruh, muncul daftar saran gedung: maksimal 3 terdekat dalam radius ~75 m, urut jarak, tiap item menampilkan nama gedung dan jarak. User mengklik untuk memilih; tidak ada pilihan otomatis. Detail lokasi opsional. |
-| **Claim & Verifikasi via Chat** | Pemilik wajib membuat laporan hilang dulu, lalu mengajukan claim ke laporan temuan. Ruang chat dengan penemu terbuka otomatis; penemu memverifikasi kepemilikan lewat chat. Admin hanya menyetujui/menolak claim (admin tidak membaca isi chat). |
-| **Chat In-App** | Chat real-time antara pemilik dan penemu, dibuka otomatis saat claim diajukan atau lewat tombol "Chat dengan Pelapor" di detail laporan. |
+| **Claim & Verifikasi via Chat** | Claim diajukan **langsung ke laporan target** (temuan/hilang milik orang lain); laporan sendiri **opsional**. Ruang chat dengan pelapor target terbuka otomatis; pelapor memverifikasi kepemilikan lewat chat. Admin hanya menyetujui/menolak claim (admin tidak membaca isi chat). |
+| **Chat In-App** | Chat real-time antara pengaju dan pelapor target, dibuka otomatis saat claim diajukan atau lewat tombol "Chat dengan Pelapor" di detail laporan. |
 | **WhatsApp** | Tombol "Hubungi via WhatsApp" hanya muncul jika pelapor mengisi nomor **dan** mengizinkan nomornya ditampilkan (default: disembunyikan). **Bergantung pada plan [[Nomor WhatsApp Pengguna - Lost&Found]]** — saat ini belum ada cara user mengisi nomor. |
 | **Push Notification** | Notifikasi FCM: claim diajukan, claim diproses (diterima/ditolak), barang sudah diserahkan, pesan chat baru, update pada laporan milik user. Badge counter angka di ikon lonceng. Tap notifikasi → deep link ke detail laporan/claim/chat. **Daftar peristiwa + keputusan badge/daftar notifikasi ada di [[Push Notification - Lost&Found]] (opsi A/B belum diputuskan).** |
 
@@ -131,6 +145,10 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 ## 5. SPESIFIKASI LAYAR — APLIKASI MOBILE (USER)
 
 ### 5.1 Splash Screen
+
+> [!warning] Status implementasi — logo baru
+> Splash saat ini memakai latar terang + ikon persegi (asumsi, karena varian gelap belum siap). Spesifikasi splash hitam di teks lama belum berlaku; menunggu logo wordmark terang siap dan tema gelap tersedia. Lihat §2.7 Logo & Aset Brand.
+
 **Elemen:** logo/nama "Campus Lost & Found" di tengah, background `primary` (hitam), loading indicator kecil kuning (`accent-yellow`) di bawah.
 
 **Stitch prompt:** Buatkan splash screen mobile app, background hitam penuh `#111111`, logo teks "Campus Lost & Found" putih di tengah layar dengan subjudul kecil "CLF" warna kuning `#F5C400`, loading spinner tipis warna kuning di bagian bawah. Font Plus Jakarta Sans, sangat minimalis.
@@ -142,6 +160,10 @@ Isi slide: (1) "Lapor barang hilang atau temuan dengan cepat", (2) "Cari barangm
 **Stitch prompt:** Buatkan 3 slide onboarding mobile app, tiap slide: ilustrasi line-art sederhana warna hitam dengan aksen kuning di tengah atas, judul bold 20px di bawah ilustrasi, deskripsi 14px abu-abu, dot indicator kuning untuk slide aktif, tombol "Mulai" hitam penuh di slide terakhir. Font Plus Jakarta Sans, background putih.
 
 ### 5.3 Login
+
+> [!warning] Status implementasi — logo baru
+> Logo login akan memakai wordmark terang baru (§2.7). Implementasi terkait di Ajax-261030-02.
+
 **Elemen:** logo, penjelasan singkat akun Google Polines yang didukung, tombol **"Masuk dengan Google"**. Tidak ada input password, tautan daftar, atau lupa password. Pesan error jika akun/domain tidak memenuhi syarat.
 
 **Stitch prompt:** Buatkan layar login mobile minimalis untuk Campus Lost & Found. Logo di atas, teks "Masuk menggunakan akun Google Polines", satu tombol lebar "Masuk dengan Google" dengan ikon Google, state loading dan pesan error yang jelas. Tidak ada field email/password, tautan daftar, atau lupa password. Gaya flat, whitespace luas, palet hitam-kuning, font Plus Jakarta Sans.
@@ -153,6 +175,10 @@ Dihapus karena akun user dibuat otomatis setelah Google SSO tervalidasi; tidak a
 Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilakukan melalui Google. Password admin Filament dikelola terpisah.
 
 ### 5.6 Beranda (Home)
+
+> [!warning] Status implementasi — logo baru
+> Logo kecil di header Beranda akan memakai ikon persegi baru (§2.7). Implementasi terkait di Ajax-261030-02.
+
 **Elemen:**
 - Header: logo kecil kiri, avatar bulat kanan (background gradasi hitam→kuning, berisi inisial), ikon lonceng notifikasi dengan badge angka merah (tap → layar Notifikasi).
 - Search bar singkat (tap → ke layar Cari).
@@ -207,20 +233,24 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 - Riwayat status timeline vertikal sederhana.
 - Tombol "Chat dengan Pelapor" (outline, ikon chat) — selalu tersedia selama status masih aktif.
 - Tombol "Hubungi via WhatsApp" (outline, ikon WA) — **hanya tampil jika pelapor sudah mengisi nomor dan mengaktifkan tampilan nomor WhatsApp**. Syarat "sudah mengisi nomor" baru bisa dipenuhi setelah [[Nomor WhatsApp Pengguna - Lost&Found]] dikerjakan; saat ini tombolnya masih stub ([[Backlog Perbaikan Lanjutan - Lost&Found]] open item x).
-- Tombol "Ajukan Claim" hitam penuh sticky bawah (hanya pada laporan **ditemukan** yang statusnya masih Pending; jika sudah Claimed/Returned, tombol diganti label status non-aktif). Jika user belum punya laporan hilang, menekan tombol ini menampilkan dialog "Buat laporan hilang dulu" yang mengarah ke form Lapor Barang.
+- Tombol "Ajukan Claim" (hitam penuh sticky bawah) — tampil untuk **laporan temuan** (pemilik klaim) **atau laporan hilang** (penemu klaim) yang statusnya `Pending`. Langsung buka form claim tanpa cek laporan sendiri. Jika sudah `Claimed`/`Returned`, tombol diganti label status non-aktif.
 
 **Stitch prompt:** Buatkan layar detail barang mobile app. Galeri foto carousel di atas dengan dot indicator, badge status oranye "Pending" menempel di pojok foto, judul nama barang bold 20px di bawah foto dengan kode laporan kecil abu-abu, info lokasi (nama gedung) dan waktu dengan ikon pin abu-abu, section deskripsi paragraf, peta kecil dengan pin lokasi, dan riwayat status berbentuk timeline vertikal sederhana. Di bawah layar: tombol "Ajukan claim" hitam penuh (teks putih), di atasnya dua tombol outline berdampingan "Chat dengan Pelapor" dan "WhatsApp". Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.10 Form Pengajuan Claim
+
+> [!note] Implementasi 2026-10-30 (Ajax-261030-03, `feature/claim/direct-claim-flow`)
+> **Dropdown laporan sendiri kini opsional** (switch default OFF). Laporan target (temuan/hilang) ditampilkan sebagai kartu non-editable. Dua konstruktor: `.forFoundReport()` (pemilik klaim temuan) dan `.forLostReport()` (penemu klaim hilang). Switch "Tautkan laporan saya" memuat dropdown lazy (`mine=true&status=pending&per_page=50`) hanya bila ON. Kode laporan target (`code`) dipakai di kartu.
+
 **Elemen:**
 - Header back + judul "Ajukan Claim".
-- Ringkasan barang temuan (foto kecil + nama + kode, non-editable).
-- Dropdown "Laporan hilang kamu" (pilih laporan hilang milik sendiri yang dikaitkan dengan claim ini) + tautan "Belum lapor? Buat laporan hilang dulu".
+- Ringkasan **laporan target** (foto kecil + nama + kode, non-editable).
+- Switch "Tautkan laporan saya" (default OFF) — bila ON, muncul dropdown laporan sendiri (hilang/temuan sesuai target) + tautan "Belum lapor? Buat laporan [hilang/temuan] dulu".
 - Textarea "Jelaskan ciri khusus/alasan klaim".
 - Tombol "Kirim Pengajuan Claim" hitam penuh.
-- Catatan kecil: "Setelah diajukan, ruang chat dengan penemu otomatis terbuka. Penemu akan menanyakan ciri barangmu untuk memastikan ini milikmu. Admin menyetujui claim setelahnya."
+- Catatan kecil: "Setelah diajukan, ruang chat dengan pelapor otomatis terbuka. Pelapor akan menanyakan ciri barangmu untuk memastikan ini milikmu. Admin menyetujui claim setelahnya."
 
-**Stitch prompt:** Buatkan form pengajuan claim mobile app. Card ringkasan barang di atas (foto kecil kiri, nama barang dan kode kanan, abu-abu non-editable). Dropdown "Laporan hilang kamu" dengan tautan kecil di bawahnya "Belum lapor? Buat laporan hilang dulu". Textarea besar "Jelaskan ciri khusus/alasan klaim". Tombol "Kirim Pengajuan Claim" hitam penuh di bawah, catatan kecil abu-abu di bawah tombol. Font Plus Jakarta Sans, palet hitam-kuning.
+**Stitch prompt:** Buatkan form pengajuan claim mobile app. Card ringkasan laporan target di atas (foto kecil kiri, nama barang dan kode kanan, abu-abu non-editable). Switch "Tautkan laporan saya" — bila aktif, muncul dropdown laporan sendiri dengan tautan kecil di bawahnya "Belum lapor? Buat laporan hilang/temuan dulu". Textarea besar "Jelaskan ciri khusus/alasan klaim". Tombol "Kirim Pengajuan Claim" hitam penuh di bawah, catatan kecil abu-abu di bawah tombol. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.11 Laporan Saya
 **Elemen:** judul "Laporan Saya", tab "Semua/Aktif/Selesai", list kartu (format Beranda) dengan kode laporan dan badge status, empty state.
@@ -313,6 +343,10 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 > Dashboard dibangun dengan **Filament**. Desain di bawah dipakai sebagai referensi tampilan dan tema (warna `primary` hitam/kuning, font Plus Jakarta Sans), bukan sebagai aplikasi web terpisah.
 
 ### 6.1 Login Admin
+
+> [!info] Status implementasi — logo baru
+> Logo baru (§2.7) BELUM diterapkan di sisi backend/Filament. Usulan penerapan di login admin dan landing page admin = usulan terpisah, butuh persetujuan user.
+
 **Elemen:** card login di tengah layar (background hitam gradasi di sekelilingnya), logo, input Email & Password, tombol "Masuk sebagai Admin" hitam penuh.
 
 **Stitch prompt:** Buatkan layar login admin web, background penuh hitam `#111111` dengan aksen bentuk geometris kuning tipis di sudut, card login putih di tengah (radius 16px, shadow lembut) berisi logo, field email, field password, tombol "Masuk sebagai Admin" hitam penuh. Font Plus Jakarta Sans.
