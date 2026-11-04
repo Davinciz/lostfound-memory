@@ -2,8 +2,8 @@
 type: design
 project: lost-found
 status: active
-updated: 2026-11-01
-summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; UI v3 (figcraft) + token warna app_colors.dart, koreksi perilaku, logo baru (§2.7).
+updated: 2026-11-04
+summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; UI v3 (figcraft) + token warna app_colors.dart, koreksi perilaku, logo baru (§2.7). 2026-11-04: keputusan Opsi A push notification — lonceng tanpa badge, layar Notifikasi (§5.16) tetap empty state, toggle push (§5.19) tetap ditunda.
 ---
 
 # Campus Lost & Found (CLF) — Design Specification
@@ -157,7 +157,7 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 | **Claim & Verifikasi via Chat** | Claim diajukan **langsung ke laporan target** (temuan/hilang milik orang lain); laporan sendiri **opsional**. Ruang chat dengan pelapor target terbuka otomatis; pelapor memverifikasi kepemilikan lewat chat. Admin hanya menyetujui/menolak claim (admin tidak membaca isi chat). |
 | **Chat In-App** | Chat real-time antara pengaju dan pelapor target, dibuka otomatis saat claim diajukan atau lewat tombol "Chat dengan Pelapor" di detail laporan. |
 | **WhatsApp** | Tombol "Hubungi via WhatsApp" hanya muncul jika pelapor mengisi nomor **dan** mengizinkan nomornya ditampilkan (default: disembunyikan). **Bergantung pada plan [[Nomor WhatsApp Pengguna - Lost&Found]]** — saat ini belum ada cara user mengisi nomor. |
-| **Push Notification** | Notifikasi FCM: claim diajukan, claim diproses (diterima/ditolak), barang sudah diserahkan, pesan chat baru, update pada laporan milik user. Badge counter angka di ikon lonceng. Tap notifikasi → deep link ke detail laporan/claim/chat. **Daftar peristiwa + keputusan badge/daftar notifikasi ada di [[Push Notification - Lost&Found]] (opsi A/B belum diputuskan).** |
+| **Push Notification** | Notifikasi FCM: claim diajukan, claim diproses (diterima/ditolak), barang sudah diserahkan, pesan chat baru, update pada laporan milik user. ~~Badge counter angka di ikon lonceng.~~ **2026-11-04: Opsi A diputuskan → lonceng TANPA badge angka, layar Notifikasi tetap empty state.** Tap notifikasi → deep link ke detail laporan/claim/chat. **Daftar peristiwa + keputusan ada di [[Push Notification - Lost&Found]] (keputusan 2026-11-04: Opsi A).** |
 
 ---
 
@@ -203,6 +203,9 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 > [!info] UI v3 2026-11-01 (GPT-261101-01)
 > **Bottom navigation 5 slot hanya ikon** — label teks dihapus; ikon nonaktif `nav-inactive` `#4A443A`, aktif tinta `#111111`. **Daftar publik hanya menampilkan laporan `pending`** — laporan yang sudah `claimed`/`returned`/`closed` tidak muncul di feed Beranda. Background krem `#F6F1E7`, kartu barang pakai label "Kehilangan" `label-lost` `#B4472F` dan "Menemukan" hijau. Chip filter **Status dihapus** (hanya jenis + kategori).
+
+> [!info] 2026-11-04 — keputusan Opsi A (notifikasi)
+> User memilih **Opsi A** di [[Push Notification - Lost&Found]]: FCM saja, tanpa tabel/endpoint notifikasi. **Ikon lonceng di header Beranda tanpa badge angka**; tap membuka layar Notifikasi (§5.16) yang tetap **empty state**. Lonceng ber-badge hanya berlaku bila Opsi B diangkat lagi nanti.
 
 **Elemen:**
 - Header: logo kecil kiri, avatar bulat kanan (background gradasi hitam→kuning, berisi inisial), ikon lonceng notifikasi dengan badge angka merah (tap → layar Notifikasi).
@@ -322,8 +325,11 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 ### 5.16 Notifikasi
 
+> [!info] 2026-11-04 — keputusan Opsi A
+> User memilih **Opsi A** di [[Push Notification - Lost&Found]]: FCM saja, tanpa tabel/endpoint notifikasi. Karena itu **layar ini tetap empty state** (tanpa daftar berisi, tanpa riwayat, tanpa badge angka); daftar jenis di bawah **tidak diimplementasi** selama Opsi A. Layar berubah hanya bila **Opsi B diangkat lagi** (butuh update [[ERD]]/`schema.dbml`/[[PRD]]).
+
 > [!warning] Akan berubah
-> Apakah layar ini berisi daftar notifikasi (dengan riwayat + badge angka) atau hanya empty state **bergantung keputusan Opsi A/B** di [[Push Notification - Lost&Found]] — opsi A (FCM saja, tanpa tabel) berarti layar ini disembunyikan/di-empty-state dan ikon lonceng tanpa badge.
+> Apakah layar ini berisi daftar notifikasi (dengan riwayat + badge angka) atau hanya empty state **bergantung keputusan Opsi A/B** di [[Push Notification - Lost&Found]] — opsi A (FCM saja, tanpa tabel) berarti layar ini disembunyikan/di-empty-state dan ikon lonceng tanpa badge. **2026-11-04: Opsi A diputuskan** (lihat callout di atas).
 >
 > Status implementasi (2026-10-18): layar ini **belum dikerjakan** dan masuk daftar prasyarat **F-4** di [[Backlog UI Redesign - Lost&Found]] (butuh keputusan Opsi A/B lebih dulu). Ikon lonceng di header Beranda saat ini belum punya sumber data notifikasi.
 
@@ -353,7 +359,7 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 > [!warning] Akan berubah
 > Status implementasi (2026-10-18), perbaikan terkait di [[Backlog UI Redesign - Lost&Found]]:
-> - **Toggle "Notifikasi push" disembunyikan** sampai push benar-benar bisa dimatikan (**E-1**, tinggi) — lihat [[Push Notification - Lost&Found]]. Catatan: push **belum pernah diuji langsung** di HP (klarifikasi user 2026-10-18).
+> - **Toggle "Notifikasi push" disembunyikan** sampai push benar-benar bisa dimatikan (**E-1**, tinggi) — lihat [[Push Notification - Lost&Found]]. **2026-11-04: keputusan Opsi A tidak mengubah ini — toggle push tetap DITUNDA** (belum diputuskan eksplisit oleh user). Catatan: push **belum pernah diuji langsung** di HP (klarifikasi user 2026-10-18).
 > - Toggle "Tampilkan nomor WhatsApp" dilaporkan **nilai stale** (**E-1**), tetapi keberadaannya di app belum diverifikasi (user: WA belum masuk implementasi). Posisinya (tetap di sini atau hanya di Edit Profil §5.18) masih **belum diputuskan** ([[Nomor WhatsApp Pengguna - Lost&Found]]). **2026-10-19:** toggle **terbukti ada** dan nilai stale sudah diperbaiki (PR #6). Posisi toggle **masih** belum diputuskan.
 > - **Versi aplikasi** masih hardcode `1.0.0`; usul memakai `package_info_plus` **menunggu persetujuan user** (dependensi baru).
 > - **Kebijakan privasi & Syarat & ketentuan** masih teks hasil agent — **wajib review manusia** sebelum dipakai.
