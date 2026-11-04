@@ -2,8 +2,8 @@
 type: prd
 project: lost-found
 status: active
-updated: 2026-10-23
-summary: Kebutuhan Campus Lost&Found untuk pelaporan barang, pencarian, claim, dan autentikasi Google SSO. 2026-10-23: claim langsung ke laporan target BERLAKU (lost/found_report_id nullable + CHECK, migration 2026_10_23_000001)
+updated: 2026-11-01
+summary: Kebutuhan Campus Lost&Found untuk pelaporan barang, pencarian, claim, dan autentikasi Google SSO. 2026-10-23: claim langsung ke laporan target BERLAKU (lost/found_report_id nullable + CHECK, migration 2026_10_23_000001). 2026-11-01: fitur Arsip & Hapus Chat (§J) — backend + Flutter sudah merge, fitur belum selesai penuh (uji manual dua akun & scheduler terbuka)
 ---
 
 ## 1. Product Overview
@@ -107,6 +107,17 @@ Menyediakan satu platform terpusat yang memungkinkan mahasiswa melaporkan barang
 - Aksi claim: terima hanya claim `pending` bila laporan temuan belum `claimed`/`returned`/`closed`; tolak claim; serahkan barang setelah claim diterima
 - Status laporan tidak berubah saat claim diajukan; setelah admin menerima claim, claim menjadi `accepted` dan laporan terkait menjadi `claimed`. Setelah serah terima, claim dan laporan menjadi `returned`
 - Admin tidak membaca isi chat; verifikasi kepemilikan berlangsung antara pengklaim dan penemu.
+### J. Arsip & Hapus Chat
+
+> [!info] Fitur baru — disetujui user 2026-11-01 (Paket A); **backend + Flutter sudah merge, fitur belum selesai penuh**
+> Sumber tunggal: [[Arsip dan Hapus Chat - Lost&Found]]. Kolom arsip/hapus sudah diterapkan lewat migration `2026_11_01_103035` (4 timestamp nullable di `conversations`); endpoint archive/unarchive/delete sudah ada (lihat [[TechnicalReference]] §16). **Masih terbuka:** uji manual dua akun (Phase 3) dan verifikasi scheduler container (Phase 0).
+
+- **Arsip otomatis** — chat tanpa pesan baru selama **14 hari** masuk arsip. **Tidak ada penghapusan permanen otomatis.**
+- **Pengecualian arsip otomatis** — chat terkait claim berstatus `pending` atau `accepted` tidak diarsipkan otomatis.
+- **Keluar dari arsip otomatis** — pesan baru mengeluarkan chat dari arsip untuk **kedua pihak**.
+- **Arsip manual** — per pengguna: arsipkan dan buka arsip dari daftar chat; daftar arsip terpisah dari daftar chat aktif.
+- **Hapus manual ("hapus untuk saya")** — chat hilang dari daftar pengguna itu dan pesan sebelum waktu hapus tidak tampil lagi untuknya; lawan bicara tidak terpengaruh. Pesan baru dari lawan bicara memunculkan kembali chat hanya dengan pesan setelah waktu hapus. **Diblokir saat claim terkait `pending`/`accepted`** (chat dibutuhkan untuk verifikasi dan serah terima).
+- **Penghapusan fisik (purge)** — tahap 2, di luar lingkup saat ini (open item).
 ---
 ## 4. User Flow
 ### 4.1 Melaporkan Barang Hilang

@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-29
-summary: Sumber tunggal Fase 1.2 claim: accept/reject penerima, withdraw pengaju, concurrency test + FCM (1.2a, 1.2b, 1.2c). 2026-10-25: PATCH /claims/{id} dihapus, constraint UUID route (405/404), audit FCM v8 bersih, token mati dibersihkan — open items baru (chore Pint, retry/backoff dilewati). 2026-10-29: koreksi — 1.2c sudah merge develop (PR #11 squash `18c85d4`).
+updated: 2026-11-01
+summary: Sumber tunggal Fase 1.2 claim: accept/reject penerima, withdraw pengaju, concurrency test + FCM (1.2a, 1.2b, 1.2c). 2026-10-25: PATCH /claims/{id} dihapus, constraint UUID route (405/404), audit FCM v8 bersih, token mati dibersihkan — open items baru (chore Pint, retry/backoff dilewati). 2026-10-29: koreksi — 1.2c sudah merge develop (PR #11 squash `18c85d4`). 2026-11-01: HTTP 500 withdraw diperbaiki (`f3b730d`, FCM best-effort), `markTransferred` diperluas ke claimant.
 ---
 
 # Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found
@@ -30,7 +30,8 @@ Menjadi **sumber tunggal** Fase 1.2 backend claim — 1.2a (accept & reject oleh
 | `ClaimDecisionService::accept()` | hanya `$claim->update(['status' => 'accepted'])`; `accepted_at` **belum** diisi (padahal jadi dasar kedaluwarsa 7 hari) |
 | Route user | `accept`/`reject`/`withdraw` **sudah ada** (1.2a/1.2b). **2026-10-25 (Bob-04):** `PATCH /api/claims/{id}` **dihapus**; route claims: `POST /api/claims`, `GET /api/claims`, `GET /api/claims/{id}`, `POST /api/claims/{id}/accept|reject|withdraw`, `PATCH /api/claims/{claim}/mark-transferred` — semua `whereUuid` |
 | Jalur admin | `POST /api/admin/claims/{id}/accept` dan `/reject` tetap ada, **tidak diubah** |
-| `ClaimPolicy` | hanya `view`, `update` (admin saja), `markTransferred` (admin \|\| `Claim::receiverId()`) |
+| `ClaimPolicy` | `view`, `update` (admin saja), `markTransferred`. **2026-11-01 (`f3b730d`):** `markTransferred` = **admin ATAU claimant ATAU penerima** (dulu `admin \|\| Claim::receiverId()`); FCM serah terima dua arah. **Sudah merge `develop`** (konfirmasi user 2026-11-01). |
+| Notifikasi FCM 500 | **2026-11-01 (`f3b730d`):** resolusi client `Messaging` dipindah dari constructor ke dalam try/catch pengiriman → kegagalan konfigurasi Firebase tidak lagi menggagalkan request (gejala: HTTP 500 withdraw di deploy). User mengonfirmasi aksi claim berhasil setelah perbaikan konfigurasi Dokploy. Laporan [[GPT-261101-05-fix-withdraw-500-transfer-policy]] |
 | `ClaimDecisionService::reject()` | hanya untuk claim `pending`; menulis `admin_note`; **tidak** mengubah status laporan (T-261023-05) |
 | Kolom & constraint | `accepted_at`, `closed_reason`, `closed_by` sudah ada sejak migration `2026_10_23_000001_make_claim_reports_nullable` (guard `hasColumn`); FK `closed_by` → `users.id` `onDelete set null` |
 | Constraint status | `claims_status_check` mengizinkan `pending, accepted, returned, rejected, withdrawn` (migration `2026_10_05_123423_sync_erd_constraints_and_drop_verification_columns`) |

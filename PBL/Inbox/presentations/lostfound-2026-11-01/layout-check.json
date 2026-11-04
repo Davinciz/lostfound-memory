@@ -1,0 +1,2242 @@
+[
+  {
+    "slide": 1,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "01 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Lost &\nFound",
+        "x": 86,
+        "y": 151,
+        "w": 630,
+        "h": 280,
+        "size": 146
+      },
+      {
+        "text": "Aplikasi barang hilang\ndan ditemukan di kampus",
+        "x": 110,
+        "y": 540,
+        "w": 560,
+        "h": 100,
+        "size": 43
+      },
+      {
+        "text": "Penerapan Aplikasi Mobile\nLost & Found (CLF)",
+        "x": 86,
+        "y": 700,
+        "w": 570,
+        "h": 74,
+        "size": 31
+      },
+      {
+        "text": "PBL",
+        "x": 116,
+        "y": 913,
+        "w": 260,
+        "h": 52,
+        "size": 43
+      },
+      {
+        "text": "PBL-202601-10",
+        "x": 116,
+        "y": 973,
+        "w": 265,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "D3",
+        "x": 450,
+        "y": 913,
+        "w": 240,
+        "h": 52,
+        "size": 43
+      },
+      {
+        "text": "Teknik Informatika",
+        "x": 450,
+        "y": 973,
+        "w": 250,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 850,
+        "y": 190,
+        "w": 870,
+        "h": 34,
+        "size": 28
+      },
+      {
+        "text": "Lapor. Cari.\nKembalikan.",
+        "x": 850,
+        "y": 270,
+        "w": 850,
+        "h": 201,
+        "size": 95
+      },
+      {
+        "text": "Satu tempat untuk laporan barang\ndan komunikasi pemilik dengan penemu.",
+        "x": 850,
+        "y": 555,
+        "w": 870,
+        "h": 83,
+        "size": 33
+      },
+      {
+        "text": "01",
+        "x": 830,
+        "y": 760,
+        "w": 233,
+        "h": 66,
+        "size": 55
+      },
+      {
+        "text": "Pelaporan\nbarang",
+        "x": 830,
+        "y": 895,
+        "w": 239,
+        "h": 74,
+        "size": 33
+      },
+      {
+        "text": "02",
+        "x": 1156,
+        "y": 760,
+        "w": 233,
+        "h": 66,
+        "size": 55
+      },
+      {
+        "text": "Pencarian\n& claim",
+        "x": 1156,
+        "y": 895,
+        "w": 239,
+        "h": 74,
+        "size": 33
+      },
+      {
+        "text": "2026",
+        "x": 1482,
+        "y": 760,
+        "w": 314,
+        "h": 84,
+        "size": 70
+      },
+      {
+        "text": "Progres proyek",
+        "x": 1482,
+        "y": 895,
+        "w": 320,
+        "h": 37,
+        "size": 33
+      },
+      {
+        "text": "1 November",
+        "x": 1482,
+        "y": 979,
+        "w": 320,
+        "h": 29,
+        "size": 24
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 2,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "02 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "04",
+        "x": 86,
+        "y": 180,
+        "w": 450,
+        "h": 180,
+        "size": 150
+      },
+      {
+        "text": "Anggota\nkelompok",
+        "x": 86,
+        "y": 490,
+        "w": 470,
+        "h": 182,
+        "size": 93
+      },
+      {
+        "text": "D3 Teknik Informatika",
+        "x": 86,
+        "y": 758,
+        "w": 455,
+        "h": 39,
+        "size": 30
+      },
+      {
+        "text": "Dosen pendamping",
+        "x": 86,
+        "y": 855,
+        "w": 450,
+        "h": 32,
+        "size": 27
+      },
+      {
+        "text": "Amran Yobioktabera,\nS.Kom., M.Kom.",
+        "x": 86,
+        "y": 903,
+        "w": 450,
+        "h": 74,
+        "size": 31
+      },
+      {
+        "text": "01",
+        "x": 636,
+        "y": 233,
+        "w": 85,
+        "h": 38,
+        "size": 32
+      },
+      {
+        "text": "Anisa\nAulia",
+        "x": 632,
+        "y": 399,
+        "w": 230,
+        "h": 85,
+        "size": 38
+      },
+      {
+        "text": "NIM",
+        "x": 632,
+        "y": 685,
+        "w": 235,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "3.34.25.1.04",
+        "x": 632,
+        "y": 737,
+        "w": 235,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Developer, Database,\nUI/UX Programmer",
+        "x": 632,
+        "y": 880,
+        "w": 230,
+        "h": 94,
+        "size": 25
+      },
+      {
+        "text": "02",
+        "x": 950,
+        "y": 233,
+        "w": 85,
+        "h": 38,
+        "size": 32
+      },
+      {
+        "text": "Daniel Arvin\nGeovani",
+        "x": 946,
+        "y": 399,
+        "w": 230,
+        "h": 85,
+        "size": 38
+      },
+      {
+        "text": "NIM",
+        "x": 946,
+        "y": 685,
+        "w": 235,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "3.34.25.1.05",
+        "x": 946,
+        "y": 737,
+        "w": 235,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Developer, Database,\nUI/UX Programmer",
+        "x": 946,
+        "y": 880,
+        "w": 230,
+        "h": 94,
+        "size": 25
+      },
+      {
+        "text": "03",
+        "x": 1264,
+        "y": 233,
+        "w": 85,
+        "h": 38,
+        "size": 32
+      },
+      {
+        "text": "Muhammad\nTsaqif Satria\nFirmansyah",
+        "x": 1260,
+        "y": 399,
+        "w": 230,
+        "h": 170,
+        "size": 38
+      },
+      {
+        "text": "NIM",
+        "x": 1260,
+        "y": 685,
+        "w": 235,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "3.34.25.1.18",
+        "x": 1260,
+        "y": 737,
+        "w": 235,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Developer, Database,\nUI/UX Programmer",
+        "x": 1260,
+        "y": 880,
+        "w": 230,
+        "h": 94,
+        "size": 25
+      },
+      {
+        "text": "04",
+        "x": 1578,
+        "y": 233,
+        "w": 85,
+        "h": 38,
+        "size": 32
+      },
+      {
+        "text": "Steven\nHermawan",
+        "x": 1574,
+        "y": 399,
+        "w": 230,
+        "h": 85,
+        "size": 38
+      },
+      {
+        "text": "NIM",
+        "x": 1574,
+        "y": 685,
+        "w": 235,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "3.34.25.1.25",
+        "x": 1574,
+        "y": 737,
+        "w": 235,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Developer, Database,\nUI/UX Programmer",
+        "x": 1574,
+        "y": 880,
+        "w": 230,
+        "h": 94,
+        "size": 25
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 3,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "03 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Deskripsi\nproyek",
+        "x": 86,
+        "y": 160,
+        "w": 520,
+        "h": 196,
+        "size": 100
+      },
+      {
+        "text": "CLF menyatukan pelaporan, pencarian, dan pengembalian barang di lingkungan kampus.",
+        "x": 86,
+        "y": 442,
+        "w": 505,
+        "h": 117,
+        "size": 30
+      },
+      {
+        "text": "Pengguna",
+        "x": 125,
+        "y": 756,
+        "w": 440,
+        "h": 43,
+        "size": 36
+      },
+      {
+        "text": "Mahasiswa, dosen, dan karyawan. Admin mengelola data melalui web.",
+        "x": 125,
+        "y": 824,
+        "w": 435,
+        "h": 120,
+        "size": 32
+      },
+      {
+        "text": "Alur pengguna",
+        "x": 672,
+        "y": 205,
+        "w": 330,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "01",
+        "x": 672,
+        "y": 300,
+        "w": 80,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "Buat laporan",
+        "x": 760,
+        "y": 306,
+        "w": 245,
+        "h": 36,
+        "size": 32
+      },
+      {
+        "text": "02",
+        "x": 672,
+        "y": 432,
+        "w": 80,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "Cari barang",
+        "x": 760,
+        "y": 438,
+        "w": 245,
+        "h": 36,
+        "size": 32
+      },
+      {
+        "text": "03",
+        "x": 672,
+        "y": 564,
+        "w": 80,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "Ajukan claim",
+        "x": 760,
+        "y": 570,
+        "w": 245,
+        "h": 36,
+        "size": 32
+      },
+      {
+        "text": "04",
+        "x": 672,
+        "y": 696,
+        "w": 80,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "Verifikasi\nlewat chat",
+        "x": 760,
+        "y": 702,
+        "w": 245,
+        "h": 72,
+        "size": 32
+      },
+      {
+        "text": "05",
+        "x": 672,
+        "y": 828,
+        "w": 80,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "Serah terima",
+        "x": 760,
+        "y": 834,
+        "w": 245,
+        "h": 36,
+        "size": 32
+      },
+      {
+        "text": "Cara aplikasi bekerja",
+        "x": 1110,
+        "y": 200,
+        "w": 680,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "1",
+        "x": 1110,
+        "y": 317,
+        "w": 56,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "Laporan terpusat",
+        "x": 1190,
+        "y": 300,
+        "w": 590,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Foto, deskripsi, kategori, dan lokasi membantu mengenali barang.",
+        "x": 1190,
+        "y": 351,
+        "w": 585,
+        "h": 71,
+        "size": 29
+      },
+      {
+        "text": "2",
+        "x": 1110,
+        "y": 483,
+        "w": 56,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "Komunikasi langsung",
+        "x": 1190,
+        "y": 466,
+        "w": 590,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Pemilik dan penemu membahas ciri barang melalui chat.",
+        "x": 1190,
+        "y": 517,
+        "w": 585,
+        "h": 71,
+        "size": 29
+      },
+      {
+        "text": "3",
+        "x": 1110,
+        "y": 649,
+        "w": 56,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "Pengembalian tercatat",
+        "x": 1190,
+        "y": 632,
+        "w": 590,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Status claim dan foto serah terima menyimpan hasil proses.",
+        "x": 1190,
+        "y": 683,
+        "w": 585,
+        "h": 71,
+        "size": 29
+      },
+      {
+        "text": "4",
+        "x": 1110,
+        "y": 815,
+        "w": 56,
+        "h": 30,
+        "size": 25
+      },
+      {
+        "text": "Mobile dan web admin",
+        "x": 1190,
+        "y": 798,
+        "w": 590,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Flutter terhubung ke Laravel API. Filament membantu admin mengelola data.",
+        "x": 1190,
+        "y": 849,
+        "w": 585,
+        "h": 71,
+        "size": 29
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 4,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "04 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Informasi\ntersebar",
+        "x": 132,
+        "y": 194,
+        "w": 420,
+        "h": 130,
+        "size": 63
+      },
+      {
+        "text": "Grup pesan, media sosial, dan pengumuman manual.",
+        "x": 132,
+        "y": 420,
+        "w": 410,
+        "h": 83,
+        "size": 33
+      },
+      {
+        "text": "Laporan mudah\ntertimbun pesan.",
+        "x": 132,
+        "y": 696,
+        "w": 410,
+        "h": 99,
+        "size": 45
+      },
+      {
+        "text": "Pencarian perlu dilakukan berulang.",
+        "x": 132,
+        "y": 860,
+        "w": 410,
+        "h": 74,
+        "size": 31
+      },
+      {
+        "text": "Perlu satu\npusat\npelaporan\ndi kampus.",
+        "x": 657,
+        "y": 210,
+        "w": 255,
+        "h": 211,
+        "size": 48
+      },
+      {
+        "text": "Pemilik dan penemu perlu menemukan informasi yang sama.",
+        "x": 657,
+        "y": 590,
+        "w": 255,
+        "h": 208,
+        "size": 32
+      },
+      {
+        "text": "Latar\nbelakang",
+        "x": 1006,
+        "y": 150,
+        "w": 828,
+        "h": 196,
+        "size": 100
+      },
+      {
+        "text": "Proses yang tersebar membuat laporan sulit dicari kembali dan pengembalian sulit ditelusuri.",
+        "x": 1006,
+        "y": 432,
+        "w": 813,
+        "h": 78,
+        "size": 30
+      },
+      {
+        "text": "Sulit dicari",
+        "x": 1036,
+        "y": 672,
+        "w": 350,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Informasi cepat tertutup pesan baru.",
+        "x": 1036,
+        "y": 725,
+        "w": 350,
+        "h": 65,
+        "size": 28
+      },
+      {
+        "text": "Detail berbeda",
+        "x": 1456,
+        "y": 672,
+        "w": 350,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Foto dan lokasi belum seragam.",
+        "x": 1456,
+        "y": 725,
+        "w": 350,
+        "h": 65,
+        "size": 28
+      },
+      {
+        "text": "Verifikasi terpisah",
+        "x": 1036,
+        "y": 862,
+        "w": 350,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Pembahasan kepemilikan belum terarah.",
+        "x": 1036,
+        "y": 915,
+        "w": 350,
+        "h": 65,
+        "size": 28
+      },
+      {
+        "text": "Hasil tidak tercatat",
+        "x": 1456,
+        "y": 862,
+        "w": 350,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Pengembalian perlu jejak yang jelas.",
+        "x": 1456,
+        "y": 915,
+        "w": 350,
+        "h": 65,
+        "size": 28
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 5,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "05 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "01",
+        "x": 120,
+        "y": 218,
+        "w": 78,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Pelaporan terpusat",
+        "x": 232,
+        "y": 191,
+        "w": 340,
+        "h": 39,
+        "size": 35
+      },
+      {
+        "text": "Pengguna membuat laporan hilang atau temuan di satu aplikasi.",
+        "x": 625,
+        "y": 190,
+        "w": 435,
+        "h": 110,
+        "size": 30
+      },
+      {
+        "text": "02",
+        "x": 120,
+        "y": 388,
+        "w": 78,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Pencarian lebih terarah",
+        "x": 232,
+        "y": 361,
+        "w": 340,
+        "h": 77,
+        "size": 35
+      },
+      {
+        "text": "Kata kunci dan filter membantu mempersempit laporan yang dicari.",
+        "x": 625,
+        "y": 360,
+        "w": 435,
+        "h": 110,
+        "size": 30
+      },
+      {
+        "text": "03",
+        "x": 120,
+        "y": 558,
+        "w": 78,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Verifikasi kepemilikan",
+        "x": 232,
+        "y": 531,
+        "w": 340,
+        "h": 77,
+        "size": 35
+      },
+      {
+        "text": "Chat membantu kedua pihak membahas ciri khusus barang.",
+        "x": 625,
+        "y": 530,
+        "w": 435,
+        "h": 73,
+        "size": 30
+      },
+      {
+        "text": "04",
+        "x": 120,
+        "y": 728,
+        "w": 78,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Pengembalian tercatat",
+        "x": 232,
+        "y": 701,
+        "w": 340,
+        "h": 77,
+        "size": 35
+      },
+      {
+        "text": "Status claim dan foto menjadi catatan proses serah terima.",
+        "x": 625,
+        "y": 700,
+        "w": 435,
+        "h": 73,
+        "size": 30
+      },
+      {
+        "text": "05",
+        "x": 120,
+        "y": 898,
+        "w": 78,
+        "h": 36,
+        "size": 30
+      },
+      {
+        "text": "Pengelolaan kampus",
+        "x": 232,
+        "y": 871,
+        "w": 340,
+        "h": 77,
+        "size": 35
+      },
+      {
+        "text": "Admin memantau laporan, claim, gedung, dan pengguna.",
+        "x": 625,
+        "y": 870,
+        "w": 435,
+        "h": 73,
+        "size": 30
+      },
+      {
+        "text": "Tujuan dan\nmanfaat",
+        "x": 1174,
+        "y": 160,
+        "w": 660,
+        "h": 190,
+        "size": 97
+      },
+      {
+        "text": "Membantu warga kampus menemukan informasi barang dan menyelesaikan pengembaliannya.",
+        "x": 1174,
+        "y": 436,
+        "w": 645,
+        "h": 117,
+        "size": 30
+      },
+      {
+        "text": "Hasil yang diharapkan",
+        "x": 1220,
+        "y": 718,
+        "w": 570,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "Laporan lebih mudah ditemukan, komunikasi lebih jelas, dan pengembalian memiliki catatan.",
+        "x": 1220,
+        "y": 790,
+        "w": 565,
+        "h": 189,
+        "size": 40
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 6,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "06 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Modul\npelaporan &\npencarian",
+        "x": 86,
+        "y": 160,
+        "w": 540,
+        "h": 270,
+        "size": 92
+      },
+      {
+        "text": "Pengguna dapat mencatat barang dengan jelas dan menemukan laporan yang sesuai.",
+        "x": 86,
+        "y": 516,
+        "w": 525,
+        "h": 117,
+        "size": 30
+      },
+      {
+        "text": "Fokus pengguna",
+        "x": 126,
+        "y": 822,
+        "w": 460,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Membuat laporan yang bisa dipahami dan dicari orang lain.",
+        "x": 126,
+        "y": 880,
+        "w": 450,
+        "h": 119,
+        "size": 33
+      },
+      {
+        "text": "01",
+        "x": 704,
+        "y": 216,
+        "w": 100,
+        "h": 48,
+        "size": 40
+      },
+      {
+        "text": "Akun dan profil",
+        "x": 846,
+        "y": 189,
+        "w": 870,
+        "h": 54,
+        "size": 45
+      },
+      {
+        "text": "Masuk dengan Google kampus, melihat identitas akun,\ndan membuka riwayat laporan sendiri.",
+        "x": 846,
+        "y": 294,
+        "w": 865,
+        "h": 77,
+        "size": 32
+      },
+      {
+        "text": "Laporan hilang",
+        "x": 696,
+        "y": 449,
+        "w": 420,
+        "h": 43,
+        "size": 36
+      },
+      {
+        "text": "02",
+        "x": 1145,
+        "y": 449,
+        "w": 65,
+        "h": 41,
+        "size": 34
+      },
+      {
+        "text": "Pemilik mencatat barang yang hilang agar pengguna lain dapat mengenalinya.",
+        "x": 696,
+        "y": 549,
+        "w": 493,
+        "h": 110,
+        "size": 30
+      },
+      {
+        "text": "Laporan temuan",
+        "x": 1296,
+        "y": 449,
+        "w": 420,
+        "h": 43,
+        "size": 36
+      },
+      {
+        "text": "03",
+        "x": 1745,
+        "y": 449,
+        "w": 65,
+        "h": 41,
+        "size": 34
+      },
+      {
+        "text": "Penemu membagikan ciri barang agar pemilik dapat mencari dan mengajukan claim.",
+        "x": 1296,
+        "y": 549,
+        "w": 493,
+        "h": 110,
+        "size": 30
+      },
+      {
+        "text": "Foto dan lokasi",
+        "x": 696,
+        "y": 751,
+        "w": 420,
+        "h": 43,
+        "size": 36
+      },
+      {
+        "text": "04",
+        "x": 1145,
+        "y": 751,
+        "w": 65,
+        "h": 41,
+        "size": 34
+      },
+      {
+        "text": "Foto, pin peta, dan saran gedung memperjelas barang serta tempat kejadian.",
+        "x": 696,
+        "y": 851,
+        "w": 493,
+        "h": 110,
+        "size": 30
+      },
+      {
+        "text": "Cari dan filter",
+        "x": 1296,
+        "y": 751,
+        "w": 420,
+        "h": 43,
+        "size": 36
+      },
+      {
+        "text": "05",
+        "x": 1745,
+        "y": 751,
+        "w": 65,
+        "h": 41,
+        "size": 34
+      },
+      {
+        "text": "Kata kunci, jenis, kategori, lokasi, dan waktu membantu pengguna mempersempit pencarian.",
+        "x": 1296,
+        "y": 851,
+        "w": 493,
+        "h": 110,
+        "size": 30
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 7,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "07 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Modul claim,\nchat & admin",
+        "x": 86,
+        "y": 160,
+        "w": 590,
+        "h": 169,
+        "size": 86
+      },
+      {
+        "text": "Fungsi lanjutan membantu pemilik, penemu, dan admin menyelesaikan proses barang.",
+        "x": 86,
+        "y": 415,
+        "w": 575,
+        "h": 117,
+        "size": 30
+      },
+      {
+        "text": "Claim",
+        "x": 126,
+        "y": 832,
+        "w": 505,
+        "h": 46,
+        "size": 38
+      },
+      {
+        "text": "Pengajuan terkait barang pada laporan target.",
+        "x": 126,
+        "y": 890,
+        "w": 500,
+        "h": 77,
+        "size": 32
+      },
+      {
+        "text": "01",
+        "x": 748,
+        "y": 246,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Claim &\nserah terima",
+        "x": 748,
+        "y": 345,
+        "w": 205,
+        "h": 111,
+        "size": 35
+      },
+      {
+        "text": "Ajukan dan proses claim. Foto menjadi catatan serah terima barang.",
+        "x": 748,
+        "y": 519,
+        "w": 205,
+        "h": 177,
+        "size": 29
+      },
+      {
+        "text": "02",
+        "x": 1030,
+        "y": 246,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Chat\nverifikasi",
+        "x": 1030,
+        "y": 345,
+        "w": 205,
+        "h": 74,
+        "size": 35
+      },
+      {
+        "text": "Bahas ciri barang dan pertemuan. Kartu laporan menjaga konteks chat.",
+        "x": 1030,
+        "y": 519,
+        "w": 205,
+        "h": 212,
+        "size": 29
+      },
+      {
+        "text": "03",
+        "x": 1312,
+        "y": 246,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Dashboard\nadmin",
+        "x": 1312,
+        "y": 345,
+        "w": 205,
+        "h": 74,
+        "size": 35
+      },
+      {
+        "text": "Kelola laporan, claim, gedung, dan pengguna melalui web.",
+        "x": 1312,
+        "y": 519,
+        "w": 205,
+        "h": 142,
+        "size": 29
+      },
+      {
+        "text": "04",
+        "x": 1594,
+        "y": 246,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Notifikasi",
+        "x": 1594,
+        "y": 345,
+        "w": 205,
+        "h": 37,
+        "size": 35
+      },
+      {
+        "text": "Memberi kabar perubahan claim. Integrasinya masih perlu dilengkapi.",
+        "x": 1594,
+        "y": 519,
+        "w": 205,
+        "h": 212,
+        "size": 29
+      },
+      {
+        "text": "Alur pengembalian",
+        "x": 758,
+        "y": 828,
+        "w": 1020,
+        "h": 41,
+        "size": 34
+      },
+      {
+        "text": "1",
+        "x": 758,
+        "y": 909,
+        "w": 44,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Ajukan claim",
+        "x": 816,
+        "y": 902,
+        "w": 200,
+        "h": 31,
+        "size": 26
+      },
+      {
+        "text": "2",
+        "x": 1021,
+        "y": 909,
+        "w": 44,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Verifikasi chat",
+        "x": 1079,
+        "y": 902,
+        "w": 200,
+        "h": 31,
+        "size": 26
+      },
+      {
+        "text": "3",
+        "x": 1284,
+        "y": 909,
+        "w": 44,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Setujui claim",
+        "x": 1342,
+        "y": 902,
+        "w": 200,
+        "h": 31,
+        "size": 26
+      },
+      {
+        "text": "4",
+        "x": 1547,
+        "y": 909,
+        "w": 44,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Foto serah terima",
+        "x": 1605,
+        "y": 902,
+        "w": 200,
+        "h": 62,
+        "size": 26
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 8,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "08 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Progres akun,\nlaporan &\npencarian",
+        "x": 86,
+        "y": 160,
+        "w": 585,
+        "h": 259,
+        "size": 88
+      },
+      {
+        "text": "Fitur inti tersedia. Bukti uji mencakup perangkat, pengujian otomatis, dan konfirmasi pengguna.",
+        "x": 86,
+        "y": 505,
+        "w": 570,
+        "h": 117,
+        "size": 30
+      },
+      {
+        "text": "Masih diperiksa",
+        "x": 126,
+        "y": 829,
+        "w": 500,
+        "h": 38,
+        "size": 32
+      },
+      {
+        "text": "Semua layar, domain akun lain, dan variasi izin lokasi.",
+        "x": 126,
+        "y": 886,
+        "w": 495,
+        "h": 80,
+        "size": 32
+      },
+      {
+        "text": "Akun dan laporan",
+        "x": 762,
+        "y": 195,
+        "w": 1000,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "Google kampus",
+        "x": 762,
+        "y": 291,
+        "w": 455,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Login mahasiswa teruji di HP. Domain akun lain belum seluruhnya terverifikasi.",
+        "x": 762,
+        "y": 353,
+        "w": 450,
+        "h": 115,
+        "size": 31
+      },
+      {
+        "text": "Laporan & riwayat",
+        "x": 1297,
+        "y": 291,
+        "w": 455,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Laporan hilang/temuan dengan foto dan lokasi tersedia. Riwayat laporan pernah diuji di HP.",
+        "x": 1297,
+        "y": 353,
+        "w": 450,
+        "h": 154,
+        "size": 31
+      },
+      {
+        "text": "Lokasi dan pencarian",
+        "x": 762,
+        "y": 622,
+        "w": 1000,
+        "h": 50,
+        "size": 42
+      },
+      {
+        "text": "Foto & lokasi",
+        "x": 762,
+        "y": 718,
+        "w": 460,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Submit dengan dan tanpa izin lokasi tidak crash, dikonfirmasi 1 November.",
+        "x": 762,
+        "y": 781,
+        "w": 450,
+        "h": 115,
+        "size": 31
+      },
+      {
+        "text": "Pencarian & filter",
+        "x": 1297,
+        "y": 718,
+        "w": 460,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Perbaikan pencarian dan pembagian halaman tercatat lulus uji backend.",
+        "x": 1297,
+        "y": 781,
+        "w": 450,
+        "h": 115,
+        "size": 31
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 9,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "09 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Progres claim\n& serah terima",
+        "x": 86,
+        "y": 160,
+        "w": 590,
+        "h": 161,
+        "size": 82
+      },
+      {
+        "text": "Aksi claim dan unggah foto telah dikonfirmasi berhasil oleh pengguna pada 1 November.",
+        "x": 86,
+        "y": 407,
+        "w": 575,
+        "h": 117,
+        "size": 30
+      },
+      {
+        "text": "Perbaikan terbaru",
+        "x": 126,
+        "y": 776,
+        "w": 500,
+        "h": 38,
+        "size": 32
+      },
+      {
+        "text": "Error aksi claim dan unggah foto sudah diperbaiki dan diuji.",
+        "x": 126,
+        "y": 839,
+        "w": 500,
+        "h": 133,
+        "size": 37
+      },
+      {
+        "text": "Tersedia",
+        "x": 748,
+        "y": 192,
+        "w": 300,
+        "h": 44,
+        "size": 41
+      },
+      {
+        "text": "Claim langsung ke laporan target.",
+        "x": 748,
+        "y": 345,
+        "w": 298,
+        "h": 74,
+        "size": 30
+      },
+      {
+        "text": "Penerima menerima atau menolak. Pengaju dapat mencabut claim.",
+        "x": 748,
+        "y": 494,
+        "w": 298,
+        "h": 148,
+        "size": 30
+      },
+      {
+        "text": "Serah terima dengan foto bukti.",
+        "x": 748,
+        "y": 643,
+        "w": 298,
+        "h": 74,
+        "size": 30
+      },
+      {
+        "text": "Bukti pengujian",
+        "x": 1126,
+        "y": 192,
+        "w": 300,
+        "h": 89,
+        "size": 41
+      },
+      {
+        "text": "284 pengujian backend lulus pada patch claim.",
+        "x": 1126,
+        "y": 345,
+        "w": 298,
+        "h": 111,
+        "size": 30
+      },
+      {
+        "text": "188 pengujian Flutter lulus, 4 dilewati pada patch foto.",
+        "x": 1126,
+        "y": 494,
+        "w": 298,
+        "h": 111,
+        "size": 30
+      },
+      {
+        "text": "Pengguna mengonfirmasi aksi claim dan unggah foto berhasil.",
+        "x": 1126,
+        "y": 643,
+        "w": 298,
+        "h": 148,
+        "size": 30
+      },
+      {
+        "text": "Masih terbuka",
+        "x": 1504,
+        "y": 192,
+        "w": 300,
+        "h": 44,
+        "size": 41
+      },
+      {
+        "text": "Lengkapi uji seluruh peran dan pilihan kamera/galeri.",
+        "x": 1504,
+        "y": 345,
+        "w": 298,
+        "h": 111,
+        "size": 30
+      },
+      {
+        "text": "Notifikasi claim di Flutter belum dibuat.",
+        "x": 1504,
+        "y": 494,
+        "w": 298,
+        "h": 74,
+        "size": 30
+      },
+      {
+        "text": "Claim pending lain belum ditutup otomatis.",
+        "x": 1504,
+        "y": 643,
+        "w": 298,
+        "h": 111,
+        "size": 30
+      },
+      {
+        "text": "Tersedia dan teruji pada skenario yang dilaporkan.",
+        "x": 760,
+        "y": 879,
+        "w": 1026,
+        "h": 46,
+        "size": 38
+      },
+      {
+        "text": "Cakupan uji manual belum mencakup seluruh kombinasi.",
+        "x": 760,
+        "y": 941,
+        "w": 1026,
+        "h": 35,
+        "size": 29
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 10,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "10 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "Progres chat\n& arsip",
+        "x": 86,
+        "y": 160,
+        "w": 575,
+        "h": 188,
+        "size": 96
+      },
+      {
+        "text": "Chat dasar sudah teruji. Arsip dan hapus chat masih memerlukan pengujian lanjutan.",
+        "x": 86,
+        "y": 434,
+        "w": 560,
+        "h": 117,
+        "size": 30
+      },
+      {
+        "text": "Chat aktif",
+        "x": 126,
+        "y": 801,
+        "w": 490,
+        "h": 41,
+        "size": 34
+      },
+      {
+        "text": "Kirim dan terima pesan real time telah diuji pada dua HP.",
+        "x": 126,
+        "y": 862,
+        "w": 490,
+        "h": 84,
+        "size": 34
+      },
+      {
+        "text": "01",
+        "x": 748,
+        "y": 226,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Chat dasar",
+        "x": 748,
+        "y": 337,
+        "w": 205,
+        "h": 40,
+        "size": 37
+      },
+      {
+        "text": "Kirim/terima real time teruji dua HP. Kartu konteks barang dikonfirmasi berhasil.",
+        "x": 748,
+        "y": 496,
+        "w": 205,
+        "h": 216,
+        "size": 29
+      },
+      {
+        "text": "02",
+        "x": 1030,
+        "y": 226,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Kode tergabung",
+        "x": 1030,
+        "y": 337,
+        "w": 205,
+        "h": 80,
+        "size": 37
+      },
+      {
+        "text": "Arsip, buka arsip, dan hapus untuk saya sudah ditulis di backend serta Flutter.",
+        "x": 1030,
+        "y": 496,
+        "w": 205,
+        "h": 252,
+        "size": 29
+      },
+      {
+        "text": "03",
+        "x": 1312,
+        "y": 226,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Uji otomatis",
+        "x": 1312,
+        "y": 337,
+        "w": 205,
+        "h": 80,
+        "size": 37
+      },
+      {
+        "text": "Flutter terbaru: 193 lulus, 4 dilewati. 23 kasus backend arsip belum dijalankan.",
+        "x": 1312,
+        "y": 496,
+        "w": 205,
+        "h": 216,
+        "size": 29
+      },
+      {
+        "text": "04",
+        "x": 1594,
+        "y": 226,
+        "w": 80,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Belum terbukti",
+        "x": 1594,
+        "y": 337,
+        "w": 205,
+        "h": 80,
+        "size": 37
+      },
+      {
+        "text": "Uji manual dua akun, deploy/migrasi produksi, dan scheduler belum terverifikasi.",
+        "x": 1594,
+        "y": 496,
+        "w": 205,
+        "h": 252,
+        "size": 29
+      },
+      {
+        "text": "Arsip otomatis 14 hari",
+        "x": 760,
+        "y": 825,
+        "w": 1000,
+        "h": 47,
+        "size": 39
+      },
+      {
+        "text": "Jadwal sudah didaftarkan. Proses penjadwal di server\nbelum terbukti berjalan. Claim aktif dikecualikan.",
+        "x": 760,
+        "y": 889,
+        "w": 1010,
+        "h": 78,
+        "size": 32
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 11,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "11 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "01",
+        "x": 120,
+        "y": 239,
+        "w": 78,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Admin",
+        "x": 232,
+        "y": 197,
+        "w": 310,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Tersedia",
+        "x": 232,
+        "y": 262,
+        "w": 310,
+        "h": 32,
+        "size": 27
+      },
+      {
+        "text": "Kelola laporan, claim, gedung, dan pengguna. Halaman laporan teruji manual.",
+        "x": 594,
+        "y": 198,
+        "w": 475,
+        "h": 114,
+        "size": 31
+      },
+      {
+        "text": "02",
+        "x": 120,
+        "y": 442,
+        "w": 78,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Uji admin",
+        "x": 232,
+        "y": 400,
+        "w": 310,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Sebagian",
+        "x": 232,
+        "y": 465,
+        "w": 310,
+        "h": 32,
+        "size": 27
+      },
+      {
+        "text": "Aksi claim memakai uji service. Test otomatis khusus Filament belum ada.",
+        "x": 594,
+        "y": 401,
+        "w": 475,
+        "h": 114,
+        "size": 31
+      },
+      {
+        "text": "03",
+        "x": 120,
+        "y": 645,
+        "w": 78,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "Notifikasi",
+        "x": 232,
+        "y": 603,
+        "w": 310,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Sebagian",
+        "x": 232,
+        "y": 668,
+        "w": 310,
+        "h": 32,
+        "size": 27
+      },
+      {
+        "text": "Pengiriman claim ada di backend. Penanganan Flutter dan uji perangkat belum lengkap.",
+        "x": 594,
+        "y": 604,
+        "w": 475,
+        "h": 114,
+        "size": 31
+      },
+      {
+        "text": "04",
+        "x": 120,
+        "y": 848,
+        "w": 78,
+        "h": 37,
+        "size": 31
+      },
+      {
+        "text": "WhatsApp",
+        "x": 232,
+        "y": 806,
+        "w": 310,
+        "h": 42,
+        "size": 35
+      },
+      {
+        "text": "Rencana",
+        "x": 232,
+        "y": 871,
+        "w": 310,
+        "h": 32,
+        "size": 27
+      },
+      {
+        "text": "Pengisian nomor belum memiliki endpoint. Integrasi belum dapat dinyatakan lengkap.",
+        "x": 594,
+        "y": 807,
+        "w": 475,
+        "h": 114,
+        "size": 31
+      },
+      {
+        "text": "Progres admin\n& fitur\npendukung",
+        "x": 1188,
+        "y": 170,
+        "w": 645,
+        "h": 262,
+        "size": 89
+      },
+      {
+        "text": "Fitur pendukung berada pada tingkat kesiapan yang berbeda.",
+        "x": 1188,
+        "y": 518,
+        "w": 630,
+        "h": 78,
+        "size": 30
+      },
+      {
+        "text": "Tampilan aplikasi",
+        "x": 1230,
+        "y": 777,
+        "w": 560,
+        "h": 40,
+        "size": 33
+      },
+      {
+        "text": "UI v3 sudah digabung. Pemeriksaan seluruh layar di HP masih dilanjutkan.",
+        "x": 1230,
+        "y": 838,
+        "w": 555,
+        "h": 125,
+        "size": 34
+      }
+    ],
+    "outside": []
+  },
+  {
+    "slide": 12,
+    "text": [
+      {
+        "text": "CAMPUS LOST & FOUND",
+        "x": 86,
+        "y": 58,
+        "w": 800,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "PROGRES PROYEK PBL",
+        "x": 1360,
+        "y": 58,
+        "w": 350,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "12 / 12",
+        "x": 1750,
+        "y": 58,
+        "w": 100,
+        "h": 26,
+        "size": 22
+      },
+      {
+        "text": "ALUR UTAMA TERSEDIA",
+        "x": 132,
+        "y": 200,
+        "w": 920,
+        "h": 35,
+        "size": 29
+      },
+      {
+        "text": "Laporan, pencarian,\nclaim, chat, dan\nserah terima.",
+        "x": 132,
+        "y": 280,
+        "w": 915,
+        "h": 250,
+        "size": 78
+      },
+      {
+        "text": "Sebagian skenario telah diuji pada perangkat.",
+        "x": 132,
+        "y": 607,
+        "w": 930,
+        "h": 38,
+        "size": 32
+      },
+      {
+        "text": "Progres\nkeseluruhan\nproyek",
+        "x": 1200,
+        "y": 156,
+        "w": 634,
+        "h": 270,
+        "size": 91
+      },
+      {
+        "text": "Proyek masih dalam penyelesaian integrasi dan pengujian menyeluruh.",
+        "x": 1200,
+        "y": 530,
+        "w": 620,
+        "h": 149,
+        "size": 42
+      },
+      {
+        "text": "01",
+        "x": 118,
+        "y": 738,
+        "w": 270,
+        "h": 66,
+        "size": 55
+      },
+      {
+        "text": "Uji arsip & hapus",
+        "x": 118,
+        "y": 832,
+        "w": 275,
+        "h": 76,
+        "size": 34
+      },
+      {
+        "text": "Dua akun dan data server.",
+        "x": 118,
+        "y": 927,
+        "w": 270,
+        "h": 66,
+        "size": 28
+      },
+      {
+        "text": "02",
+        "x": 475,
+        "y": 738,
+        "w": 270,
+        "h": 66,
+        "size": 55
+      },
+      {
+        "text": "Pastikan scheduler",
+        "x": 475,
+        "y": 832,
+        "w": 275,
+        "h": 76,
+        "size": 34
+      },
+      {
+        "text": "Arsip dan kedaluwarsa claim.",
+        "x": 475,
+        "y": 927,
+        "w": 270,
+        "h": 66,
+        "size": 28
+      },
+      {
+        "text": "03",
+        "x": 832,
+        "y": 738,
+        "w": 270,
+        "h": 66,
+        "size": 55
+      },
+      {
+        "text": "Lengkapi kualitas",
+        "x": 832,
+        "y": 832,
+        "w": 275,
+        "h": 76,
+        "size": 34
+      },
+      {
+        "text": "Notifikasi dan seluruh layar.",
+        "x": 832,
+        "y": 927,
+        "w": 270,
+        "h": 66,
+        "size": 28
+      },
+      {
+        "text": "Terima kasih",
+        "x": 1240,
+        "y": 808,
+        "w": 550,
+        "h": 68,
+        "size": 57
+      },
+      {
+        "text": "Diskusi dan masukan",
+        "x": 1240,
+        "y": 900,
+        "w": 545,
+        "h": 41,
+        "size": 34
+      }
+    ],
+    "outside": []
+  }
+]

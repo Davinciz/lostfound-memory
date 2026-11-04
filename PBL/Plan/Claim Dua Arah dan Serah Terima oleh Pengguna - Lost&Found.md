@@ -3,8 +3,14 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-25
-summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari. 2026-10-25: mark-transferred (fix transfer claim) sudah merge develop — FCM API v8 + guard di dalam transaction + lockForUpdate
+updated: 2026-11-01
+summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari. 2026-11-01: claim langsung ke laporan target sudah merge develop (migration nullable + CHECK, PR #6/#7 backend, PR #12 Flutter)
+---
+
+**Konflik:** §1 plan induk menulis "serah terima hanya bisa dilakukan admin atau penemu" — **digantikan** (2026-11-01, backend `f3b730d`): `ClaimPolicy::markTransferred` kini **admin ATAU claimant (pengaju) ATAU penerima** (lihat §5 poin 8). Teks lama di §1 tetap ada sebagai riwayat.
+
+**Update 2026-11-01 (backend `f3b730d`, branch `fix/claim/withdraw-500-transfer-policy`):** kode sudah **menerapkan** poin §5 no. 8 — `markTransferred` boleh admin ATAU claimant ATAU penerima; FCM serah terima dua arah (claimant→penerima, penerima→claimant, admin→claimant). **Status:** commit `f3b730d` **sudah di-push dan sudah merge `develop`** (konfirmasi user 2026-11-01). **Belum diterapkan:** penutupan otomatis claim `pending` lain saat `returned` (§4 baris 134) — **keputusan user 2026-11-01: pertahankan scope patch**, tetap backlog. Laporan: [[GPT-261101-05-fix-withdraw-500-transfer-policy]], [[GPT-261101-05-fix-upload-foto-serah-terima]].
+
 ---
 
 # Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found
@@ -480,7 +486,7 @@ $table->index('accepted_at'); // untuk query expire
 
 ## Revisi 2026-10-19: Claim Langsung ke Laporan Target
 
-> **Status keputusan:** DISETUJUI user 2026-10-19. **Belum diimplementasi** — belum ada migration, belum ada perubahan kode. Section ini **membalik** keputusan lama "claim wajib punya laporan sendiri" (`claims.lost_report_id` NOT NULL) yang tercatat di §1 Claim Dua Arah, [[Verifikasi via Chat - Lost&Found]] §1, [[PRD]] §3.D/§4.2/§5, dan [[ERD]]/`schema.dbml` (skema saat ini masih NOT NULL).
+> **Status keputusan:** DISETUJUI user 2026-10-19. ~~**Belum diimplementasi** — belum ada migration, belum ada perubahan kode.~~ **DILURUSKAN 2026-11-01:** sudah **diimplementasi & merge `develop`** — migration `2026_10_23_000001_make_claim_reports_nullable` (PR #6 `d1ef1eb`, Phase 1a & 1b-i) dan Flutter PR #12 `cdc223e` (Phase 2). Section ini **membalik** keputusan lama "claim wajib punya laporan sendiri" (`claims.lost_report_id` NOT NULL) yang tercatat di §1 Claim Dua Arah, [[Verifikasi via Chat - Lost&Found]] §1, [[PRD]] §3.D/§4.2/§5, dan [[ERD]]/`schema.dbml` (skema saat ini masih NOT NULL).
 >
 > **Sumber tunggal A1/A2:** [[Claim Langsung ke Laporan Target - Lost&Found]]. Section ini menjadi riwayat keputusan; aturan yang berlaku ada di plan baru itu.
 
@@ -498,7 +504,7 @@ $table->index('accepted_at'); // untuk query expire
 - `claims.found_report_id` → **NULLABLE**
 - **CHECK constraint**: minimal salah satu terisi — `CHECK (lost_report_id IS NOT NULL OR found_report_id IS NOT NULL)`
 - Tetap: `claimant_id` NOT NULL, `status` default `pending`, `code` claim tidak ada, tanpa kolom `claimant_role`.
-- Migration belum dibuat; direncanakan masuk **Phase 1** bersama `accepted_at`, `closed_reason`, `closed_by`.
+- Migration ~~belum dibuat~~; direncanakan masuk **Phase 1** bersama `accepted_at`, `closed_reason`, `closed_by`. **DILURUSKAN 2026-11-01:** migration **sudah diterapkan** `2026_10_23_000001_make_claim_reports_nullable` (merge `develop` PR #6 `d1ef1eb`).
 
 **Peran pengaju/penerima:** dihitung dari laporan target, bukan disimpan di kolom.
 - Target = laporan temuan (`found_report_id` terisi) → penerima = `found_report.reporter_id` (penemu), pengaju = pemilik.

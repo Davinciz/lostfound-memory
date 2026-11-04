@@ -1,6 +1,6 @@
 ---
 type: report
-task: T-YYMMDD-NN
+task: <Agent>-YYMMDD-NN
 from: backend              # docs | backend | flutter
 outcome: succeeded         # succeeded | failed | blocked
 branch:

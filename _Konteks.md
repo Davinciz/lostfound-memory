@@ -1,7 +1,7 @@
 ---
 type: context
 status: active
-updated: 2026-10-23
+updated: 2026-10-31
 summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 ---
 
@@ -50,7 +50,8 @@ ObsidianVault/
 	└── Inbox/              # Laporan antar-agent (alur tugas via prompt chat)
 	    ├── tasks/           # TIDAK DIPAKAI (alur lama)
 	    ├── reports/         # Laporan aktif: <Agent>-YYMMDD-NN-<slug>.md (format lama: R-YYMMDD-NN-<slug>.md — tetap valid sebagai riwayat)
-	    ├── Archive/         # TIDAK DIPAKAI (alur lama)
+	    ├── Archive/         # Arsip administratif (laporan lama di Archive/reports/YYMM/; aturan di Inbox/README.md)
+	    ├── pm-handoff.md   # Log serah terima Claudia (Asisten PM); ditulis Claudia, dibaca Claude
 	    └── _Templates/      # laporan.md (template laporan)
 
 ## Arti Tiap Type
@@ -73,7 +74,7 @@ ObsidianVault/
 - Setiap selesai tugas, tulis ringkasan ke D:\ObsidianVault\PBL\DailyChanges\<tanggal>.md.
 - Perbarui `status` dan `updated` di catatan yang diubah.
 - Jangan menghapus atau menimpa catatan tanpa konfirmasi.
-- Tugas diberikan user langsung lewat prompt di chat (header `ID: T-YYMMDD-NN | target: ...`); laporan hasil tugas ditulis ke PBL/Inbox/reports/ dan mengikuti PBL/Inbox/README.md
+- Tugas diberikan user langsung lewat prompt di chat (header `ID: <Agent>-YYMMDD-NN | target: <docs|backend|flutter> | branch: ... | base: develop`); Prompt ditulis Claude (PM utama) atau Claudia (Asisten PM, saat Claude tidak tersedia); laporan hasil tugas ditulis ke PBL/Inbox/reports/ dan mengikuti PBL/Inbox/README.md
 - Bahasa catatan: Indonesia.
 - Jika diminta membuat Plan, tulis Plan ke PBL/Plan
 - Plan berstatus `done` dipindah ke `PBL/Plan/Archive/` **setelah konfirmasi user**; plan baru tetap dibuat di `PBL/Plan/`. Wikilink berbasis nama file tetap aman setelah dipindah.
@@ -195,4 +196,4 @@ summary: Verifikasi kepemilikan lewat chat in-app antara pengklaim dan penemu
 - lost-found: Campus Lost&Found (mobile Flutter + admin Laravel Filament)
 - <tambahkan proyek/mata kuliah lain di sini>
 
-*Last updated: 2026-10-23*
+*Last updated: 2026-10-31*

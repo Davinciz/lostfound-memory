@@ -2,8 +2,8 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-10-29
-summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18. 2026-10-28: gambar ERD + tautan dbdesigner diperbarui (banner "gambar mungkin belum diperbarui" dihapus)
+updated: 2026-11-01
+summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18; 2026-11-01 arsip & hapus chat 4 kolom timestamp nullable di conversations (migration 2026_11_01_103035, tetap 7 tabel). 2026-10-28: gambar ERD + tautan dbdesigner diperbarui (banner "gambar mungkin belum diperbarui" dihapus)
 ---
 # ERD Lost & Found
 
@@ -88,6 +88,7 @@ Ruang percakapan antara dua pengguna, biasanya terkait klaim atau laporan terten
 - **PK:** `id` (UUID)
 - **FK:** `user1_id` → users.id, `user2_id` → users.id, `lost_report_id` → lost_reports.id (nullable), `found_report_id` → found_reports.id (nullable), `claim_id` → claims.id (nullable)
 - **Index:** claim_id, user1_id, user2_id (index lama tetap) + **partial unique index** `(claim_id) WHERE claim_id IS NOT NULL` dan `(user1_id, user2_id) WHERE claim_id IS NULL` (pasangan user dinormalisasi min/max untuk chat langsung) — ditambahkan migration `2026_10_18_071626_add_conversation_indexes`, **tanpa perubahan kolom/tabel**
+- **Kolom arsip & hapus per slot user (sejak 2026-11-01, migration `2026_11_01_103035_add_archive_delete_columns_to_conversations`):** `user1_archived_at`, `user2_archived_at` (timestamp nullable — arsip manual atau arsip otomatis 14 hari, per slot pengguna), `user1_deleted_at`, `user2_deleted_at` (timestamp nullable — "hapus untuk saya"; batas riwayat pesan yang tampil untuk pengguna itu). **Tanpa tabel baru** (tetap 7 tabel). Kolom per **slot** (`user1_*` milik `user1_id`, `user2_*` milik `user2_id`), bukan per user id.
 - **Relasi:** 1 conversation → N messages
 
 #### 7. `messages`
@@ -153,3 +154,4 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **2026-10-14 (lanjutan):** `photo_urls` (lost_reports & found_reports) dan `proof_of_transfer_photo_url` (claims) kini menyimpan **path relatif** (mis. `reports/uuid.jpg`, `claims/proof/uuid.jpg`); URL lengkap dibangun di response API dari `APP_URL`. Struktur kolom **tidak berubah** (Backlog Item 4, selesai 2026-10-14).
 - **2026-10-18:** Real-Time Chat Fase 1 backend merge ke `develop` (commit `fb256f9`). Migration `2026_10_18_071626_add_conversation_indexes` menambah partial unique index + composite index (lihat bagian Index chat). **Struktur kolom/tabel tidak berubah.**
 - **2026-10-23:** `claims.lost_report_id` & `claims.found_report_id` jadi **nullable** + CHECK `claims_target_report_check` (minimal satu terisi); kolom `accepted_at`, `closed_reason`, `closed_by` (disetujui 2026-10-14) ikut diterapkan. Migration `2026_10_23_000001_make_claim_reports_nullable`; merge ke `develop` PR #6 (commit squash `d1ef1eb`). Sumber tunggal: [[Claim Langsung ke Laporan Target - Lost&Found]].
+- **2026-11-01:** Fitur **Arsip & Hapus Chat** — migration `2026_11_01_103035_add_archive_delete_columns_to_conversations` menambah **4 kolom timestamp nullable** di `conversations`: `user1_archived_at`, `user2_archived_at`, `user1_deleted_at`, `user2_deleted_at`. **Tanpa tabel baru** (tetap 7 tabel), tanpa index baru. Chat cabang claim: `user1_id` = claimant/pengaju, `user2_id` = penerima (pelapor laporan target) — kolom per **slot** mengikuti `user1_id`/`user2_id`, bukan peran pelapor hilang/temuan. Sumber tunggal: [[Arsip dan Hapus Chat - Lost&Found]].

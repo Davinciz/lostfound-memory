@@ -2,8 +2,8 @@
 type: design
 project: lost-found
 status: active
-updated: 2026-10-30
-summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; catatan plan WhatsApp, push notification, backlog UI redesign, dan logo baru (§2.7).
+updated: 2026-11-01
+summary: Spesifikasi UI mobile dan admin dengan autentikasi Google SSO; UI v3 (figcraft) + token warna app_colors.dart, koreksi perilaku, logo baru (§2.7).
 ---
 
 # Campus Lost & Found (CLF) — Design Specification
@@ -43,6 +43,22 @@ Palet brand: **hitam-kuning**. Warna status (Pending/Returned/Rejected/Closed) t
 | `text` | `#0D0D0D` | `#F5F5F5` | Teks utama |
 | `text-secondary` | `#5C5C5C` | `#A3A3A3` | Teks sekunder, label, caption, placeholder |
 | `border` | `#E5E5E5` | `#262626` | Border kartu, input, divider |
+
+**Token tambahan UI v3 (disetujui 2026-11-01; sumber: `lib/utils/app_colors.dart`):**
+
+| Token | Hex | Kegunaan |
+| --- | --- | --- |
+| `bg` (krem) | `#F6F1E7` | Background layar light mode (menggantikan `#FAFAFA`) |
+| `text` (tinta) | `#111111` | Teks utama (menggantikan `#0D0D0D`) |
+| `text-secondary` | `#5A5347` | Teks sekunder, label, caption, placeholder (menggantikan `#5C5C5C`) |
+| `accent-yellow` | `#F5C400` | Aksen kuning — sama seperti di atas |
+| `nav-inactive` | `#4A443A` | Ikon/label nav nonaktif |
+| `photo-placeholder` | `#E9E1D0` | Placeholder kotak foto di form laporan |
+| `label-lost` | `#B4472F` | Label "Kehilangan" (oranye kecokelatan) di kartu barang |
+| `text-on-ink` | `#CFCABF` | Teks di atas latar tinta/gelap (mis. bubble chat sendiri) |
+
+> [!note] Pemetaan ke kode
+> Nama token di `app_colors.dart`: `bg`, `text`, `textSecondary`, `accentYellow`, `navInactive`, `photoPlaceholder`, `labelLost`, `textOnInk`. Nilai lama dipertahankan sebagai alias (`background`, `textPrimary`, `textLight`, dll.) agar pemakaian lama tidak putus. **Status `text-on-ink #CFCABF` disetujui user 2026-11-01 sebagai token resmi** (sebelumnya ditandai pending di kode).
 
 > **Aturan kontras:** di light mode `primary` hitam → teks di atasnya **putih**. Di dark mode `primary` berganti kuning terang → teks di atasnya **hitam** (bukan putih), supaya tetap terbaca. Label "Menemukan" pakai `success` (hijau), label "Kehilangan" pakai `warning` (oranye) — bukan kuning, supaya tidak tertukar dengan badge Claimed.
 
@@ -122,6 +138,9 @@ Daftar kategori **tetap** (sesuai ERD): Buku, Elektronik, Jaket/Kemeja, Dompet, 
 
 **Lokasi aset:** `assets/images/logo/` di repo `lostfound-mobile` (ditetapkan di Ajax-261030-02).
 
+> [!info] UI v3 2026-11-01 — aset & font
+> Logo dipakai lewat widget `app_logo.dart` (SVG via `flutter_svg`, sudah menjadi dependency). Font **Plus Jakarta Sans dibundel lokal, 4 bobot**. Sumber desain UI v3: `D:\PBL\Lost&Found.figcraft`.
+
 ---
 
 ## 3. Role Pengguna
@@ -164,6 +183,9 @@ Isi slide: (1) "Lapor barang hilang atau temuan dengan cepat", (2) "Cari barangm
 > [!warning] Status implementasi — logo baru
 > Logo login akan memakai wordmark terang baru (§2.7). Implementasi terkait di Ajax-261030-02.
 
+> [!info] UI v3 2026-11-01 (GPT-261101-01)
+> Login memakai logo SVG lokal (`app_logo.dart` + `assets/images/logo/`, `flutter_svg`). Latar krem `#F6F1E7`, tombol primer tinta `#111111`. Font Plus Jakarta Sans **lokal 4 bobot** (Regular/Medium/SemiBold/Bold), tidak lagi ambil dari Google Fonts runtime.
+
 **Elemen:** logo, penjelasan singkat akun Google Polines yang didukung, tombol **"Masuk dengan Google"**. Tidak ada input password, tautan daftar, atau lupa password. Pesan error jika akun/domain tidak memenuhi syarat.
 
 **Stitch prompt:** Buatkan layar login mobile minimalis untuk Campus Lost & Found. Logo di atas, teks "Masuk menggunakan akun Google Polines", satu tombol lebar "Masuk dengan Google" dengan ikon Google, state loading dan pesan error yang jelas. Tidak ada field email/password, tautan daftar, atau lupa password. Gaya flat, whitespace luas, palet hitam-kuning, font Plus Jakarta Sans.
@@ -179,6 +201,9 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 > [!warning] Status implementasi — logo baru
 > Logo kecil di header Beranda akan memakai ikon persegi baru (§2.7). Implementasi terkait di Ajax-261030-02.
 
+> [!info] UI v3 2026-11-01 (GPT-261101-01)
+> **Bottom navigation 5 slot hanya ikon** — label teks dihapus; ikon nonaktif `nav-inactive` `#4A443A`, aktif tinta `#111111`. **Daftar publik hanya menampilkan laporan `pending`** — laporan yang sudah `claimed`/`returned`/`closed` tidak muncul di feed Beranda. Background krem `#F6F1E7`, kartu barang pakai label "Kehilangan" `label-lost` `#B4472F` dan "Menemukan" hijau. Chip filter **Status dihapus** (hanya jenis + kategori).
+
 **Elemen:**
 - Header: logo kecil kiri, avatar bulat kanan (background gradasi hitam→kuning, berisi inisial), ikon lonceng notifikasi dengan badge angka merah (tap → layar Notifikasi).
 - Search bar singkat (tap → ke layar Cari).
@@ -192,12 +217,15 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 ### 5.7 Cari & Filter
 **Elemen:**
 - Search bar auto-focus, tombol batal kanan.
-- Tombol "Filter" membuka bottom-sheet: jenis (Hilang/Ditemukan), kategori (chip multi-select), status, **gedung** (dropdown dari master gedung), rentang tanggal, tombol "Terapkan Filter" (hitam penuh) & "Reset" (outline).
+- Tombol "Filter" membuka bottom-sheet: jenis (Hilang/Ditemukan), kategori (chip multi-select), **gedung** (dropdown dari master gedung), rentang tanggal, tombol "Terapkan Filter" (hitam penuh) & "Reset" (outline). **Status dihapus dari filter 2026-11-01** (UI v3) — daftar publik hanya menampilkan `pending`, jadi filter status tidak relevan.
 - Hasil pencarian: list kartu (format sama seperti Beranda).
 - Riwayat pencarian terakhir (chip) saat search bar kosong.
 - Empty state: "Tidak ditemukan hasil untuk pencarian ini".
 
-**Stitch prompt:** Buatkan layar pencarian mobile app, search bar besar di atas dengan auto-focus, di bawahnya chip "Pencarian Terakhir" (3-4 chip abu-abu), tombol filter di kanan search bar membuka bottom sheet berisi: jenis (Hilang/Ditemukan), kategori (chip multi-select, aktif bg kuning muda teks hitam), status (radio button), dropdown gedung, date range picker, tombol "Terapkan Filter" hitam penuh dan "Reset" outline hitam. Hasil pencarian tampil sebagai list card sama seperti home feed. Font Plus Jakarta Sans, palet hitam-kuning.
+> [!info] UI v3 2026-11-01 — pencarian & filter
+> Input krem/placeholder `photo-placeholder` `#E9E1D0`; chip terpilih tinta. Filter status dihapus (lihat di atas).
+
+**Stitch prompt:** Buatkan layar pencarian mobile app, search bar besar di atas dengan auto-focus, di bawahnya chip "Pencarian Terakhir" (3-4 chip abu-abu), tombol filter di kanan search bar membuka bottom sheet berisi: jenis (Hilang/Ditemukan), kategori (chip multi-select, aktif bg kuning muda teks hitam), dropdown gedung, date range picker, tombol "Terapkan Filter" hitam penuh dan "Reset" outline hitam. Hasil pencarian tampil sebagai list card sama seperti home feed. Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.8 Form Lapor Barang (Hilang/Ditemukan)
 
@@ -208,8 +236,8 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 **Elemen:**
 - Header: back + judul "Lapor Barang".
-- Toggle 2 opsi: "Hilang" | "Ditemukan" (aktif = bg hitam, teks putih).
-- Upload foto: 3 kotak 64px — kotak terisi (bg kuning muda `primary-soft`, ikon kamera hitam), kotak kosong bergaris putus-putus + ikon plus. Tombol "Ambil dari kamera" & "Pilih dari galeri". Info kecil: "Foto dikompres otomatis".
+- ~~Toggle 2 opsi: "Hilang" | "Ditemukan" (aktif = bg hitam, teks putih).~~ **Sheet pemilihan Hilang/Ditemukan dihapus 2026-11-01** (UI v3) — tombol "+" di nav langsung membuka form laporan; jenis laporan dipilih di dalam form.
+- Upload foto: 3 kotak 64px — kotak terisi (bg kuning muda `primary-soft`, ikon kamera hitam), kotak kosong bergaris putus-putus (placeholder `photo-placeholder` `#E9E1D0`) + ikon plus. Tombol "Ambil dari kamera" & "Pilih dari galeri". Info kecil: "Foto dikompres otomatis".
 - Input Nama Barang, dropdown Kategori (7 kategori tetap), textarea Deskripsi.
 - Section lokasi: peta `flutter_map` terbuka di tengah kampus tanpa pin. User menaruh pin dengan tap di peta; pin bisa digeser. Tombol "Lokasi saya" menggeser peta ke posisi GPS (tidak menetapkan pin). Marker gedung tampil di peta; tap marker memilih gedung. Setelah pin ditaruh, muncul **daftar saran gedung** (maks 3, radius 75 m, urut jarak; tiap item: nama gedung + jarak, mis. "Gedung Sekolah A · 45 m"). User klik item untuk memilih (tidak otomatis). Input "Detail Lokasi (opsional)" ("lantai 2, ruang 201"). Label section: Lost → "Lokasi Kehilangan", Found → "Lokasi Penemuan".
 - Input tanggal: **Hilang** = tanggal hilang (tanggal saja); **Ditemukan** = tanggal & jam ditemukan (default: sekarang).
@@ -223,14 +251,17 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 > [!note] Implementasi 2026-10-19 (E-1, PR #6, `lostfound-mobile`)
 > **Ikon share dihapus** dari header detail barang karena fungsinya belum ada — baris "ikon share" di daftar elemen bawah sudah tidak berlaku.
 
+> [!info] Perubahan UI v3 2026-11-01 (GPT-261101-01)
+> **Riwayat Status dihapus** dari layar Detail Barang. **Section kategori ditambah** (badge/chip kategori barang), **peta lokasi** dipertahankan, dan **blok "Dilaporkan oleh" diperkuat** sebagai info pelapor. Tombol "Ajukan Claim" tetap tampil untuk laporan temuan (pemilik klaim) maupun laporan hilang (penemu) selama status `pending`.
+
 **Elemen:**
 - Header: back ~~+ ikon share~~ (**ikon share dihapus 2026-10-19**, lihat callout di atas).
 - Galeri foto carousel (dot indicator).
-- Badge status di atas judul, nama barang (H1), kode laporan kecil (mis. LST-261001-A3F9 / FND-261001-B7K2), lokasi (gedung + detail) + waktu laporan.
+- Badge status di atas judul, nama barang (H1), kode laporan kecil (mis. LST-261001-A3F9 / FND-261001-B7K2), **kategori**, lokasi (gedung + detail) + waktu laporan.
 - Peta kecil pin lokasi.
 - Section "Deskripsi" teks lengkap.
 - Section "Dilaporkan oleh" (nama/inisial, bukan kontak langsung).
-- Riwayat status timeline vertikal sederhana.
+- ~~Riwayat status timeline vertikal sederhana.~~ (**dihapus 2026-11-01**, UI v3)
 - Tombol "Chat dengan Pelapor" (outline, ikon chat) — selalu tersedia selama status masih aktif.
 - Tombol "Hubungi via WhatsApp" (outline, ikon WA) — **hanya tampil jika pelapor sudah mengisi nomor dan mengaktifkan tampilan nomor WhatsApp**. Syarat "sudah mengisi nomor" baru bisa dipenuhi setelah [[Nomor WhatsApp Pengguna - Lost&Found]] dikerjakan; saat ini tombolnya masih stub ([[Backlog Perbaikan Lanjutan - Lost&Found]] open item x).
 - Tombol "Ajukan Claim" (hitam penuh sticky bawah) — tampil untuk **laporan temuan** (pemilik klaim) **atau laporan hilang** (penemu klaim) yang statusnya `Pending`. Langsung buka form claim tanpa cek laporan sendiri. Jika sudah `Claimed`/`Returned`, tombol diganti label status non-aktif.
@@ -272,7 +303,11 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 **Stitch prompt:** Buatkan layar detail claim mobile app. Atas: kartu ringkasan barang (foto kecil, nama, kode) dengan badge status hijau "Diterima". Di bawahnya info tanggal pengajuan, lalu tombol outline "Buka Chat". Di bagian bawah section "Bukti Serah Terima": foto besar berradius 12px, caption abu-abu "Diserahkan pada 30 Sep 2026, 10:30 · Oleh: Admin Kampus". Font Plus Jakarta Sans, palet hitam-kuning.
 
 ### 5.14 Daftar Chat
-**Elemen:** judul "Chat", list percakapan (avatar inisial, nama lawan bicara, preview pesan terakhir 1 baris, waktu, badge angka belum dibaca, nama/kode barang terkait kecil), pull-to-refresh, empty state ("Belum ada percakapan").
+
+> [!info] Arsip & Hapus Chat — **DIIMPLEMENTASI** (2026-11-01, backend + Flutter sudah merge; fitur belum selesai penuh)
+> Layar ini kini punya **tab/segmen Chat | Arsip**. Di tab Arsip tiap item menampilkan **badge "Diarsipkan"** dan aksi **Buka Arsip**. Di tab Chat: **long-press** atau **swipe kiri** pada item memunculkan menu **Arsipkan** dan **Hapus**; **Hapus** memakai **konfirmasi** dialog ("hapus untuk saya" — hanya menghilang untuk pengguna itu, bukan menghapus untuk lawan bicara). Bila chat terkait claim aktif, **Hapus diblokir** dan muncul pesan "Chat ini masih terkait claim aktif. Selesaikan atau batalkan claim terlebih dahulu sebelum menghapus chat." Aksi arsip/buka arsip/hapus lewat `PATCH .../archive`, `PATCH .../unarchive`, `DELETE .../{id}` ([[TechnicalReference]] §16). Sumber tunggal: [[Arsip dan Hapus Chat - Lost&Found]]. **Masih terbuka:** uji manual dua akun (Phase 3) dan verifikasi scheduler container (Phase 0).
+
+**Elemen:** judul "Chat", **segmen/tab "Chat" dan "Arsip"**, list percakapan (avatar inisial, nama lawan bicara, preview pesan terakhir 1 baris, waktu, badge angka belum dibaca, nama/kode barang terkait kecil, **badge "Diarsipkan"** di tab Arsip), aksi **long-press/swipe** → menu **Arsipkan**/**Buka Arsip**/**Hapus** dengan konfirmasi, pull-to-refresh, empty state ("Belum ada percakapan").
 
 **Stitch prompt:** Buatkan layar daftar chat mobile app. Judul "Chat" di atas. List percakapan: avatar bulat inisial (gradasi hitam ke kuning) kiri, nama lawan bicara bold, preview pesan terakhir 1 baris abu-abu, label kecil nama barang terkait, waktu di kanan atas, badge bulat kuning dengan angka untuk pesan belum dibaca. Bottom navigation dengan tab Chat aktif. Font Plus Jakarta Sans, palet hitam-kuning.
 

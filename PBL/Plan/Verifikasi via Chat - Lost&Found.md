@@ -3,7 +3,7 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-10-19
+updated: 2026-11-01
 summary: Verifikasi kepemilikan via real-time chat in-app, bukan pertanyaan keamanan
 ---
 
@@ -63,6 +63,9 @@ Sebelum bisa claim, pemilik harus punya laporan hilang (`lost_reports`) yang val
 **Constraint:**
 - `claims.lost_report_id` wajib (NOT NULL)
 - Hanya pemilik laporan hilang yang bisa claim
+
+> [!warning] Revisi 2026-10-19 — sudah tidak berlaku (koreksi 2026-11-01)
+> Dua constraint di atas **dibatalkan**. Claim kini diajukan langsung ke laporan target; `claims.lost_report_id` dan `claims.found_report_id` **nullable** (minimal salah satu terisi, CHECK `claims_target_report_check`), laporan sendiri opsional. Sumber tunggal: [[Claim Langsung ke Laporan Target - Lost&Found]]; berlaku sejak migration `2026_10_23_000001` (merge `develop` PR #6 `d1ef1eb`).
 
 ### 3. Chat Otomatis Dibuat
 Saat claim dibuat, sistem auto-create `conversation`:
@@ -176,6 +179,9 @@ UI hint di form claim: "Pastikan Anda sudah melaporkan barang hilang."
 - Constraint `claims.lost_report_id NOT NULL`
 - Auto-create conversation saat claim dibuat
 - Banner tips verifikasi di chat screen (UI only, no DB change)
+
+> [!warning] Koreksi 2026-11-01 — baris `claims.lost_report_id NOT NULL` di atas sudah tidak berlaku
+> `claims.lost_report_id` kini **nullable** (+ `claims.found_report_id`), CHECK minimal satu terisi (`claims_target_report_check`). Sumber tunggal: [[Claim Langsung ke Laporan Target - Lost&Found]].
 
 **Tetap sama:**
 - Admin approve/reject flow

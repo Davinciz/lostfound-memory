@@ -183,7 +183,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       },
       {
         "id": "c4a69a0de2802d51",
@@ -205,6 +205,7 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "PBL/Documents/Lost&Found Progress.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
@@ -234,8 +235,14 @@
       "workspaces:Manage workspace layouts": false
     }
   },
-  "active": "e04b699d74ce6242",
+  "active": "4ec035db0fc56839",
   "lastOpenFiles": [
+    "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
+    "PBL/Documents/ERD.md",
+    "PBL/Attachments/lostfound-logo-simple.svg",
+    "PBL/Documents/Design.md",
+    "PBL/Attachments/lostfound-logo-dark-simple.svg",
+    "PBL/Documents/Lost&Found Progress.md",
     "PBL/Documents/PRD.md",
     "PBL/Documents/RPP.md",
     "PBL/Documents/TechnicalReference.md",
@@ -250,7 +257,6 @@
     "PBL/Plan/Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found.md",
     "PBL/Plan/Security Hardening - Lost&Found.md",
     "_Konteks.md",
-    "PBL/Documents/ERD.md",
     "PBL/Attachments/Unconfirmed 419286.crdownload",
     "PBL/Documents/~WRL0004.tmp",
     "PBL/Documents/~WRD0003.tmp",
@@ -258,9 +264,6 @@
     "PBL/Documents/~WRL0001.tmp",
     "PBL/Documents/~WRD0000.tmp",
     "PBL/Documents/~$P_LnF_Kelompok4_IK2B.docx",
-    "PBL/Documents/Design.md",
-    "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
-    "PBL/Documents/Lost&Found Progress.md",
     "PBL/DailyChanges/2026-10-19.md",
     "PBL/Plan/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
     "PBL/Plan/Archive",
@@ -270,7 +273,6 @@
     "PBL/Plan/Master Buildings + Auto Location - Lost&Found.md",
     "PBL/Plan/Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found.md",
     "PBL/Plan/Backlog UI Redesign - Lost&Found.md",
-    "PBL/Plan/Backlog Perbaikan Lanjutan - Lost&Found.md",
     "_Base/Index.base",
     "Untitled 1.canvas",
     "Untitled.canvas",
