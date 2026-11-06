@@ -11,10 +11,14 @@
             "id": "e04b699d74ce6242",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "PBL/_Konteks.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "_Konteks"
             }
           }
         ]
@@ -224,6 +228,8 @@
   },
   "active": "e04b699d74ce6242",
   "lastOpenFiles": [
+    "PBL/IDEA.md",
+    "PBL/_Konteks.md",
     "PBL/Inbox/reports/Dominic-261104-07-sinkron-dokumentasi-fcm.md",
     "Untitled Kanban 1.md",
     "Untitled Kanban.md",
@@ -246,7 +252,6 @@
     "PBL/Plan/Claim Langsung ke Laporan Target - Lost&Found.md",
     "PBL/Plan/Claim Fase 1.2 - Accept Reject Withdraw oleh Pengguna - Lost&Found.md",
     "PBL/Plan/Security Hardening - Lost&Found.md",
-    "_Konteks.md",
     "PBL/Attachments/Unconfirmed 419286.crdownload",
     "PBL/Documents/~WRL0004.tmp",
     "PBL/Documents/~WRD0003.tmp",
@@ -260,7 +265,6 @@
     "PBL/DailyChanges/2026-10-18.md",
     "PBL/Plan/Real-Time Chat - Lost&Found.md",
     "PBL/Plan/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
-    "PBL/Plan/Master Buildings + Auto Location - Lost&Found.md",
     "_Base/Index.base",
     "Untitled 1.canvas",
     "Untitled.canvas",

@@ -3,21 +3,24 @@ type: plan
 project: lost-found
 status: active
 priority: low
-updated: 2026-10-29
-summary: Landing page publik `/` dengan statistik agregat (barang dikembalikan, tren, top gedung) untuk transparansi kampus
+updated: 2026-11-06
+summary: Halaman login admin yang sekarang dipakai untuk sementara. Rencana landing statistik publik ditunda.
 ---
 
 # Landing Page Admin Publik - Lost&Found
 
 **Tanggal:** 2026-10-29  
 **Project:** [[PBL]] Lost&Found  
-**Status:** In Progress  
+**Status:** Landing statistik publik ditunda  
 **Priority:** Low  
 
 > [!info] Disetujui user 2026-10-29
 > Plan ini **disetujui user 2026-10-29** (status `active`). Fitur masih **belum ada di PRD** — PRD/Design/TechnicalReference baru diperbarui setelah fitur selesai dan ter-merge ke `develop`. Implementasi dikerjakan oleh **Bob-261029-04**. Lihat [[#Koreksi Implementasi (hasil review 2026-10-29)]] — koreksi di sana **mengalahkan** snippet kode ilustrasi di plan ini.
 
 ---
+
+> [!note] Keputusan 2026-11-06
+> Keputusan user 2026-11-06: gunakan halaman login admin yang sekarang di route `/` untuk sementara. Pengerjaan landing statistik publik ditunda. Bagian berikut mendokumentasikan rencana awal.
 
 ## Goal
 

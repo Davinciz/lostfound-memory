@@ -3,15 +3,15 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-11-01
-summary: Arsip otomatis 14 hari + arsip/hapus manual chat "hapus untuk saya", tanpa penghapusan permanen otomatis
+updated: 2026-11-06
+summary: Arsip otomatis 14 hari (belum selesai, diblokir scheduler Dokploy) + arsip/hapus manual chat "hapus untuk saya" (diterima sementara 2026-11-06), tanpa penghapusan permanen otomatis
 ---
 
 # Arsip dan Hapus Chat - Lost&Found
 
 **Tanggal:** 2026-11-01
 **Project:** [[PBL]] Lost&Found
-**Status:** Implementasi berjalan — backend (`adcd1ee`, branch `feature/chat/archive-delete`) & Flutter (`6528324`, branch `feature/chat/archive-delete-ui`) **sudah merge**; fitur **belum selesai penuh** (Phase 3 uji manual + Phase 0 scheduler terbuka)
+**Status:** Implementasi berjalan — **arsip/hapus manual sudah diterima sementara (Done sementara, 2026-11-06); arsip otomatis 14 hari tetap terbuka & ditunda** (diblokir scheduler Dokploy). Backend (`adcd1ee`, branch `feature/chat/archive-delete`) & Flutter (`6528324`, branch `feature/chat/archive-delete-ui`) sudah merge; fix perilaku daftar chat + N+1 (`9feb665`) merge 2026-11-06. Plan `status: active` (arsip otomatis belum selesai).
 **Priority:** Medium
 
 > **Fitur baru — disetujui user 2026-11-01 (Paket A).** Fitur ini **belum ada di [[PRD]]**; ditandai di PRD sebagai fitur baru yang disetujui. Kerangka chat tempat fitur ini menempel: [[Real-Time Chat - Lost&Found]] (Fase 1 backend sudah merge & deploy 2026-11-01).
@@ -62,7 +62,7 @@ Memberi pengguna cara merapikan daftar chat tanpa menghapus data pihak lain: cha
 ### 3.4 Hapus untuk saya (keputusan 5)
 
 - `DELETE /api/conversations/{id}` **tidak menghapus baris** `conversations` maupun `messages`; hanya menulis `{slot}_deleted_at = now()` milik pemanggil.
-- Chat hilang dari daftar pengguna itu; permintaan pesan (`GET /api/conversations/{id}/messages`) menyaring pesan dengan `created_at <= {slot}_deleted_at` untuk pengguna itu (pesan lawan bicara tetap utuh di DB).
+- Chat hilang dari daftar pengguna itu; permintaan pesan (`GET /api/conversations/{id}/messages`) menyaring pesan dengan `created_at <= {slot}_deleted_at` untuk pengguna itu (pesan lawan bicara tetap utuh di DB). **Diperbaiki 2026-11-06 (fix `9feb665`, merge `develop`):** scope `Conversation::visibleTo()` lama juga mewajibkan kolom hapus slot pemanggil **null**, sehingga chat terhapus **tidak pernah muncul lagi** walau ada pesan baru — kini syarat itu dilepas; chat muncul kembali sesuai butir berikut. Tidak ada perubahan skema.
 - **Diblokir saat claim terkait `pending` atau `accepted`** → **409** (hubungan barang masih hidup, chat dibutuhkan untuk verifikasi dan serah terima).
 - Pesan baru dari lawan bicara → chat muncul kembali di daftar pengguna itu **hanya** dengan pesan setelah waktu hapus (`created_at > deleted_at`).
 - Ketika pengguna yang menghapus ikut mengirim pesan baru, kolom `*_deleted_at` miliknya **dibiarkan sebagai batas riwayat** (tidak dikosongkan) — perilaku **sudah dikonfirmasi user 2026-11-01**: chat muncul lagi hanya dengan pesan setelah `deleted_at`.
@@ -106,7 +106,7 @@ conversations
 
 **Catatan implementasi (selesai):**
 - `ConversationController` kini punya method archive/unarchive/destroy — rute baru terpasang.
-- Penyaring `archived`/`deleted_at` di `index()` dibungkus grup `where()` (menghindari bocor `orWhere` lama). ⚠ **N+1 query di `index()` + `unread_count` per baris masih open item** — eager-load belum dikerjakan.
+- Penyaring `archived`/`deleted_at` di `index()` dibungkus grup `where()` (menghindari bocor `orWhere` lama). ~~⚠ **N+1 query di `index()` + `unread_count` per baris masih open item** — eager-load belum dikerjakan.~~ **✅ SELESAI 2026-11-06** (fix `9feb665`, merge `develop`, konfirmasi user 2026-11-06): `last_message`/`unread_count` dihitung lewat subquery di query daftar; jumlah query 7→4 (2 percakapan) dan 23→4 (10), tetap 4. Sisa risiko: biaya subquery ke `messages` belum diukur data produksi.
 - `index()` menyaring `{slot}_deleted_at`; `messages()` menyaring pesan `created_at <= {slot}_deleted_at`; `unread_count`/`last_message` juga menyaring batas riwayat.
 
 ---
@@ -125,9 +125,9 @@ conversations
 | Fase | Isi | Catatan |
 |---|---|---|
 | **Phase 0** | Verifikasi scheduler di container deploy (Dokploy) | **Belum terkonfirmasi berjalan.** Jadwal command `conversations:archive-inactive` **sudah didaftarkan** di `routes/console.php` (`dailyAt('02:00')->withoutOverlapping()`); `Dockerfile` runtime tidak memasang cron/`schedule:work` (supervisor hanya nginx + php-fpm) → container belum terbukti menjalankan scheduler. Command `claims:expire` juga bergantung ini → **blokir bersama**. |
-| **Phase 1** | Backend: migration 4 kolom + endpoint archive/unarchive/hapus + command `conversations:archive-inactive` + test | ✅ **Merge** (branch `feature/chat/archive-delete`, `adcd1ee`). ⚠ 23 test case ditulis **belum berhasil dijalankan** (DB testing lokal belum ada). Bagian terjadwal menunggu Phase 0. |
+| **Phase 1** | Backend: migration 4 kolom + endpoint archive/unarchive/hapus + command `conversations:archive-inactive` + test | ✅ **Merge** (branch `feature/chat/archive-delete`, `adcd1ee`). ⚠ 23 test case ditulis **belum berhasil dijalankan** (DB testing lokal belum ada) — **sebagian teratasi 2026-11-06** (fix `9feb665`, merge `develop`): `ConversationArchiveTest` 25 lulus, suite penuh 365 lulus (1.341 assertion) menurut laporan GPT-261106-01; sisa test case lain tetap belum dijalankan. N+1 `index()` conversations **selesai** (subquery; query 7→4 dan 23→4). Bagian terjadwal menunggu Phase 0. |
 | **Phase 2** | Flutter: tab Arsip, menu aksi, dialog konfirmasi, penanganan 409 | ✅ **Merge** (branch `feature/chat/archive-delete-ui`, `6528324`). `flutter test` 193 lulus/4 skip; `analyze` 8 issue lama (0 dari file berubah). `Design.md` §5.14 diperbarui. |
-| **Phase 3** | Test & uji manual dua akun (arsip manual, unarchive otomatis, hapus untuk saya, blokir claim aktif, arsip otomatis 14 hari) | ⏳ **Belum dijalankan.** Arsip otomatis 14 hari perlu manipulasi data/tanggal di DB uji. |
+| **Phase 3** | Test & uji manual dua akun (arsip manual, unarchive otomatis, hapus untuk saya, blokir claim aktif, arsip otomatis 14 hari) | ⏳ **Belum dijalankan.** Arsip otomatis 14 hari perlu manipulasi data/tanggal di DB uji. **Anotasi 2026-11-06:** uji manual dua akun **arsip/hapus manual** dinyatakan user **"aman dan berhasil"** 2026-11-04 (tanpa rincian skenario) → bagian **arsip/hapus manual** dianggap **Done (diterima sementara)**; perilaku "chat terhapus muncul lagi setelah ada pesan baru" lulus **test otomatis**. Pada 2026-11-06, user mengonfirmasi uji manual chat muncul kembali setelah pesan baru usai “Hapus untuk saya” sudah aman. Rincian tiap pemeriksaan tidak dilaporkan. Bagian **arsip otomatis 14 hari** tetap belum diuji (idealnya lewat command, bukan uji manual). |
 | **Phase 4** | Sinkronisasi dokumen: [[ERD]], `schema.dbml`, [[TechnicalReference]], [[PRD]], [[Design]], [[Lost&Found Progress]] | ✅ **Selesai 2026-11-01** (dokumen vault; `Lost&Found Progress.md` tetap hanya di vault). |
 
 ---
@@ -138,9 +138,10 @@ conversations
 - **Purge (penghapusan fisik) = tahap 2**, di luar plan: aturan kapan aman dihapus benar-benar (kedua sisi hapus? retensi N bulan?) belum diputuskan.
 - **Perilaku `*_deleted_at` saat pihak yang menghapus mengirim pesan baru** — ✅ **dikonfirmasi user 2026-11-01**: tetap sebagai batas riwayat (§3.4).
 - **Index** — belum ditambahkan; tambah hanya bila query plan command/pencarian menunjukkan perlu (§4).
-- **⚠ N+1 query di `index()` + `unread_count` per baris — masih open item** (§5): penyaring `archived`/`deleted_at` sudah dibungkus grup `where()`, tetapi eager-load belum dikerjakan.
+- ~~**⚠ N+1 query di `index()` + `unread_count` per baris — masih open item** (§5): penyaring `archived`/`deleted_at` sudah dibungkus grup `where()`, tetapi eager-load belum dikerjakan.~~ **✅ SELESAI 2026-11-06** (fix `9feb665`, merge `develop`, konfirmasi user): `last_message`/`unread_count` dihitung lewat subquery di query daftar; jumlah query 7→4 (2 percakapan) dan 23→4 (10), tetap 4. Sisa risiko: biaya subquery ke `messages` belum diukur data produksi.
+- **Catatan lingkungan tes (baru 2026-11-06):** suite backend hanya berjalan di **PostgreSQL** (SQLite gagal di migration bawaan yang memakai `pg_constraint`); satu test (`ConversationTest::test_list_includes_found_target_instead_of_claimants_own_lost_report`) bergantung `APP_URL=http://localhost`.
 - **Realtime reload berlebih:** event `MessageSent` memicu reload kedua daftar — berpotensi boros; tambah debounce bila terasa di perangkat.
-- **Phase 3 uji manual dua akun** (arsip manual, unarchive otomatis, hapus untuk saya, blokir claim aktif, arsip otomatis 14 hari) — belum dijalankan.
+- **Phase 3** — uji manual arsip/hapus dan chat muncul kembali dikonfirmasi user. Rincian uji unarchive otomatis dan blokir hapus saat claim aktif belum tercatat. Arsip otomatis 14 hari belum diuji.
 - **Purge vs `messages.read_at`:** pesan yang di-"hapus untuk saya" tetap ada; `unread_count` pengguna yang menghapus sudah menyaring pesan sebelum waktu hapus (diterapkan 2026-11-01).
 
 ---
