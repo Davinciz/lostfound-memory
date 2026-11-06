@@ -25,7 +25,6 @@ summary: Konteks umum Daniel programmer dengan project Lost&Found ongoing
 - **Status:*On Going* 
 - **Path / Directory: *C:\Project*
 - **Documentation:* D:\ObsidianVault\PBL\Documents*
-- **Workspace Notion : *https://app.notion.com/p/Campus-Lost-Found-3e53e759df1080e584c1cf571b5f176d?source=copy_link* 
 
 ## Catatan & Pengingat Penting
 
@@ -193,7 +192,7 @@ summary: Verifikasi kepemilikan lewat chat in-app antara pengklaim dan penemu
 
 
 ## Proyek aktif
-- lost-found: Campus Lost&Found (mobile Flutter + admin Laravel Filament)
+- lost-found: Lost&Found (mobile Flutter + admin Laravel Filament)
 - <tambahkan proyek/mata kuliah lain di sini>
 
 *Last updated: 2026-10-31*
