@@ -325,13 +325,16 @@ Dihapus karena autentikasi user mobile memakai Google SSO; pemulihan akun dilaku
 
 ### 5.16 Notifikasi
 
-> [!info] 2026-11-04 — keputusan Opsi A
+> [!success] 2026-11-04 — implementasi MVP Opsi A selesai & diterima sementara
+> Backend GPT-261104-02/04/05 (PR #24/25/27) + Flutter GPT-261104-03/06 (PR #21/22) — **sudah merge develop**. Keenam type payload (`claim_new`, `claim_accepted`, `claim_rejected`, `claim_withdrawn`, `claim_returned`, `chat`); backend `PushNotificationService` sinkron best-effort; Flutter `FcmService` lifecycle guard per sesi, keenam type handled, foreground banner ~4s suppress chat aktif, logout PUT+conditional DELETE. Uji manual 2 HP **"sebagian besar berhasil"**, rincian skenario belum lengkap. **Layar Notifikasi tetap empty state** (sesuai Opsi A); **ikon lonceng di header Beranda tanpa badge angka**. Opsi B (tabel history + badge) ditunda, bukan dibatalkan.
+
+> [!info] Keputusan Opsi A (2026-11-04)
 > User memilih **Opsi A** di [[Push Notification - Lost&Found]]: FCM saja, tanpa tabel/endpoint notifikasi. Karena itu **layar ini tetap empty state** (tanpa daftar berisi, tanpa riwayat, tanpa badge angka); daftar jenis di bawah **tidak diimplementasi** selama Opsi A. Layar berubah hanya bila **Opsi B diangkat lagi** (butuh update [[ERD]]/`schema.dbml`/[[PRD]]).
 
-> [!warning] Akan berubah
-> Apakah layar ini berisi daftar notifikasi (dengan riwayat + badge angka) atau hanya empty state **bergantung keputusan Opsi A/B** di [[Push Notification - Lost&Found]] — opsi A (FCM saja, tanpa tabel) berarti layar ini disembunyikan/di-empty-state dan ikon lonceng tanpa badge. **2026-11-04: Opsi A diputuskan** (lihat callout di atas).
+> [!warning] Implementasi lama (dikoreksi 2026-11-04)
+> Apakah layar ini berisi daftar notifikasi (dengan riwayat + badge angka) atau hanya empty state **bergantung keputusan Opsi A/B** di [[Push Notification - Lost&Found]] — opsi A (FCM saja, tanpa tabel) berarti layar ini disembunyikan/di-empty-state dan ikon lonceng tanpa badge. **2026-11-04: Opsi A diputuskan & diimplementasi** (lihat callout di atas).
 >
-> Status implementasi (2026-10-18): layar ini **belum dikerjakan** dan masuk daftar prasyarat **F-4** di [[Backlog UI Redesign - Lost&Found]] (butuh keputusan Opsi A/B lebih dulu). Ikon lonceng di header Beranda saat ini belum punya sumber data notifikasi.
+> Status implementasi (2026-10-18, sudah digantikan): layar ini **belum dikerjakan** dan masuk daftar prasyarat **F-4** di [[Backlog UI Redesign - Lost&Found]] (butuh keputusan Opsi A/B lebih dulu). Ikon lonceng di header Beranda saat ini belum punya sumber data notifikasi. **→ 2026-11-04:** ikon lonceng tanpa badge, layar empty state, keputusan Opsi A diterima sementara.
 
 **Elemen:** judul "Notifikasi" + "Tandai semua dibaca", list notifikasi (ikon jenis, judul, deskripsi 1 baris, waktu relatif, titik kuning jika belum dibaca), grouping "Hari Ini/Kemarin/Lebih Awal", empty state. Jenis: claim baru, claim diterima/ditolak, barang diserahkan, pesan chat baru, update laporan. Diakses lewat ikon lonceng di header Beranda.
 

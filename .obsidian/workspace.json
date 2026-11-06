@@ -11,21 +11,10 @@
             "id": "e04b699d74ce6242",
             "type": "leaf",
             "state": {
-              "type": "kanban",
-              "state": {
-                "file": "PBL/Documents/Lost&Found Progress.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
-                }
-              },
-              "icon": "lucide-trello",
-              "title": "Lost&Found Progress"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
         ]
@@ -126,7 +115,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "PBL/Documents/Lost&Found Progress.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -145,7 +133,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "PBL/DailyChanges/2026-10-06.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -235,14 +222,17 @@
       "workspaces:Manage workspace layouts": false
     }
   },
-  "active": "4ec035db0fc56839",
+  "active": "e04b699d74ce6242",
   "lastOpenFiles": [
+    "PBL/Inbox/reports/Dominic-261104-07-sinkron-dokumentasi-fcm.md",
+    "Untitled Kanban 1.md",
+    "Untitled Kanban.md",
+    "PBL/Documents/Lost&Found Progress.md",
     "PBL/Documents/Koordinat Gedung - Sheet1.pdf",
     "PBL/Documents/ERD.md",
     "PBL/Attachments/lostfound-logo-simple.svg",
     "PBL/Documents/Design.md",
     "PBL/Attachments/lostfound-logo-dark-simple.svg",
-    "PBL/Documents/Lost&Found Progress.md",
     "PBL/Documents/PRD.md",
     "PBL/Documents/RPP.md",
     "PBL/Documents/TechnicalReference.md",
@@ -271,8 +261,6 @@
     "PBL/Plan/Real-Time Chat - Lost&Found.md",
     "PBL/Plan/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
     "PBL/Plan/Master Buildings + Auto Location - Lost&Found.md",
-    "PBL/Plan/Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found.md",
-    "PBL/Plan/Backlog UI Redesign - Lost&Found.md",
     "_Base/Index.base",
     "Untitled 1.canvas",
     "Untitled.canvas",

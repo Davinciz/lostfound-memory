@@ -4,7 +4,7 @@ project: lost-found
 status: active
 priority: high
 updated: 2026-11-04
-summary: Plan push notification FCM (claim, serah terima, chat). 2026-11-04: user memilih Opsi A (FCM saja, tanpa tabel notifikasi) — tetap 7 tabel; Opsi B ditunda. Kontrak payload FCM ditetapkan, implementasi belum ada.
+summary: Plan push notification FCM (claim, serah terima, chat). 2026-11-04: user memilih Opsi A (FCM saja, tanpa tabel notifikasi) — tetap 7 tabel; Opsi B ditunda. Implementasi MVP Opsi A selesai dan diterima sementara user; uji manual sebagian besar berhasil, rincian skenario belum lengkap.
 ---
 
 # Push Notification - Lost&Found
@@ -16,8 +16,14 @@ summary: Plan push notification FCM (claim, serah terima, chat). 2026-11-04: use
 
 ---
 
-> [!info] 2026-11-04 — keputusan Opsi A (dari user)
-> User memutuskan **Opsi A: FCM saja, tanpa tabel/endpoint notifikasi** — database tetap **7 tabel**. **Opsi B (tabel notifikasi ke-8) ditunda, bukan dibatalkan**; bisa diangkat lagi di tahap berikutnya. Kontrak payload FCM ditetapkan (§USULAN — hal teknis lain #2). Implementasi belum ada; pelaksana implementasi: **ChatGPT (agent "GPT")** — backend dulu (GPT-261104-02, branch `feature/notification/claim-chat-push`), Flutter menyusul (ID belum ada). Dokumentasi tetap Dominic. Detail status peristiwa & kondisi kode lihat tabel peristiwa di bawah. Sumber: DailyChanges [[2026-11-04]].
+> [!info] 2026-11-04 — implementasi MVP Opsi A selesai & diterima sementara
+> User memutuskan **Opsi A: FCM saja, tanpa tabel/endpoint notifikasi** — database tetap **7 tabel**. **Opsi B (tabel notifikasi ke-8) ditunda, bukan dibatalkan**. Kontrak payload FCM ditetapkan (§USULAN #2).
+> 
+> **Implementasi MVP Opsi A:** backend GPT-261104-02 (PR #24 `fdd9952`), GPT-261104-04 (PR #25 `459f969`), GPT-261104-05 (PR #27 `6f45cbf`) — **sudah merge develop**. Flutter GPT-261104-03 (PR #21 `50ce102`), GPT-261104-06 (PR #22 `6fe1330`) — **sudah merge develop**. Pelaksana: ChatGPT. Dokumentasi: Dominic.
+> 
+> **Verifikasi:** 6 type payload aktual; 219+247 test Flutter lulus, 349+361 test backend lulus (1 gagal baseline chat); PM review 54 test Flutter + route backend lulus. **Uji manual user 2026-11-04:** notifikasi Firebase Console → HP berhasil; uji 2 akun/2 HP dinyatakan **"sebagian besar sudah berhasil, untuk sekarang sudah aman"**. **Rincian hasil per skenario belum lengkap** — tidak ada daftar kasus gagal/belum diuji, model HP, atau rekaman lengkap. **Diterima sementara untuk penggunaan/pengujian saat ini, bukan audit keamanan menyeluruh.**
+> 
+> Detail status peristiwa & lifecycle token/logout lihat tabel di bawah. Batasan & pekerjaan lanjutan tetap terbuka (§Open Items). Sumber: DailyChanges [[2026-11-04]].
 
 ## Tujuan
 
@@ -40,7 +46,7 @@ Semua fakta di bawah hasil pembacaan kode read-only; tabel diperbarui **2026-10-
 | Daftar notifikasi di app | **Belum ada** — tidak ada tabel, tidak ada endpoint. **Keputusan user 2026-11-04: Opsi A → layar Notifikasi tetap empty state, lonceng tanpa badge; tidak akan ada sumber data daftar notifikasi.** Layar ([[Design]] §5.16) & badge lonceng (§5.6) |
 | Paket | `kreait/laravel-firebase` terpasang ([[TechnicalReference]] §15.1); Flutter `firebase_messaging` terpasang |
 
-**Pemeriksaan payload FCM (read-only PM 2026-11-04, belum diimplementasi):** `ClaimNotificationService` mengirim `claim_accepted`/`claim_rejected`/`claim_withdrawn` + data `type` & `claim_id`; push serah terima di `ClaimTransferService` **belum punya payload data**; **belum ada** push untuk claim diajukan dan pesan chat baru (`ConversationController::sendMessage` hanya broadcast Pusher). Sisi Flutter: `fcm_service.dart` hanya menangani `type == 'chat'` + `conversation_id` — belum ada tipe `claim_*`, belum ada `getInitialMessage` (app tertutup), background handler hanya `debugPrint`; `notification_screen.dart` sudah empty state tanpa data palsu.
+**Implementasi aktual (2026-11-04, backend PR #24/25/27 + Flutter PR #21/22 merge develop):** Backend `PushNotificationService` terpusat sinkron best-effort; keenam `type` (`claim_new`, `claim_accepted`, `claim_rejected`, `claim_withdrawn`, `claim_returned`, `chat`) + payload `claim_id`/`conversation_id` (semua string); claim baru → penerima, accepted/rejected → pengaju, withdrawn → penerima, returned → lawan pihak transfer, chat → lawan bicara. Flutter `FcmService` lifecycle guard per sesi, izin sekali, token refresh, keenam type handled; claim → detail, chat dicari lewat daftar lalu fallback tab Chat; foreground banner OverlayEntry ~4 detik tanpa navigasi otomatis, suppress chat aktif. Logout dideduplikasi: shutdown guard, snapshot auth/token, tunggu PUT, conditional DELETE kredensial lama sebelum auth lokal dibuang, budget FCM 5 detik. Kegagalan jaringan/cleanup tidak gagalkan logout lokal. Tidak memanggil Firebase deleteToken atau ubah auto-init.
 
 ---
 
@@ -48,13 +54,13 @@ Semua fakta di bawah hasil pembacaan kode read-only; tabel diperbarui **2026-10-
 
 Daftar ini disusun dari [[Design]] §4, [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §2/§6, dan [[Real-Time Chat - Lost&Found]] Fase 3.
 
-| # | Peristiwa | Penerima | Catatan | Status 2026-11-04 |
+|| # | Peristiwa | Penerima | Catatan | Status 2026-11-04 |
 |---|---|---|---|---|
-| 1 | Claim diajukan | Pihak **penerima** claim (bukan pengaju) | Buka chat verifikasi | **Dijadwalkan** GPT-261104-02 |
-| 2 | Claim diterima ("Cocok") | Pengaju | Deep link ke detail claim | **Sudah ada di backend**, menunggu handler Flutter |
-| 3 | Claim ditolak (alasan wajib) | Pengaju | Sertakan alasan | **Sudah ada di backend**, menunggu handler Flutter |
-| 4 | Barang sudah diserahkan (`returned`) | Kedua pihak | Sudah ada (penyempurnaan) | **Sudah ada**, ditambah payload data |
-| 5 | Pesan chat baru | Lawan bicara | Deep link ke `ChatScreen` | **Dijadwalkan** GPT-261104-02 |
+| 1 | Claim diajukan | Pihak **penerima** claim (bukan pengaju) | Buka chat verifikasi | **Selesai** backend+Flutter (merge develop PR #24/#21) |
+| 2 | Claim diterima ("Cocok") | Pengaju | Deep link ke detail claim | **Selesai** backend+Flutter (merge develop PR #25/#21) |
+| 3 | Claim ditolak (alasan wajib) | Pengaju | Sertakan alasan | **Selesai** backend+Flutter (merge develop PR #25/#21) |
+| 4 | Barang sudah diserahkan (`returned`) | Lawan pihak transfer | Sudah ada, ditambah payload | **Selesai** backend+Flutter (merge develop PR #24/#21) |
+| 5 | Pesan chat baru | Lawan bicara | Deep link ke `ChatScreen` | **Selesai** backend+Flutter (merge develop PR #24/#21) |
 | 6 | Claim dibekukan / aktif kembali (claim lain pada laporan sama) | Pengklaim yang dibekukan | Plan Claim Dua Arah §3 | **Di luar tugas ini** — status implementasi belum diverifikasi (open item) |
 | 7 | Claim kedaluwarsa otomatis (7 hari) + pengingat H-1/H-2 | Pengklaim | Plan Claim Dua Arah §6 | **Ditunda** — butuh scheduler Dokploy |
 | 8 | Status laporan milik user diubah admin | Pelapor | Mis. `closed` | **Tidak dikerjakan** — selaras keputusan 2026-10-25 (FCM admin tidak diperlukan) |
@@ -126,11 +132,17 @@ Daftar ini disusun dari [[Design]] §4, [[Claim Dua Arah dan Serah Terima oleh P
 ## Open Items
 
 - [x] **Keputusan user: Opsi A (FCM saja, tanpa tabel notifikasi)** — diputuskan user 2026-11-04; database tetap 7 tabel, [[ERD]]/`schema.dbml` tidak berubah. Opsi B ditunda (bisa diangkat lagi).
+- [x] **Implementasi MVP Opsi A selesai & diterima sementara** (2026-11-04) — backend+Flutter merge develop; uji manual 2 HP "sebagian besar berhasil"; **rincian checklist belum lengkap**. Lihat batasan & pekerjaan lanjutan di bawah.
 - [ ] Keputusan bentuk tabel notifikasi (tabel sendiri vs tabel `notifications` bawaan Laravel) — **hanya relevan bila Opsi B diangkat lagi** (saat ini Opsi A, tidak relevan).
 - [ ] Keputusan cara mematikan push (toggle Pengaturan) — **ditunda** (user belum memutuskan).
-- [ ] Keputusan pengiriman sinkron vs queue — **belum diputuskan eksplisit**; usul sinkron untuk MVP.
-- [ ] Urutan pengerjaan: backend dulu (**GPT-261104-02**, branch `feature/notification/claim-chat-push`) lalu Flutter (ID menyusul).
-- [ ] **Open item (dari verifikasi kode 2026-11-04):** #6 (claim dibekukan/aktif kembali) di luar tugas ini — status implementasi belum diverifikasi; #7 (kedaluwarsa + pengingat) ditunda karena butuh scheduler Dokploy; #8 (status laporan diubah admin) tidak dikerjakan.
+- [ ] **Keputusan pengiriman sinkron vs queue** — **belum diputuskan eksplisit**; implementasi aktual sinkron best-effort.
+- [ ] **Open item verifikasi manual:** rincian checklist dua akun/dua HP (foreground/background/terminated, semua penerima, regresi logout) **belum lengkap** — user menyatakan "sebagian besar berhasil", tanpa daftar kasus gagal/belum diuji. Jangan klaim semua kombinasi sudah lulus.
+- [ ] **Race PUT paralel token sama:** transaksi existing tanpa lock per token/constraint unik belum jamin pemilik tunggal di bawah konkurensi.
+- [ ] **Logout offline/timeout/auth expired/token tidak pasti:** token server dapat tetap ada; pelepasan best-effort bukan jaminan privasi mutlak. Push yang sudah terkirim/tampil tidak ditarik DELETE.
+- [ ] **Satu slot token per user; iOS & multi-perangkat penuh** belum diverifikasi rangkaian ini.
+- [ ] **Test `ConversationArchiveTest::test_unread_count_filtered_by_deleted_at` tetap gagal** (diagnosis: `visibleTo` kecualikan deleted_at terisi; assertion data null).
+- [ ] **Scheduler Dokploy ditunda** (keputusan user 2026-11-04 belum prioritas) — blokir pengingat/kedaluwarsa claim + arsip otomatis. N+1 daftar percakapan terbuka.
+- [ ] **Open item (verifikasi kode 2026-11-04):** #6 (claim dibekukan/aktif kembali) status implementasi belum diverifikasi; #7 (kedaluwarsa + pengingat) ditunda scheduler; #8 (status laporan diubah admin) tidak dikerjakan. History/Opsi B, badge, toggle, ikon/channel khusus, push admin, event di luar 6 type tidak otomatis selesai.
 - [x] Prioritas plan ini `high` (ditetapkan user 2026-10-18).
 - [x] **Retry/backoff `ServerUnavailable` — TIDAK dibuat** (keputusan 2026-10-25); kegagalan tetap `Log::warning`, request tetap 2xx.
 - [x] **FCM jalur admin/Filament — tidak diperlukan sekarang** (keputusan 2026-10-25; audit Bob-03: tidak ada FCM di jalur admin, `Notification::make()` Filament bukan FCM).
