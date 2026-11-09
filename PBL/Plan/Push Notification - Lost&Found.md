@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-04
-summary: Plan push notification FCM (claim, serah terima, chat). 2026-11-04: user memilih Opsi A (FCM saja, tanpa tabel notifikasi) — tetap 7 tabel; Opsi B ditunda. Implementasi MVP Opsi A selesai dan diterima sementara user; uji manual sebagian besar berhasil, rincian skenario belum lengkap.
+updated: 2026-11-07
+summary: Plan push notification FCM (claim, serah terima, chat). 2026-11-04: user memilih Opsi A (FCM saja, tanpa tabel notifikasi) — tetap 7 tabel; Opsi B ditunda. Implementasi MVP Opsi A selesai dan diterima sementara user; uji perangkat 2026-11-07 lulus untuk skenario yang dicatat di log harian.
 ---
 
 # Push Notification - Lost&Found
@@ -136,7 +136,7 @@ Daftar ini disusun dari [[Design]] §4, [[Claim Dua Arah dan Serah Terima oleh P
 - [ ] Keputusan bentuk tabel notifikasi (tabel sendiri vs tabel `notifications` bawaan Laravel) — **hanya relevan bila Opsi B diangkat lagi** (saat ini Opsi A, tidak relevan).
 - [ ] Keputusan cara mematikan push (toggle Pengaturan) — **ditunda** (user belum memutuskan).
 - [ ] **Keputusan pengiriman sinkron vs queue** — **belum diputuskan eksplisit**; implementasi aktual sinkron best-effort.
-- [ ] **Open item verifikasi manual:** rincian checklist dua akun/dua HP (foreground/background/terminated, semua penerima, regresi logout) **belum lengkap** — user menyatakan "sebagian besar berhasil", tanpa daftar kasus gagal/belum diuji. Jangan klaim semua kombinasi sudah lulus.
+- [x] **Uji manual 2026-11-07:** user mengonfirmasi notifikasi chat dan klaim lulus saat aplikasi terbuka, di latar belakang, dan setelah ditutup, termasuk tujuan saat notifikasi diketuk. Uji logout online lalu ganti akun juga lulus. Tidak ada bug ditemukan pada skenario ini. Lihat [[DailyChanges/2026-11-07]].
 - [ ] **Race PUT paralel token sama:** transaksi existing tanpa lock per token/constraint unik belum jamin pemilik tunggal di bawah konkurensi.
 - [ ] **Logout offline/timeout/auth expired/token tidak pasti:** token server dapat tetap ada; pelepasan best-effort bukan jaminan privasi mutlak. Push yang sudah terkirim/tampil tidak ditarik DELETE.
 - [ ] **Satu slot token per user; iOS & multi-perangkat penuh** belum diverifikasi rangkaian ini.

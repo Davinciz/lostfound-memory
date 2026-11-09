@@ -2,8 +2,8 @@
 type: plan
 project: lost-found
 status: active
-updated: 2026-10-18
-summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan
+updated: 2026-11-08
+summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan; §2 diperbarui — penyaringan lima field user via PR #30, aturan nomor WA final, enkripsi ditunda
 priority: medium
 ---
 
@@ -352,9 +352,16 @@ protected $casts = [
 **Never expose:**
 - Password hash
 - FCM token (kecuali untuk update)
+- `whatsapp`/`nim`/`email`/`blocked`/`blocked_reason` pada relasi user (reporter/claimant/transferred_by) di endpoint laporan, pencarian, dan claim
 - Email/phone jika `wa_visible = false`
 
-**API Resource:**
+> [!success] Terimplementasi lewat PR #30 (2026-11-07, squash `c760ef2`)
+> Lima field (`whatsapp`, `nim`, `email`, `blocked`, `blocked_reason`) disaring dari relasi `reporter`/`claimant`/`transferred_by` di **19 endpoint** lewat helper `Controller::hideUserContactFields`. `$hidden` model `User` **tidak** diubah. Baseline backend saat itu **378 test / 1.602 assertion**.
+
+> [!warning] Keputusan final 2026-11-07 — aturan nomor WhatsApp
+> Nomor **tidak pernah muncul** di respons laporan maupun pencarian. Nomor hanya tampil ke **lawan claim setelah claim `accepted`**, bila `wa_visible` aktif dan nomor tidak null. Admin **tidak** menerima nomor lewat API claim. Pola lama di bawah (`'whatsapp' => $this->wa_visible ? $this->whatsapp : null`) adalah **usulan**, bukan implementasi final.
+
+**API Resource (usulan lama — belum diterapkan):**
 
 ```php
 // app/Http/Resources/UserResource.php
@@ -370,6 +377,8 @@ public function toArray($request)
     ];
 }
 ```
+
+**Catatan enkripsi (dari §1 di atas):** nomor WhatsApp **belum** dienkripsi. Keputusan 2026-11-07: enkripsi **ditunda ke plan terpisah**; cast `encrypted` untuk `whatsapp` tetap usulan. Bila dipakai, nomor tidak bisa difilter/di-`LIKE` di DB.
 
 ### 3. GDPR-Compliant Account Deletion
 
