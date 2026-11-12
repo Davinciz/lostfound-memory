@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-11-08
-summary: Plan isi & tampilkan nomor WhatsApp user SSO; keputusan final 2026-11-07, endpoint & validasi sudah merge
+updated: 2026-11-12
+summary: Plan isi & tampilkan nomor WhatsApp user SSO; keputusan final 2026-11-07, endpoint & validasi sudah merge; 2026-11-12 tambah catatan koordinasi dengan brief chat (tugas D merge dulu)
 ---
 
 # Nomor WhatsApp Pengguna - Lost&Found
@@ -78,6 +78,18 @@ Memberi user cara **mengisi** nomor WhatsApp-nya sendiri (sekarang tidak ada sam
 - [x] ~~Perilaku untuk user yang belum pernah mengisi nomor.~~ → **DIPUTUSKAN: tombol disembunyikan (default).**
 - [x] ~~Prioritas plan ini `medium`.~~ → tetap `medium`.
 - [ ] **Sisa pekerjaan (belum selesai):** (B) mobile `feature/ui/edit-profile-whatsapp`; (C) backend `feature/claim/counterpart-whatsapp` (field `counterpart_whatsapp` di respons claim tunggal); (D) mobile `feature/claim/whatsapp-contact-button`. Uji HP terhadap server live untuk fitur ini **belum dilakukan**. Sinkronisasi docs ke repo backend **belum dilakukan** (checkout sedang di branch lain dengan perubahan lokal README.md user).
+
+---
+
+## Koordinasi dengan Brief Chat (2026-11-12)
+
+> Keputusan user 2026-11-12 (Dominic-261112-05). **Status tugas B/C/D di plan ini TIDAK diubah.**
+
+- Chat dan WhatsApp dikerjakan oleh **orang berbeda, paralel**.
+- **Urutan:** **Tugas D** (`feature/claim/whatsapp-contact-button`) diselesaikan **dan di-merge dulu** sebelum Tugas chat Flutter yang menyentuh `chat_screen.dart`.
+- **Alasan:** perbaikan review D kemungkinan menyentuh `chat_screen.dart` dan `claim_actions.dart`; `lib/models/claim.dart` dan `api_client.dart` dipakai kedua pihak.
+- Detail urutan tugas chat: [[Brief Pengembangan Real-Time Chat - Lost&Found]] §6 (paragraf koordinasi) dan [[Real-Time Chat - Lost&Found]] §Open Items — Status 2026-11-12.
+- **Status review dari laporan saja:** (C) [[GPT-261109-01]] **APPROVE DENGAN CATATAN**; (D) [[GPT-261110-02]] **REQUEST CHANGES**. **Status merge C/D tidak diketahui — jangan diklaim.**
 
 ---
 

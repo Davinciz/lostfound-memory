@@ -20,7 +20,7 @@ summary: Brief PM berisi delapan tugas pengembangan chat untuk tim; tanpa tabel/
 > [!info] Cara membaca
 > **Revisi 2026-11-12:** §1 butir 1, Tugas 1 (tujuan, aturan perilaku, langkah tes), Tugas 2 (banner, lapisan kedua), dan §10 diselaraskan dengan keputusan Daniel 2026-11-12 — claim `returned` **tetap terbuka**.
 >
-> Isi badan brief di bawah **dipakai tim apa adanya** — hanya frontmatter + header ini yang ditambahkan dokumentasi (Dominic-261112-02). Sumber tunggal isi Tugas 1–8: file ini; plan induk hanya menautkan.
+> Isi badan brief di bawah **dipakai tim apa adanya** — frontmatter + header ditambahkan dokumentasi (Dominic-261112-02); badan direvisi sekali pada 2026-11-12 (Dominic-261112-03) sesuai catatan revisi di atas. Sumber tunggal isi Tugas 1–8: file ini; plan induk hanya menautkan.
 
 Disusun oleh PM (Claude) untuk tim Daniel Geovani, 12 November 2026. Brief ini dibuat agar bisa dibaca sendiri oleh developer atau AI coding tim tanpa dokumen lain. Isinya dibaca dari kode lokal pada 12 November 2026, yang bisa saja belum sama dengan `develop` terbaru. Setiap klaim tentang kondisi kode di bawah wajib diverifikasi dulu sebelum mulai mengerjakan.
 
@@ -156,7 +156,7 @@ Langkah:
 1. `ChatService`: tangani event `MessageRead` (sekarang `_onEvent` membuang semua event selain `MessageSent`). Tambah stream baru dan parse payload di atas. Periksa `event.channelName` bila perlu.
 2. `ApiClient`: tambah `markConversationRead(conversationId)` untuk `PATCH /api/conversations/{id}/read`.
 3. `ChatScreen`: saat event `MessageRead` datang dan `reader_id` bukan kita, panggil `_store.updateReadAt` untuk id yang ada di payload. Abaikan event dari diri sendiri.
-4. Ganti mark-read satu-satu: saat layar dibuka, saat app resume, dan saat pesan masuk, panggil endpoint massal (debounce \~500 ms, hindari panggilan beruntun). Hapus tracking `_readSent` per pesan bila tidak diperlukan lagi.
+4. Ganti mark-read satu-satu: saat layar dibuka, saat app resume, dan saat pesan masuk, panggil endpoint massal (debounce ~500 ms, hindari panggilan beruntun). Hapus tracking `_readSent` per pesan bila tidak diperlukan lagi.
 5. Tampilan: pertahankan label `· terbaca` yang sudah ada. Jangan mengubah desain gelembung.
 6. Tes: store memperbarui `readAt` dari event, event milik diri sendiri diabaikan, parse payload.
 
@@ -229,6 +229,8 @@ Aturan:
 
 Setiap tugas dibuat PR kecil sendiri. Sebelum mulai tugas berikutnya, tugas sebelumnya harus sudah merge dan di-review Daniel.
 
+Koordinasi dengan pekerjaan WhatsApp (keputusan Daniel, 12 November 2026): tugas WhatsApp D (mobile, branch feature/claim/whatsapp-contact-button) dikerjakan orang lain secara paralel. Tugas 1, 3, dan 8 boleh dimulai kapan saja. Tugas 2, 4, 5, 6, dan 7 baru dimulai setelah tugas D ter-merge ke develop, karena D dan Tugas-tugas itu bisa mengubah file yang sama (chat_screen.dart, claim_actions.dart, lib/models/claim.dart, api_client.dart). Sebelum mulai Tugas 2, tarik develop terbaru dan baca ulang file-file itu. Jangan menyelesaikan konflik dengan rebase; bila ragu, berhenti dan tanya Daniel.
+
 ## 7. Definisi selesai (setiap tugas)
 
 - Semua langkah dan tes pada tugas itu selesai, suite penuh tidak menurun dari baseline. Catat baseline sendiri sebelum mulai: `php artisan test` di backend dan `flutter test` serta `flutter analyze` di mobile. Sebagai gambaran dari catatan 8 November 2026: backend sekitar 395 tes lulus, mobile 247 lulus/4 dilewati/0 gagal dan analyze 6 issue lama di file test. Angka ini bisa sudah berubah.
@@ -250,7 +252,7 @@ Setelah selesai, kirim laporan ke Daniel yang berisi: nama branch dan hash commi
 
 ## 10. Keputusan Daniel atas asumsi PM (sudah dikonfirmasi)
 
-- Chat tanpa claim tetap terbuka; hanya chat yang claim-nya berakhir yang menjadi read-only (disetujui).
+- Chat tanpa claim tetap terbuka; hanya chat yang claim-nya ditolak (rejected) atau dicabut (withdrawn) yang menjadi read-only (disetujui).
 - Read-only hanya untuk claim `rejected` dan `withdrawn`. Claim `returned` tetap terbuka, jadi pengguna masih bisa mengirim pesan setelah serah terima (keputusan Daniel, menggantikan usulan awal PM).
 - Pengiriman yang ditolak memakai HTTP 422 plus field `reason` (`claim_closed` atau `user_blocked`) (disetujui).
 - Yang dibatasi adalah pengirim yang diblokir; lawan bicara yang diblokir tidak otomatis menutup chat (disetujui).

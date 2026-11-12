@@ -4,7 +4,7 @@ project: lost-found
 status: active
 priority: high
 updated: 2026-11-12
-summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend & kartu konteks merge develop; 8 tugas brief dijadwalkan; 4 asumsi brief terkonfirmasi (read-only hanya rejected/withdrawn, returned terbuka), Tugas 1 boleh mulai
+summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend & kartu konteks merge develop; 8 tugas brief dijadwalkan; 4 asumsi brief terkonfirmasi (read-only hanya rejected/withdrawn, returned terbuka); urutan: Tugas 1/3/8 boleh mulai, Tugas 2/4/5/6/7 tunggu WhatsApp D merge; Client Events Pusher diputuskan diaktifkan (belum)
 ---
 
 # Real-Time Chat - Lost&Found
@@ -498,7 +498,15 @@ Teks lama B/E/F di bawah dipertahankan sebagai riwayat, TIDAK BERLAKU. Acuan bar
 3. Penolakan kirim memakai HTTP 422 + field `reason` (`claim_closed`/`user_blocked`). **Disetujui.**
 4. Hanya pengirim yang diblokir yang dibatasi (lawan bicara terblokir tidak menutup chat). **Disetujui.**
 
-**Masih terbuka:** (b) Client Events Pusher belum diaktifkan (prasyarat Tugas 7); (c) urutan brief vs fokus WhatsApp belum ditetapkan.
+**Keputusan 2026-11-12 (Dominic-261112-05) — koordinasi urutan & Client Events (sumber: user menyerahkan ke saran PM):**
+- **(c) Urutan brief vs WhatsApp — DIPUTUSKAN:** chat dan WhatsApp dikerjakan **orang berbeda, paralel**. **Tugas WhatsApp D** (mobile, branch `feature/claim/whatsapp-contact-button`) **diselesaikan & di-merge dulu** sebelum Tugas chat Flutter yang menyentuh `chat_screen.dart`.
+  - **Boleh mulai sekarang:** **Tugas 1** dan **Tugas 3** (backend chat) + **Tugas 8** (badge unread — tidak menyentuh `chat_screen.dart`).
+  - **Menunggu D ter-merge:** **Tugas 2, 4, 5, 6, 7**.
+  - Alasan: perbaikan review D kemungkinan menyentuh `chat_screen.dart` dan `claim_actions.dart`; `lib/models/claim.dart` dan `api_client.dart` dipakai kedua pihak. Sebelum Tugas 2 mulai, tarik `develop` terbaru & baca ulang file itu; konflik **jangan** diselesaikan dengan rebase.
+- **(b) Client Events Pusher — DIPUTUSKAN DIAKTIFKAN** (tugas manual user, prasyarat Tugas 7). **Status: BELUM dilakukan** sampai user mengonfirmasi aktif.
+- **Status WhatsApp yang boleh diklaim (dari laporan saja):** **C** ([[GPT-261109-01]]) **APPROVE DENGAN CATATAN**; **D** ([[GPT-261110-02]]) **REQUEST CHANGES**. **Status merge C/D tidak diketahui — jangan diklaim.**
+
+**Teks lama (tidak berlaku):** ~~Masih terbuka: (b) Client Events Pusher belum diaktifkan (prasyarat Tugas 7); (c) urutan brief vs fokus WhatsApp belum ditetapkan.~~
 
 ---
 
@@ -549,7 +557,7 @@ Teks lama B/E/F di bawah dipertahankan sebagai riwayat, TIDAK BERLAKU. Acuan bar
 - [ ] **Fase 3 — Integrasi:** auto-create conversation by `claim_id` di `ClaimController::store()`; redirect ke chat setelah claim; FCM deep link → ChatScreen; ~~banner tips verifikasi~~ (**DIBATALKAN 2026-11-12** — user: tidak terlalu perlu; teks lama dipertahankan sebagai riwayat); test dua HP.
 	- [x] **Kartu konteks di ruang chat — SELESAI & merge `develop` (mobile), dikonfirmasi user 2026-11-12.** Backend field `report_context`; Flutter kartu `chat_report_reference.dart`. Hash/PR tidak diketahui. Tombol aksi di kartu tetap menunggu endpoint [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
 - [ ] **Fase 4 — Evaluasi:** pantau usage Pusher free tier → tentukan timing migrasi Soketi.
-- [ ] **Fase 5 — Delapan tugas brief (2026-11-12) — DIJADWALKAN, BELUM dikerjakan.** Detail & langkah ada di [[Brief Pengembangan Real-Time Chat - Lost&Found]]; ringkasan + urutan ada di §"Brief 8 Tugas (2026-11-12)". Tugas 1 (read-only backend) + 2 (read-only Flutter) menggantikan open item (4); Tugas 3/4 menggantikan open item (3); Tugas 5/6/7/8 adalah usulan E + F yang kini dijadwalkan. **Prasyarat:** ~~konfirmasi 4 asumsi §10 brief~~ **sudah dikonfirmasi user 2026-11-12** (read-only hanya `rejected`/`withdrawn`; `returned` tetap terbuka) → **Tugas 1 boleh dimulai, belum dikerjakan**; Client Events Pusher **belum aktif** sebelum Tugas 7. **Dikerjakan tim user, bukan bot.**
+- [ ] **Fase 5 — Delapan tugas brief (2026-11-12) — DIJADWALKAN, BELUM dikerjakan.** Detail & langkah ada di [[Brief Pengembangan Real-Time Chat - Lost&Found]]; ringkasan + urutan ada di §"Brief 8 Tugas (2026-11-12)". Tugas 1 (read-only backend) + 2 (read-only Flutter) menggantikan open item (4); Tugas 3/4 menggantikan open item (3); Tugas 5/6/7/8 adalah usulan E + F yang kini dijadwalkan. **Prasyarat:** ~~konfirmasi 4 asumsi §10 brief~~ **sudah dikonfirmasi user 2026-11-12** → **Tugas 1 boleh dimulai, belum dikerjakan**. **Urutan 2026-11-12:** Tugas 1/3/8 boleh mulai sekarang; Tugas 2/4/5/6/7 menunggu WhatsApp D merge. Client Events Pusher **diputuskan diaktifkan tapi belum dilakukan** (prasyarat Tugas 7). **Dikerjakan tim user, bukan bot.**
 
 > [!note] Usulan alur integrasi (disetujui user 2026-10-18)
 > Auto-create conversation di `ClaimController::store()` cukup mendukung `claim_id` dulu; penyesuaian peran pengaju/penerima (claim dua arah) dikerjakan di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
