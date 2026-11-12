@@ -2,8 +2,8 @@
 type: plan
 project: lost-found
 status: active
-updated: 2026-11-08
-summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan; §2 diperbarui — penyaringan lima field user via PR #30, aturan nomor WA final, enkripsi ditunda
+updated: 2026-11-12
+summary: Hardening keamanan aplikasi termasuk throttle Google SSO, perlindungan data, dan mitigasi penyalahgunaan; §2 diperbarui — penyaringan lima field user via PR #30, aturan nomor WA final, enkripsi ditunda; usulan throttle kirim pesan chat (belum dikerjakan)
 priority: medium
 ---
 
@@ -565,6 +565,9 @@ protected $middleware = [
 - Throttle endpoint auth `POST /auth/google`: sudah 30 permintaan/menit per IP (WiFi kampus berbagi IP). Verifikasi token Google gagal dicatat di log server tanpa token atau email. Login user memakai Google SSO; admin Filament tetap memakai password.
 
 Per DailyChanges 2026-10-06, rate limiting, HTTPS force, CORS, dan security headers belum dikerjakan.
+
+> [!note] Usulan 2026-11-12 — throttle kirim pesan chat (BELUM dikerjakan)
+> Usul: throttle endpoint `POST /api/conversations/{id}/messages` dengan `throttle:30,1` untuk membatasi spam pesan. **Status: usulan saja, tidak dikerjakan sekarang** (keputusan user 2026-11-12). Bila dikerjakan, pertimbangkan batas per **user** alih-alih per IP — WiFi kampus berbagi IP. Terkait [[Real-Time Chat - Lost&Found]].
 
 ### Phase 2: High Priority (Week 2)
 - ~~[ ] CAPTCHA (registration + suspicious login)~~ — tidak relevan untuk SSO

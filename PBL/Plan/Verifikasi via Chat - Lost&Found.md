@@ -3,11 +3,14 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-11-01
+updated: 2026-11-12
 summary: Verifikasi kepemilikan via real-time chat in-app, bukan pertanyaan keamanan
 ---
 
 # Verifikasi via Chat - Lost&Found
+
+> [!note] Banner tips verifikasi — DIBATALKAN (2026-11-12)
+> Keputusan user: banner tips untuk penemu **tidak terlalu perlu** dan **dibatalkan**. Semua penyebutan banner di bawah adalah **riwayat, tidak berlaku**. Sumber: [[Real-Time Chat - Lost&Found]] status 2026-11-12.
 
 > [!warning] Akan berubah
 > Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
@@ -331,7 +334,7 @@ TextEntry::make('conversation.messages_count')
 3. ✅ Update backend: validasi `lost_report_id` + cek kepemilikan (403) — tercatat selesai di DailyChanges 2026-10-06
 4. ✅ Dropdown "Pilih Laporan Hilang Anda" di ClaimScreen — tercatat selesai di DailyChanges 2026-10-06
 5. ✅ Metadata chat di admin (ClaimResource, 2026-10-06; tidak membaca isi chat)
-6. ⬜ Banner tips + auto-create conversation + redirect ke chat — **backend auto-create tersedia** (Real-Time Chat Fase 1, merge `develop` 2026-10-18: `POST /api/conversations` find-or-create); sisa banner tips & redirect butuh UI Flutter (Fase 2)
+6. ⬜ ~~Banner tips~~ (**DIBATALKAN 2026-11-12**) + auto-create conversation + redirect ke chat — **backend auto-create tersedia** (Real-Time Chat Fase 1, merge `develop` 2026-10-18: `POST /api/conversations` find-or-create); sisa banner tips & redirect butuh UI Flutter (Fase 2)
 7. ⬜ Test end-to-end: claim → chat → admin approve → serah terima (butuh Fase 2 UI + Fase 3 integrasi claim)
 8. ⬜ Monitor fraud rate (compare dengan baseline)
 

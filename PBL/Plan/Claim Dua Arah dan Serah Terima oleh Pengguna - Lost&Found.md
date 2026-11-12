@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-01
-summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari. 2026-11-01: claim langsung ke laporan target sudah merge develop (migration nullable + CHECK, PR #6/#7 backend, PR #12 Flutter)
+updated: 2026-11-12
+summary: Claim dua arah (pemilik & penemu), verifikasi lewat chat, serah terima oleh pengguna, kedaluwarsa 7 hari. 2026-11-12: chat read-only hanya untuk claim rejected/withdrawn, returned tetap terbuka
 ---
 
 **Konflik:** §1 plan induk menulis "serah terima hanya bisa dilakukan admin atau penemu" — **digantikan** (2026-11-01, backend `f3b730d`): `ClaimPolicy::markTransferred` kini **admin ATAU claimant (pengaju) ATAU penerima** (lihat §5 poin 8). Teks lama di §1 tetap ada sebagai riwayat.
@@ -480,7 +480,7 @@ $table->index('accepted_at'); // untuk query expire
 
 **Catatan:** 
 - Verdict tetap pakai `status` (accepted/rejected), bukan kolom `verdict` baru
-- Chat read-only dihitung dari kondisi claim (`rejected`, `withdrawn`, `returned`) atau laporan (`claimed` oleh claim lain), **BUKAN dari kolom tersimpan**
+- Chat read-only dihitung dari kondisi claim (`rejected`, `withdrawn`, ~~`returned`~~) atau laporan (`claimed` oleh claim lain), **BUKAN dari kolom tersimpan**. **KOREKSI 2026-11-12 (keputusan user): `returned` TIDAK membuat chat read-only — tetap terbuka.** Lihat [[Brief Pengembangan Real-Time Chat - Lost&Found]] §10.
 
 ---
 

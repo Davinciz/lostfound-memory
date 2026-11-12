@@ -100,7 +100,7 @@ Menutup risiko yang dicatat Bob di R-261023-05: claim `accepted` yang macet kini
 
 ## Di luar Fase 1.2 (tahap berikutnya, jangan dikerjakan di sini)
 
-- `claims:expire` + scheduler + notifikasi pengingat H-1 (Phase 1.6/1.7 plan lama); penutupan otomatis claim lain saat `returned`; `isFreezed`/chat read-only per status (Real-Time Chat Fase 3); aksi override admin "Cabut Claim" dan perbaikan Edit Filament (Phase 3); Flutter (Phase 2, termasuk cek model `Claim` nullable oleh Ajax); tugas `UserResource` (respons claim tanpa `User` mentah); usulan memindahkan cek 5-pending/claim ganda ke dalam transaction.
+- `claims:expire` + scheduler + notifikasi pengingat H-1 (Phase 1.6/1.7 plan lama); penutupan otomatis claim lain saat `returned`; `isFreezed`/chat read-only per status (Real-Time Chat Fase 3; **2026-11-12: read-only hanya `rejected`/`withdrawn`, `returned` tetap terbuka**); aksi override admin "Cabut Claim" dan perbaikan Edit Filament (Phase 3); Flutter (Phase 2, termasuk cek model `Claim` nullable oleh Ajax); tugas `UserResource` (respons claim tanpa `User` mentah); usulan memindahkan cek 5-pending/claim ganda ke dalam transaction.
 
 ---
 

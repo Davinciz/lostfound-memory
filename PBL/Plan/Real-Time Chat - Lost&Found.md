@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-10-19
-summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend merge, UI chat teruji 1 HP 2 akun; usulan kartu konteks chat
+updated: 2026-11-12
+summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend & kartu konteks merge develop; 8 tugas brief dijadwalkan; 4 asumsi brief terkonfirmasi (read-only hanya rejected/withdrawn, returned terbuka), Tugas 1 boleh mulai
 ---
 
 # Real-Time Chat - Lost&Found
@@ -19,6 +19,13 @@ summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend merge, UI chat t
 > - **Fase 1 backend SELESAI & merge (2026-10-18):** merge ke `develop` via PR #4 (squash), commit develop `fb256f9`; branch asal `feature/chat/realtime-api` (3 commit: `2367926`, `669466b`, `8141719`). `php artisan test` di develop: **132 lulus** (sebelumnya 108). Migration index ter-apply di DB dev. Paket baru `pusher/pusher-php-server`; factory baru `Claim`, `Conversation`, `FoundReport`, `LostReport`, `Message`. Rincian kontrak ada di §Backend API-as-built di bawah.
 > - **Tes manual 2026-10-18 (laporan user):** chat diuji di **1 HP dengan 2 akun berbeda**; UI Flutter (list percakapan + kirim/terima pesan) sudah dipakai; **kirim/terima pesan realtime antar dua user berhasil**; belum menemukan bug. Belum diuji: dedup pengirim, mark-read, penolakan non-peserta (403), reconnect saat app dibuka kembali, dan tes dua perangkat fisik.
 > - **Belum ada:** integrasi claim/FCM (Fase 3), evaluasi Pusher (Fase 4), dan kepastian broadcast lewat **Pusher asli** (key/app Pusher sudah disiapkan user, tetapi user belum yakin driver yang dipakai saat tes). Branch/commit/merge untuk UI Flutter belum dilaporkan.
+>
+> **Status implementasi (2026-11-12, konfirmasi user):**
+> - **Kartu konteks barang di `ChatScreen` — SELESAI, sudah merge ke `develop` (mobile).** Hash commit / nomor PR **tidak diketahui** — jangan dikarang. Pernyataan lama "sisi mobile belum merge" **tidak berlaku**.
+> - **Pesan baru langsung masuk tanpa refresh — terkonfirmasi user.** Hanya itu yang diklaim. Skenario lain (**reconnect saat app di-resume/dari background**, **dua HP fisik**) **bukan** bagian klaim ini.
+> - **Chat read-only sesuai status claim (`rejected`/`withdrawn`, **bukan** `returned`) + user terblokir tidak bisa kirim pesan — ~~BELUM diterapkan, masuk backlog, belum dijadwalkan~~ → DIJADWALKAN 2026-11-12** sebagai **Tugas 1 (backend) + Tugas 2 (Flutter)** di [[Brief Pengembangan Real-Time Chat - Lost&Found]]; **belum dikerjakan**.
+> - **Delapan tugas lanjutan (read-only, read receipt, status kirim, quick reply, typing indicator, badge unread) — DIJADWALKAN, belum dikerjakan**, lihat §"Brief 8 Tugas (2026-11-12)".
+> - **Banner tips verifikasi untuk penemu — DIBATALKAN** atas keputusan user 2026-11-12 (tidak terlalu perlu).
 
 > [!warning] Akan berubah (revisi 2026-10-19, disetujui, belum diimplementasi)
 > Conversation dari claim harus dibuat **per `claim_id`**, bukan per pasangan user. Saat ini `ConversationController::store()` jalur `other_user_id` mencari per pasangan user (partial unique index `conversations_user_pair_unique`), sehingga chat ke penemu yang sama membuka percakapan lama dengan konteks laporan pertama — dugaan bug "tidak bisa claim ke akun yang sama meski beda laporan". Chat sebelum claim tetap per pasangan. Daftar chat wajib menampilkan kartu konteks laporan. Lihat [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §Revisi 2026-10-19 bagian B. **Sumber tunggal aturan ini:** [[Claim Langsung ke Laporan Target - Lost&Found]] (§`ConversationController` cabang `claim_id` — tahan NULL).
@@ -433,14 +440,65 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 
 1. **Route ganda `/broadcasting/auth`** — otomatis dari `withRouting(channels:)` + manual `Broadcast::routes` di `api.php`. Usul: rapikan dengan `withBroadcasting(prefix: 'api', middleware: ['api', 'auth:sanctum'])`. **Prioritas low.**
 2. **`index()` conversations N+1 query** — usul optimasi eager-load/agregat.
-3. **Endpoint mark-read massal** — sekarang satu panggilan per percakapan; usul satu endpoint massal.
-4. **Chat read-only berdasar status claim + user terblokir masih bisa kirim pesan** — usul dikerjakan di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] / Fase 3.
+3. **Endpoint mark-read massal** — sekarang satu panggilan per percakapan; usul satu endpoint massal. **2026-11-12: dijadwalkan sebagai Tugas 3 brief + Tugas 4 (Flutter).**
+4. **Chat read-only berdasar status claim + user terblokir masih bisa kirim pesan** — ~~usul dikerjakan di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] / Fase 3~~. **DIPERBARUI 2026-11-12: dijadwalkan sebagai Tugas 1 + Tugas 2 di [[Brief Pengembangan Real-Time Chat - Lost&Found]]** (bukan lagi menunggu plan claim).
 5. **FCM notifikasi pesan baru + deep link** — belum ada; usul Fase 3.
 6. **`GET /api/search` belum punya `limit`/pagination** — usul tambahkan limit/pagination. **Prioritas low.**
 7. **`ConversationController::index` memakai `orWhere` tanpa group** — usul dibungkus satu grup `where()`; digabung dengan usulan (2) optimasi N+1. **Prioritas low.**
 8. **Dropdown "Laporan hilang kamu" di mobile hanya memuat 20 laporan pertama** (`GET /lost-reports` default `per_page`) — sebagian laporan hilang user tidak muncul di pilihan; usul kirim `status=pending` (+ opsi `mine=1`/pagination). **Prioritas low.** Lihat [[Backlog Perbaikan Lanjutan - Lost&Found]] item (ix).
 9. **Tes manual lanjutan** — dedup pengirim, mark-read, penolakan non-peserta (403), reconnect saat app dibuka kembali, dan tes dua perangkat fisik (baru 1 HP 2 akun).
-10. **Kartu konteks di ruang chat** — usul menambah field `context` di respons `GET /api/conversations` dan kartu pinned di `ChatScreen` (lihat §Kartu Konteks di Ruang Chat). Bukan plan terpisah; masuk Fase 2/3 plan ini. **Belum diputuskan.**
+10. **Kartu konteks di ruang chat** — ~~usul~~ **SELESAI 2026-11-12**: dikerjakan sebagai `report_context` di respons `GET`/`POST /api/conversations` + kartu `chat_report_reference.dart`; **sudah merge `develop` (mobile)**, dikonfirmasi user. Hash/PR tidak diketahui.
+
+## Open Items — Status 2026-11-12 (keputusan user; kesemuanya BELUM dikerjakan)
+
+> Sumber: konfirmasi user 2026-11-12. Tidak ada yang ditandai selesai. **Tetap 7 tabel** — semua usulan di bawah tanpa tabel/kolom baru.
+
+<!--
+REVISI 2026-11-12 (Dominic-261112-02): isi bagian ini DIGANTIKAN oleh keputusan user 2026-11-12.
+Teks lama B/E/F di bawah dipertahankan sebagai riwayat, TIDAK BERLAKU. Acuan baru: §"Brief 8 Tugas (2026-11-12)".
+-->
+
+**B. Chat read-only + user terblokir — ~~BELUM diterapkan (backlog, belum dijadwalkan)~~ → DIJADWALKAN, dikerjakan sekarang (2026-11-12).**
+- ~~Chat harus read-only sesuai status claim `rejected`/`withdrawn`/`returned`; user terblokir tidak boleh kirim pesan. Sekarang keduanya masih bisa.~~ **KOREKSI 2026-11-12: `returned` TETAP TERBUKA — read-only hanya untuk `rejected` dan `withdrawn`.** **Diperbarui:** masuk **Tugas 1 (backend, branch `feature/chat/readonly-guard`)** + **Tugas 2 (Flutter, `feature/chat/readonly-ui`)** di [[Brief Pengembangan Real-Time Chat - Lost&Found]]. **Status: BELUM dikerjakan.** Empat asumsi PM (chat tanpa claim tetap terbuka; `returned` ikut read-only; penolakan HTTP 422 + `reason`; hanya pengirim terblokir yang dibatasi) **menunggu konfirmasi user** sebelum Tugas 1 mulai.
+
+**E. Usulan chat tambahan — DISETUJUI, kini jadi tugas konkret di brief (2026-11-12), BELUM dikerjakan:**
+1. **Read receipt** — event broadcast `MessageRead` + endpoint mark-read massal (**Tugas 3** backend + **Tugas 4** Flutter; kolom `read_at` sudah ada; melengkapi open item (3)).
+2. **Typing indicator** — client event Pusher/Soketi (**Tugas 7**, Flutter). **Butuh Client Events diaktifkan di app Pusher (tugas manual user)** sebelum Tugas 7 dimulai; belum aktif.
+3. **Status kirim** (mengirim/terkirim/gagal/coba lagi) + optimistic UI — **Flutter saja (Tugas 5)**.
+4. **Badge total unread di tab Chat** — memakai `unread_count` yang sudah ada di `GET /api/conversations` (**Tugas 8**; belum realtime lintas chat, sudah diterima).
+- **Dikerjakan oleh TIM user, bukan lewat bot Bob/Ajax.**
+
+**F. Quick reply verifikasi — ~~DITUNDA~~ → DIKERJAKAN sekarang (Tugas 6, Flutter, `feature/chat/quick-reply`).**
+- Alur **sesuai rekomendasi PM di brief** (keputusan user 2026-11-12): chip di atas kolom input; tap **mengisi** kolom input (**tidak** auto-kirim); hanya untuk penerima claim saat claim `pending` dan `canSend` true. **Status: BELUM dikerjakan.**
+
+**G. Tetap tidak berubah:** banner tips verifikasi **DIBATALKAN**; throttle kirim pesan tetap **usulan** di [[Security Hardening - Lost&Found]]; sinkronisasi docs ke repo backend tetap ditahan.
+
+---
+
+## Brief 8 Tugas (2026-11-12) — DIJADWALKAN, BELUM dikerjakan
+
+> **Sumber tunggal isi tugas:** [[Brief Pengembangan Real-Time Chat - Lost&Found]] (brief PM, disimpan user di `PBL/Plan/`). Plan ini hanya menautkannya; **jangan menduplikasi detail tugas di sini.** **Dikerjakan oleh tim user, bukan lewat bot Bob/Ajax.** Tidak ada yang berstatus selesai.
+
+| # | Tugas | Repo / branch | Prasyarat |
+|---|---|---|---|
+| 1 | Guard chat read-only — **`rejected`/`withdrawn` saja; `returned` tetap terbuka** (backend, HTTP 422 + `reason`, field `can_send`/`readonly_reason`) | backend `feature/chat/readonly-guard` | 4 asumsi §10 brief **sudah dikonfirmasi user 2026-11-12** → boleh mulai |
+| 2 | Tampilan chat read-only | mobile `feature/chat/readonly-ui` | Tugas 1 merge |
+| 3 | Read receipt: event `MessageRead` + `PATCH /api/conversations/{id}/read` | backend `feature/chat/read-receipt` | Tugas 1 merge |
+| 4 | Read receipt realtime | mobile `feature/chat/read-receipt-ui` | Tugas 2 + 3 merge |
+| 5 | Status kirim + optimistic UI | mobile `feature/chat/send-status` | Tugas 4 merge |
+| 6 | Quick reply verifikasi | mobile `feature/chat/quick-reply` | Tugas 5 merge |
+| 7 | Typing indicator (client event) | mobile `feature/chat/typing-indicator` | Tugas 6 merge + **Client Events Pusher aktif (manual user, belum)** |
+| 8 | Badge total unread di tab Chat | mobile `feature/chat/unread-badge` | independen |
+
+**Batasan (dari brief, ringkas):** tanpa tabel/kolom/migration/dependensi baru — **tetap 7 tabel**; tanpa field user baru di payload; error berbahasa Indonesia; satu tugas = satu branch = satu PR squash ke `develop`.
+
+**KEPUTUSAN USER 2026-11-12 — keempat asumsi §10 brief TERKONFIRMASI, Tugas 1 boleh dimulai (belum dikerjakan):**
+1. Chat tanpa claim tetap terbuka; hanya chat yang claim-nya berakhir yang read-only. **Disetujui.**
+2. **Read-only hanya untuk `rejected` dan `withdrawn`. Claim `returned` TETAP TERBUKA** — menggantikan usulan awal PM. **Teks lama (tidak berlaku):** ~~Claim `returned` ikut membuat chat read-only.~~
+3. Penolakan kirim memakai HTTP 422 + field `reason` (`claim_closed`/`user_blocked`). **Disetujui.**
+4. Hanya pengirim yang diblokir yang dibatasi (lawan bicara terblokir tidak menutup chat). **Disetujui.**
+
+**Masih terbuka:** (b) Client Events Pusher belum diaktifkan (prasyarat Tugas 7); (c) urutan brief vs fokus WhatsApp belum ditetapkan.
 
 ---
 
@@ -486,10 +544,12 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 - [x] **Fase 1 — Backend SELESAI & merge (2026-10-18)** (branch `feature/chat/realtime-api` → merge ke `develop` via PR #4 squash, commit develop `fb256f9`; `php artisan test` di develop **132 lulus**, sebelumnya 108; migration index ter-apply di DB dev). Rincian kontrak ada di **§Backend API-as-built** di bawah.
 - [ ] **Fase 2 — Flutter** (branch `feature/chat/chat-ui`): `pusher_channels_flutter`; `ConversationListScreen`, `ChatScreen`; tab **Chats**; tombol "Chat dengan Pelapor"; reconnect + sinkron pesan saat app dibuka kembali.
 	- [x] **Teruji manual (user, 2026-10-18):** UI chat (list percakapan + kirim/terima pesan) berjalan; pesan realtime antar dua user berhasil di **1 HP, 2 akun berbeda**; belum ada bug.
+	- [x] **Pesan baru langsung masuk tanpa refresh — terkonfirmasi user 2026-11-12.** Hanya sebatas itu: **reconnect saat app di-resume/background** dan **uji dua HP fisik** tidak termasuk klaim ini.
 	- [ ] Belum dilaporkan: branch/commit/merge Flutter, tab **Chats**, tombol "Chat dengan Pelapor", reconnect + sinkron pesan saat app dibuka kembali.
-- [ ] **Fase 3 — Integrasi:** auto-create conversation by `claim_id` di `ClaimController::store()`; redirect ke chat setelah claim; FCM deep link → ChatScreen; banner tips verifikasi; test dua HP.
-	- [ ] **USULAN — Kartu konteks di ruang chat** (belum diputuskan): lihat §Kartu Konteks di Ruang Chat di bawah. Backend hanya menambah field `context` di respons `GET /api/conversations` (**bukan skema DB**); Flutter menampilkan kartu pinned. **Tahap 1 read-only**; tombol aksi menunggu endpoint [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
+- [ ] **Fase 3 — Integrasi:** auto-create conversation by `claim_id` di `ClaimController::store()`; redirect ke chat setelah claim; FCM deep link → ChatScreen; ~~banner tips verifikasi~~ (**DIBATALKAN 2026-11-12** — user: tidak terlalu perlu; teks lama dipertahankan sebagai riwayat); test dua HP.
+	- [x] **Kartu konteks di ruang chat — SELESAI & merge `develop` (mobile), dikonfirmasi user 2026-11-12.** Backend field `report_context`; Flutter kartu `chat_report_reference.dart`. Hash/PR tidak diketahui. Tombol aksi di kartu tetap menunggu endpoint [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
 - [ ] **Fase 4 — Evaluasi:** pantau usage Pusher free tier → tentukan timing migrasi Soketi.
+- [ ] **Fase 5 — Delapan tugas brief (2026-11-12) — DIJADWALKAN, BELUM dikerjakan.** Detail & langkah ada di [[Brief Pengembangan Real-Time Chat - Lost&Found]]; ringkasan + urutan ada di §"Brief 8 Tugas (2026-11-12)". Tugas 1 (read-only backend) + 2 (read-only Flutter) menggantikan open item (4); Tugas 3/4 menggantikan open item (3); Tugas 5/6/7/8 adalah usulan E + F yang kini dijadwalkan. **Prasyarat:** ~~konfirmasi 4 asumsi §10 brief~~ **sudah dikonfirmasi user 2026-11-12** (read-only hanya `rejected`/`withdrawn`; `returned` tetap terbuka) → **Tugas 1 boleh dimulai, belum dikerjakan**; Client Events Pusher **belum aktif** sebelum Tugas 7. **Dikerjakan tim user, bukan bot.**
 
 > [!note] Usulan alur integrasi (disetujui user 2026-10-18)
 > Auto-create conversation di `ClaimController::store()` cukup mendukung `claim_id` dulu; penyesuaian peran pengaju/penerima (claim dua arah) dikerjakan di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
@@ -552,7 +612,7 @@ Tidak ada kolom/tabel baru; cukup eager-load relasi yang sudah ada (`claim`, `lo
 - Tombol aksi (**"Barang Sudah Diserahkan"**, **"Batalkan Claim"**) **menunggu endpoint** di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] (Fase 3) — jangan dikerjakan di sini.
 - **Jangan tampilkan `reason`/alasan claim** di kartu (isi chat dianggap area privat antara dua pihak; admin pun tidak membacanya).
 
-**Belum diputuskan:** bentuk final payload `context`, siapa yang boleh melihat kartu (kedua pihak? penemu saja?), perilaku kartu saat claim `rejected`/`withdrawn`/dibekukan ([[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §3).
+~~**Belum diputuskan:** bentuk final payload `context`~~ — **Diputuskan & SELESAI 2026-11-12:** nama final `report_context`; kartu sudah merge `develop` (mobile). **Teks lama (tidak dihapus):** bentuk final payload `context`, siapa yang boleh melihat kartu (kedua pihak? penemu saja?), perilaku kartu saat claim `rejected`/`withdrawn`/dibekukan ([[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] §3).
 
 ---
 
@@ -574,6 +634,7 @@ Merujuk [[TechnicalReference]] §15.3:
 - **Flutter mobile:** `C:\Project\lostfound-mobile` (Gitea kampus: `git.informatikapolines.id/Daniel_Geovani/lostfound-mobile`, Private, HTTPS)
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]] — §15.3
+- **Brief 8 tugas chat (2026-11-12):** [[Brief Pengembangan Real-Time Chat - Lost&Found]] — sumber tunggal isi Tugas 1–8
 - **Claim Dua Arah:** [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] (dependency)
 - **Push Notification:** [[Push Notification - Lost&Found]] (FCM pesan baru + deep link)
 - **Nomor WhatsApp Pengguna:** [[Nomor WhatsApp Pengguna - Lost&Found]]
