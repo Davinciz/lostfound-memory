@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-12
-summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend & kartu konteks merge develop; 8 tugas brief dijadwalkan; 4 asumsi brief terkonfirmasi (read-only hanya rejected/withdrawn, returned terbuka); urutan: Tugas 1/3/8 boleh mulai, Tugas 2/4/5/6/7 tunggu WhatsApp D merge; Client Events Pusher diputuskan diaktifkan (belum)
+updated: 2026-11-13
+summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend & kartu konteks merge develop; 8 tugas brief dijadwalkan; 4 asumsi brief terkonfirmasi; prasyarat WhatsApp D SUDAH MERGE 2026-11-13 → Tugas 2/4/5/6/7 terbuka; Client Events Pusher diputuskan diaktifkan (belum)
 ---
 
 # Real-Time Chat - Lost&Found
@@ -452,6 +452,8 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 ## Open Items — Status 2026-11-12 (keputusan user; kesemuanya BELUM dikerjakan)
 
 > Sumber: konfirmasi user 2026-11-12. Tidak ada yang ditandai selesai. **Tetap 7 tabel** — semua usulan di bawah tanpa tabel/kolom baru.
+>
+> **Status 2026-11-13 (Dominic-261113-04):** prasyarat WhatsApp **D sudah merge `develop`** → **Tugas 2, 4, 5, 6, 7 sekarang terbuka** (tetap berurutan; belum dikerjakan). Tugas 1 dan 3 (backend) serta 8 tetap boleh jalan. **Client Events Pusher masih BELUM aktif** (prasyarat Tugas 7).
 
 <!--
 REVISI 2026-11-12 (Dominic-261112-02): isi bagian ini DIGANTIKAN oleh keputusan user 2026-11-12.
@@ -501,10 +503,11 @@ Teks lama B/E/F di bawah dipertahankan sebagai riwayat, TIDAK BERLAKU. Acuan bar
 **Keputusan 2026-11-12 (Dominic-261112-05) — koordinasi urutan & Client Events (sumber: user menyerahkan ke saran PM):**
 - **(c) Urutan brief vs WhatsApp — DIPUTUSKAN:** chat dan WhatsApp dikerjakan **orang berbeda, paralel**. **Tugas WhatsApp D** (mobile, branch `feature/claim/whatsapp-contact-button`) **diselesaikan & di-merge dulu** sebelum Tugas chat Flutter yang menyentuh `chat_screen.dart`.
   - **Boleh mulai sekarang:** **Tugas 1** dan **Tugas 3** (backend chat) + **Tugas 8** (badge unread — tidak menyentuh `chat_screen.dart`).
-  - **Menunggu D ter-merge:** **Tugas 2, 4, 5, 6, 7**.
+  - **Menunggu D ter-merge:** **Tugas 2, 4, 5, 6, 7**. → **KOREKSI 2026-11-13: D SUDAH MERGE `develop` → kelima tugas TERBUKA** (tetap urut, belum dikerjakan).
   - Alasan: perbaikan review D kemungkinan menyentuh `chat_screen.dart` dan `claim_actions.dart`; `lib/models/claim.dart` dan `api_client.dart` dipakai kedua pihak. Sebelum Tugas 2 mulai, tarik `develop` terbaru & baca ulang file itu; konflik **jangan** diselesaikan dengan rebase.
 - **(b) Client Events Pusher — DIPUTUSKAN DIAKTIFKAN** (tugas manual user, prasyarat Tugas 7). **Status: BELUM dilakukan** sampai user mengonfirmasi aktif.
 - **Status WhatsApp yang boleh diklaim (dari laporan saja):** **C** ([[GPT-261109-01]]) **APPROVE DENGAN CATATAN**; **D** ([[GPT-261110-02]]) **REQUEST CHANGES**. **Status merge C/D tidak diketahui — jangan diklaim.**
+  - **KOREKSI 2026-11-13 (Dominic-261113-04): kalimat di atas TIDAK BERLAKU.** **Tugas B, C, dan D SUDAH MERGE `develop`** (sumber: konfirmasi Daniel 2026-11-13). **Prasyarat "D merge" untuk Tugas 2, 4, 5, 6, 7 kini TERPENUHI** — kelima tugas itu **terbuka untuk dimulai** (tetap urut sesuai §6 brief; belum ada yang dikerjakan). Detail: [[Nomor WhatsApp Pengguna - Lost&Found]] §Status Merge B/C/D dan [[TechnicalReference]] §17 (q.13). Sisa batasan: guard `mounted` jalur sukses D diterima sebagai risiko diketahui (bukan "teruji"); uji HP & deploy backend **belum**.
 
 **Teks lama (tidak berlaku):** ~~Masih terbuka: (b) Client Events Pusher belum diaktifkan (prasyarat Tugas 7); (c) urutan brief vs fokus WhatsApp belum ditetapkan.~~
 

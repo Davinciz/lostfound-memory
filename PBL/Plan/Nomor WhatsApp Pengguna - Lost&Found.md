@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-11-12
-summary: Plan isi & tampilkan nomor WhatsApp user SSO; keputusan final 2026-11-07, endpoint & validasi sudah merge; 2026-11-12 tambah catatan koordinasi dengan brief chat (tugas D merge dulu)
+updated: 2026-11-13
+summary: Plan isi & tampilkan nomor WhatsApp user SSO; endpoint + tugas B/C/D sudah merge develop (2026-11-13), uji HP & deploy backend belum
 ---
 
 # Nomor WhatsApp Pengguna - Lost&Found
@@ -14,8 +14,12 @@ summary: Plan isi & tampilkan nomor WhatsApp user SSO; keputusan final 2026-11-0
 **Status:** In Progress
 **Priority:** Medium
 
-> [!info] Status 2026-11-08
-> Keputusan final fitur ditetapkan user 2026-11-07. Endpoint `PUT /api/users/me/whatsapp` + `PUT /api/users/me/wa-visibility` **sudah merge `develop`** (PR #31, `df5e22ed17`) dan perbaikan validasi (PR #32, `6f8b43d4b5`). Sisi **mobile BELUM SIAP** (review [[GPT-261107-07-review-wa-mobile]]). Tombol WhatsApp di alur claim **belum dikerjakan**. Plan **tidak ditandai selesai**.
+> [!info] Status 2026-11-13 — merge selesai, belum live
+> **Tugas B, C, dan D SUDAH MERGE ke `develop`** (sumber: konfirmasi Daniel 2026-11-13 + laporan review). Rincian per tugas ada di §"Status Merge B/C/D (2026-11-13)".
+> **Status fitur tetap BELUM selesai / belum live:** uji manual di HP **belum** dilakukan dan backend **belum di-deploy** (auto-deploy Dokploy dimatikan sejak 2026-11-08). Plan **tidak ditandai selesai**.
+
+> [!info] Status 2026-11-08 (riwayat)
+> Keputusan final fitur ditetapkan user 2026-11-07. Endpoint `PUT /api/users/me/whatsapp` + `PUT /api/users/me/wa-visibility` **sudah merge `develop`** (PR #31, `df5e22ed17`) dan perbaikan validasi (PR #32, `6f8b43d4b5`). ~~Sisi mobile BELUM SIAP...~~ **Tidak berlaku — lihat blok 2026-11-13.**
 
 ---
 
@@ -77,19 +81,55 @@ Memberi user cara **mengisi** nomor WhatsApp-nya sendiri (sekarang tidak ada sam
 - [x] ~~Apakah toggle di Pengaturan dipertahankan berdampingan dengan toggle di Edit Profil?~~ → **DIPUTUSKAN: dua toggle dipertahankan.**
 - [x] ~~Perilaku untuk user yang belum pernah mengisi nomor.~~ → **DIPUTUSKAN: tombol disembunyikan (default).**
 - [x] ~~Prioritas plan ini `medium`.~~ → tetap `medium`.
-- [ ] **Sisa pekerjaan (belum selesai):** (B) mobile `feature/ui/edit-profile-whatsapp`; (C) backend `feature/claim/counterpart-whatsapp` (field `counterpart_whatsapp` di respons claim tunggal); (D) mobile `feature/claim/whatsapp-contact-button`. Uji HP terhadap server live untuk fitur ini **belum dilakukan**. Sinkronisasi docs ke repo backend **belum dilakukan** (checkout sedang di branch lain dengan perubahan lokal README.md user).
+- [x] ~~**Sisa pekerjaan (belum selesai):** (B) mobile `feature/ui/edit-profile-whatsapp`; (C) backend `feature/claim/counterpart-whatsapp` (field `counterpart_whatsapp` di respons claim tunggal); (D) mobile `feature/claim/whatsapp-contact-button`. Uji HP terhadap server live untuk fitur ini **belum dilakukan**. Sinkronisasi docs ke repo backend **belum dilakukan** (checkout sedang di branch lain dengan perubahan lokal README.md user).~~ → **B/C/D SUDAH MERGE `develop` 2026-11-13** (lihat §Status Merge). Sisa: **uji HP** dan **deploy backend** — keduanya **belum**. Sinkronisasi docs ke repo backend **belum dilakukan**.
+
+---
+
+## Status Merge B/C/D (2026-11-13)
+
+> Sumber: konfirmasi Daniel 2026-11-13 + laporan review [[GPT-261109-01-review-c-counterpart-whatsapp]], [[GPT-261110-01-review-b-revisi-2]], [[GPT-261110-03-review-b-revisi-3]], [[GPT-261110-02-review-d-whatsapp-button]], [[GPT-261113-01-review-d-revisi]], [[Ajax-261113-02-review-d-revisi-2]], [[Ajax-261113-03-assert-status-aksi-chat]]. **Tidak ada fakta di luar sumber ini.** Status fitur: **merge selesai, BELUM live** (uji HP + deploy backend belum).
+
+### C — backend `feature/claim/counterpart-whatsapp` — MERGE `develop` (oleh Daniel)
+
+- Komit branch: `17a5ab9a7b` dan `31153ab8cb`. **Nomor PR: tidak diketahui** (tidak diisi Daniel — jangan dikarang).
+- Review [[GPT-261109-01]]: **APPROVE DENGAN CATATAN**; 404 tes lulus / 1.768 assertion; `route:list` identik (37); Pint bersih; 5 mutasi gagal sesuai harapan; maks 1 query tambahan.
+- **Catatan Minor (backlog kecil, BELUM diperbaiki):** `ClaimCounterpartWhatsAppTest.php` sekitar baris 175 dan 180 — assertion dashboard admin berjalan tanpa fixture, sehingga bukti "kunci absen dari admin" lemah.
+
+### B — mobile `feature/ui/edit-profile-whatsapp` — MERGE `develop` sebagai **PR #26**
+
+- Merge commit `ccabb1d173` (**merge commit, bukan squash**).
+- Review: [[GPT-261110-01]] (revisi 2) **REQUEST CHANGES** — hanya tes; [[GPT-261110-03]] (revisi 3) **APPROVE**.
+- Angka akhir: **259 lulus, 4 dilewati, 0 gagal**; `analyze` 4 warning + 2 info lama di file test.
+
+### D — mobile `feature/claim/whatsapp-contact-button` — MERGE `develop` (oleh Daniel, 2026-11-13)
+
+- Tombol WhatsApp **pindah dari Detail Laporan ke `ClaimDetailScreen`**, memakai `counterpart_whatsapp` dari `getClaim(id)` ulang (objek claim dari `index` tidak membawa nomor).
+- Rangkaian review: [[GPT-261110-02]] **REQUEST CHANGES** (4 Mayor + 1 Minor); [[GPT-261113-01]] **REQUEST CHANGES** (2 Mayor, hanya tes); [[Ajax-261113-02]] **REQUEST CHANGES** (Mayor 1 assertion status belum ada; Mayor 2 mutasi guard `mounted` jalur sukses lolos); [[Ajax-261113-03]] menutup Mayor 1 (komit `043180dedf`, 4 assertion badge "Diterima", mutasi bypass-versi membuat 3 tes gagal).
+- Angka akhir tip D: **273 lulus, 4 dilewati, 0 gagal**; `analyze` selisih 0 terhadap `develop`.
+- **Nomor PR: tidak diketahui**; **metode merge: tidak diketahui** (squash / merge commit tidak diisi Daniel).
+- **Batasan yang diketahui (Mayor 2 — DITERIMA Daniel, bukan "teruji"):** menghapus guard `mounted` **di jalur sukses saja** tidak mengubah perilaku yang teramati, karena error `setState` setelah dispose ditelan `catch` yang masih berguard; dinilai **tidak bisa dibedakan oleh tes**. Dicatat apa adanya.
+
+### Catatan jujur
+
+- Setelah [[Ajax-261113-03]] **TIDAK ada review independen lagi**; Daniel merge berdasarkan laporan itu + pengecekan PR di Gitea.
+
+### Belum dilakukan / tidak diklaim
+
+- **Uji manual di HP** (isi nomor di Edit Profil kedua akun, buat claim, accept, cek tombol WhatsApp di kedua sisi, daftar/detail laporan, pencarian, Claim Saya, chat, toggle di Pengaturan).
+- **Deploy backend ke Dokploy** — auto-deploy dimatikan sejak 2026-11-08, server live **belum** membawa Tugas C; strategi manual vs lacak `main` **belum diputuskan**.
+- **Pembersihan branch** — belum ada branch yang dihapus.
 
 ---
 
 ## Koordinasi dengan Brief Chat (2026-11-12)
 
-> Keputusan user 2026-11-12 (Dominic-261112-05). **Status tugas B/C/D di plan ini TIDAK diubah.**
+> Keputusan user 2026-11-12 (Dominic-261112-05). Status tugas B/C/D diperbarui 2026-11-13 (lihat §Status Merge).
 
 - Chat dan WhatsApp dikerjakan oleh **orang berbeda, paralel**.
-- **Urutan:** **Tugas D** (`feature/claim/whatsapp-contact-button`) diselesaikan **dan di-merge dulu** sebelum Tugas chat Flutter yang menyentuh `chat_screen.dart`.
+- **Urutan:** **Tugas D** (`feature/claim/whatsapp-contact-button`) diselesaikan **dan di-merge dulu** sebelum Tugas chat Flutter yang menyentuh `chat_screen.dart`. **D SUDAH MERGE 2026-11-13 → prasyarat terpenuhi.**
 - **Alasan:** perbaikan review D kemungkinan menyentuh `chat_screen.dart` dan `claim_actions.dart`; `lib/models/claim.dart` dan `api_client.dart` dipakai kedua pihak.
 - Detail urutan tugas chat: [[Brief Pengembangan Real-Time Chat - Lost&Found]] §6 (paragraf koordinasi) dan [[Real-Time Chat - Lost&Found]] §Open Items — Status 2026-11-12.
-- **Status review dari laporan saja:** (C) [[GPT-261109-01]] **APPROVE DENGAN CATATAN**; (D) [[GPT-261110-02]] **REQUEST CHANGES**. **Status merge C/D tidak diketahui — jangan diklaim.**
+- ~~**Status review dari laporan saja:** (C) [[GPT-261109-01]] **APPROVE DENGAN CATATAN**; (D) [[GPT-261110-02]] **REQUEST CHANGES**. **Status merge C/D tidak diketahui — jangan diklaim.**~~ **Tidak berlaku sejak 2026-11-13: C dan D sudah merge `develop`; D juga lolos review lanjutan ([[Ajax-261113-03]]) dengan sisa batasan Mayor 2.**
 
 ---
 

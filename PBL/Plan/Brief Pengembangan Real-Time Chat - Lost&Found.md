@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-12
-summary: Brief PM berisi delapan tugas pengembangan chat untuk tim; tanpa tabel/dependensi baru
+updated: 2026-11-13
+summary: Brief PM berisi delapan tugas pengembangan chat untuk tim; tanpa tabel/dependensi baru; prasyarat WhatsApp D sudah merge 2026-11-13
 ---
 
 # Brief Pengembangan Real-Time Chat - Lost&Found
@@ -230,6 +230,8 @@ Aturan:
 Setiap tugas dibuat PR kecil sendiri. Sebelum mulai tugas berikutnya, tugas sebelumnya harus sudah merge dan di-review Daniel.
 
 Koordinasi dengan pekerjaan WhatsApp (keputusan Daniel, 12 November 2026): tugas WhatsApp D (mobile, branch feature/claim/whatsapp-contact-button) dikerjakan orang lain secara paralel. Tugas 1, 3, dan 8 boleh dimulai kapan saja. Tugas 2, 4, 5, 6, dan 7 baru dimulai setelah tugas D ter-merge ke develop, karena D dan Tugas-tugas itu bisa mengubah file yang sama (chat_screen.dart, claim_actions.dart, lib/models/claim.dart, api_client.dart). Sebelum mulai Tugas 2, tarik develop terbaru dan baca ulang file-file itu. Jangan menyelesaikan konflik dengan rebase; bila ragu, berhenti dan tanya Daniel.
+
+Pembaruan 13 November 2026 (Dominic-261113-04): Tugas WhatsApp D sudah merge ke develop, jadi prasyarat di atas terpenuhi dan Tugas 2, 4, 5, 6, dan 7 sudah boleh dimulai, tetap berurutan seperti daftar di atas. Belum ada tugas chat yang dikerjakan. Client Events Pusher masih belum diaktifkan (prasyarat Tugas 7). Tugas 1, 3, dan 8 tidak berubah.
 
 ## 7. Definisi selesai (setiap tugas)
 
