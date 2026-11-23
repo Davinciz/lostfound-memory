@@ -3,18 +3,23 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-11-13
-summary: Plan isi & tampilkan nomor WhatsApp user SSO; endpoint + tugas B/C/D sudah merge develop (2026-11-13), uji HP & deploy backend belum
+updated: 2026-11-23
+summary: Plan isi & tampilkan nomor WhatsApp user SSO; diterima sementara 2026-11-23 usai uji HP 1 akun berhasil; Bob-261123-02 & Ajax-261123-03 push ke branch perbaikan (merge develop belum dikonfirmasi); uji 2 akun & deploy backend belum
 ---
 
 # Nomor WhatsApp Pengguna - Lost&Found
 
 **Tanggal:** 2026-10-18
 **Project:** [[PBL]] Lost&Found
-**Status:** In Progress
+**Status:** Done (diterima sementara — pengisian nomor di HP berhasil; uji 2 akun detail claim & konfirmasi deploy Dokploy belum)
 **Priority:** Medium
 
-> [!info] Status 2026-11-13 — merge selesai, belum live
+> [!info] Status 2026-11-23 — Done (diterima sementara)
+> **Keputusan pemilik (Daniel, 2026-11-23):** pengisian nomor WhatsApp di HP berhasil diuji pada **1 akun**, dan fitur diterima sebagai **`Done (diterima sementara)`** tanpa menjalankan uji manual 2 akun terlebih dahulu.
+> **Tindak lanjut teknis selesai di branch terpisah (push ke `origin`, merge ke `develop` belum dikonfirmasi):** [[Bob-261123-02-fix-test-admin-counterpart-whatsapp]] (`test/claim/counterpart-whatsapp-admin-fixture`, `f4096cd`) dan [[Ajax-261123-03-fix-whatsapp-mounted-guard]] (`test/claim/whatsapp-mounted-guard`, `02fc358`).
+> **Belum dilakukan / belum dikonfirmasi:** uji manual 2 akun di HP (`ClaimDetailScreen` tombol WhatsApp saat `accepted`), konfirmasi merge kedua branch perbaikan hari ini ke `develop`, dan konfirmasi deploy ulang backend Dokploy setelah 2026-11-08. Plan tetap berstatus frontmatter `active` (tidak diarsipkan) sampai penutupan akhir dikonfirmasi pemilik.
+
+> [!info] Status 2026-11-13 — merge selesai, belum live (riwayat)
 > **Tugas B, C, dan D SUDAH MERGE ke `develop`** (sumber: konfirmasi Daniel 2026-11-13 + laporan review). Rincian per tugas ada di §"Status Merge B/C/D (2026-11-13)".
 > **Status fitur tetap BELUM selesai / belum live:** uji manual di HP **belum** dilakukan dan backend **belum di-deploy** (auto-deploy Dokploy dimatikan sejak 2026-11-08). Plan **tidak ditandai selesai**.
 
@@ -115,9 +120,19 @@ Memberi user cara **mengisi** nomor WhatsApp-nya sendiri (sekarang tidak ada sam
 
 ### Belum dilakukan / tidak diklaim
 
-- **Uji manual di HP** (isi nomor di Edit Profil kedua akun, buat claim, accept, cek tombol WhatsApp di kedua sisi, daftar/detail laporan, pencarian, Claim Saya, chat, toggle di Pengaturan).
-- **Deploy backend ke Dokploy** — auto-deploy dimatikan sejak 2026-11-08, server live **belum** membawa Tugas C; strategi manual vs lacak `main` **belum diputuskan**.
+- **Uji manual 2 akun di HP** (buat claim antara 2 akun berbeda sampai `accepted`, lalu cek dan tap tombol "Hubungi via WhatsApp" di `ClaimDetailScreen` kedua akun, serta cek daftar/detail laporan, pencarian, Claim Saya, chat, toggle Pengaturan) — **belum dilakukan**.
+- **Deploy backend ke Dokploy** — auto-deploy dimatikan sejak 2026-11-08, konfirmasi deploy ulang backend setelah 2026-11-08 belum ada; strategi manual vs lacak `main` **belum diputuskan**.
+- **Konfirmasi merge kedua branch perbaikan 2026-11-23 (`Bob-261123-02` & `Ajax-261123-03`) ke `develop`** — belum dikonfirmasi user.
 - **Pembersihan branch** — belum ada branch yang dihapus.
+
+### Pembaruan 2026-11-23 — PR #33 & #27, Perbaikan Bob-02 / Ajax-03, & Penerimaan Sementara
+
+- **(a) Identifikasi nomor PR dari riwayat Git `origin/develop`** (sumber: [[Bob-261123-01-persiapan-rilis-v0-2-0]] & [[Ajax-261123-02-persiapan-rilis-v0-2-0]]):
+  - Tugas C (`feature/claim/counterpart-whatsapp`) tercatat di riwayat Gitea sebagai **PR #33**.
+  - Tugas D (`feature/claim/whatsapp-contact-button`) tercatat di riwayat Git `origin/develop` sebagai **PR #27** (`d17637c4821ac44beedbde2097f0ee33015aabde`).
+- **(b) Penutupan catatan Minor Tugas C (`Bob-261123-02`):** laporan [[Bob-261123-02-fix-test-admin-counterpart-whatsapp]], branch `test/claim/counterpart-whatsapp-admin-fixture`, commit `f4096cd9301b4ca57a59de43a8c8c19b3bb89c55` (`test(claim): ensure admin WhatsApp privacy assertions have fixtures`), sudah di-push ke `origin`. `tests/Feature/ClaimCounterpartWhatsAppTest.php` kini menyertakan fixture claim `pending` dan `LostReport` (milik user dengan nomor WhatsApp valid & `wa_visible=true`), meng-assert ID fixture muncul di `pending_claims_list.0`, `lost_reports.data.0`, serta daftar claim admin (`accepted` dan `pending`) sebelum memeriksa absennya `counterpart_whatsapp` dan 5 field kontak (`whatsapp`, `nim`, `email`, `blocked`, `blocked_reason`). Mutasi `AdminController::dashboard` dan `AdminController::reports` masing-masing gagal sesuai harapan (exit 1, baris 184 & 193) lalu di-reset bersih. `ClaimCounterpartWhatsAppTest` naik dari 9 tes / 96 assertion menjadi **9 tes / 157 assertion** (lulus); suite penuh **412 lulus / 1.940 assertion**; Pint & `git diff --check` bersih. **Status merge ke `develop`: belum dikonfirmasi user (jangan diklaim sudah merge).**
+- **(c) Penutupan batasan Mayor 2 Tugas D (`Ajax-261123-03`):** laporan [[Ajax-261123-03-fix-whatsapp-mounted-guard]], branch `test/claim/whatsapp-mounted-guard`, commit `02fc358662e4bded5da5a7ddc1aedd12512711b9` (`fix(claim): isolate reload success mounted guard from network catch`), sudah di-push ke `origin`. `lib/screens/claim/claim_detail_screen.dart` membatasi blok `try` hanya pada `await _apiClient.getClaim(claim.id)`, sedangkan guard `mounted` + versi request (`_claimRequestVersion`) dan `setState` jalur sukses dijalankan di luar `try/catch` sehingga error `setState()` setelah `dispose()` tidak lagi tertelan `catch`. `test/claim_whatsapp_test.dart` diperkuat untuk menguji skenario dispose saat GET tertahan lalu respons sukses dilepas. Mutasi sempit Mayor 2 (menghapus hanya `!mounted` dari guard sukses `_reloadClaim`) kini **terdeteksi GAGAL (exit 1, 11 lulus / 1 gagal)** dengan `setState() called after dispose()`; keenam mutasi lain (`a`, `b`, `c`, `d1`, `d2`, `d3`) tetap gagal (exit 1). `flutter test test/claim_whatsapp_test.dart` **12 lulus**; suite penuh **273 lulus / 4 skip / 0 gagal**; `flutter analyze --no-pub` **0 error**, 4 warning + 2 info lama (selisih 0). **Status merge ke `develop`: belum dikonfirmasi user (jangan diklaim sudah merge).**
+- **(d) Uji HP & keputusan penerimaan sementara (Daniel, 2026-11-23):** Daniel sudah melakukan build aplikasi ke HP dan mengonfirmasi **pengisian nomor WhatsApp di HP sudah berhasil (1 akun)**, lalu memilih menerima fitur Nomor WhatsApp Pengguna sebagai **`Done (diterima sementara)`** tanpa menjalankan uji manual 2 akun terlebih dahulu.
 
 ---
 
