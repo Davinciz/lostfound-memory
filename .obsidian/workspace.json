@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "PBL/_Konteks.md",
+                "file": "_Base/Interview_Script (1).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "_Konteks"
+              "title": "Interview_Script (1)"
             }
           }
         ]
@@ -228,8 +228,9 @@
   },
   "active": "e04b699d74ce6242",
   "lastOpenFiles": [
-    "PBL/IDEA.md",
     "PBL/_Konteks.md",
+    "_Base/Interview_Script (1).md",
+    "PBL/IDEA.md",
     "PBL/Inbox/reports/Dominic-261104-07-sinkron-dokumentasi-fcm.md",
     "Untitled Kanban 1.md",
     "Untitled Kanban.md",
@@ -264,7 +265,6 @@
     "PBL/Plan/Archive",
     "PBL/DailyChanges/2026-10-18.md",
     "PBL/Plan/Real-Time Chat - Lost&Found.md",
-    "PBL/Plan/Perbaikan Flow Claim dan Form Laporan - Lost&Found.md",
     "_Base/Index.base",
     "Untitled 1.canvas",
     "Untitled.canvas",
