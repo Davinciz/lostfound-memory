@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-13
-summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend & kartu konteks merge develop; 8 tugas brief dijadwalkan; 4 asumsi brief terkonfirmasi; prasyarat WhatsApp D SUDAH MERGE 2026-11-13 → Tugas 2/4/5/6/7 terbuka; Client Events Pusher diputuskan diaktifkan (belum)
+updated: 2026-11-26
+summary: Real-time chat Pusher (MVP) → Soketi; seluruh 8 tugas brief + PR perbaikan pasca-merge (#38 backend, #36 mobile) SUDAH MERGE ke origin/develop 2026-11-26 (belum main pasca-v0.2.0); Client Events Pusher, uji 2 HP, & deploy Dokploy belum diklaim
 ---
 
 # Real-Time Chat - Lost&Found
@@ -24,7 +24,7 @@ summary: Real-time chat Pusher (MVP) → Soketi; Fase 1 backend & kartu konteks 
 > - **Kartu konteks barang di `ChatScreen` — SELESAI, sudah merge ke `develop` (mobile).** Hash commit / nomor PR **tidak diketahui** — jangan dikarang. Pernyataan lama "sisi mobile belum merge" **tidak berlaku**.
 > - **Pesan baru langsung masuk tanpa refresh — terkonfirmasi user.** Hanya itu yang diklaim. Skenario lain (**reconnect saat app di-resume/dari background**, **dua HP fisik**) **bukan** bagian klaim ini.
 > - **Chat read-only sesuai status claim (`rejected`/`withdrawn`, **bukan** `returned`) + user terblokir tidak bisa kirim pesan — ~~BELUM diterapkan, masuk backlog, belum dijadwalkan~~ → DIJADWALKAN 2026-11-12** sebagai **Tugas 1 (backend) + Tugas 2 (Flutter)** di [[Brief Pengembangan Real-Time Chat - Lost&Found]]; **belum dikerjakan**.
-> - **Delapan tugas lanjutan (read-only, read receipt, status kirim, quick reply, typing indicator, badge unread) — DIJADWALKAN, belum dikerjakan**, lihat §"Brief 8 Tugas (2026-11-12)".
+> - **Delapan tugas lanjutan (read-only, read receipt, status kirim, quick reply, typing indicator, badge unread) — ~~DIJADWALKAN, belum dikerjakan~~ → SUDAH MERGE ke `origin/develop` (2026-11-26, `Dominic-261126-01`),** lihat §"Brief 8 Tugas (2026-11-12)" dan §Fase 5. **Belum diklaim:** masuk `origin/main` (masih di `v0.2.0`), aktivasi Client Events Pusher, uji 2 akun/2 HP, & deploy Dokploy.
 > - **Banner tips verifikasi untuk penemu — DIBATALKAN** atas keputusan user 2026-11-12 (tidak terlalu perlu).
 
 > [!warning] Akan berubah (revisi 2026-10-19, disetujui, belum diimplementasi)
@@ -449,9 +449,11 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 9. **Tes manual lanjutan** — dedup pengirim, mark-read, penolakan non-peserta (403), reconnect saat app dibuka kembali, dan tes dua perangkat fisik (baru 1 HP 2 akun).
 10. **Kartu konteks di ruang chat** — ~~usul~~ **SELESAI 2026-11-12**: dikerjakan sebagai `report_context` di respons `GET`/`POST /api/conversations` + kartu `chat_report_reference.dart`; **sudah merge `develop` (mobile)**, dikonfirmasi user. Hash/PR tidak diketahui.
 
-## Open Items — Status 2026-11-12 (keputusan user; kesemuanya BELUM dikerjakan)
+## Open Items — Status 2026-11-12 (~~keputusan user; kesemuanya BELUM dikerjakan~~ → diperbarui 2026-11-26: 8 tugas + PR fix SUDAH MERGE `origin/develop`)
 
-> Sumber: konfirmasi user 2026-11-12. Tidak ada yang ditandai selesai. **Tetap 7 tabel** — semua usulan di bawah tanpa tabel/kolom baru.
+> Sumber: konfirmasi user 2026-11-12, diperbarui 2026-11-26 (`Dominic-261126-01`). **Tetap 7 tabel** — semua fitur di bawah tanpa tabel/kolom baru. Plan tetap `active` (tidak ditutup/diarsipkan tanpa konfirmasi pemilik).
+>
+> **Status 2026-11-26 (`Dominic-261126-01`):** seluruh 8 tugas brief + PR perbaikan pasca-merge (**PR #38** backend `a75f697`, **PR #36** mobile `ffca6ba`) **SUDAH MERGE ke `origin/develop`** (belum ke `origin/main` setelah `v0.2.0`). **Belum diklaim:** aktivasi Client Events Pusher (tugas manual Daniel), uji manual 2 akun / 2 HP, deploy ulang Dokploy, dan merge `develop -> main`.
 >
 > **Status 2026-11-13 (Dominic-261113-04):** prasyarat WhatsApp **D sudah merge `develop`** → **Tugas 2, 4, 5, 6, 7 sekarang terbuka** (tetap berurutan; belum dikerjakan). Tugas 1 dan 3 (backend) serta 8 tetap boleh jalan. **Client Events Pusher masih BELUM aktif** (prasyarat Tugas 7).
 
@@ -477,20 +479,20 @@ Teks lama B/E/F di bawah dipertahankan sebagai riwayat, TIDAK BERLAKU. Acuan bar
 
 ---
 
-## Brief 8 Tugas (2026-11-12) — DIJADWALKAN, BELUM dikerjakan
+## Brief 8 Tugas (2026-11-12) — ~~DIJADWALKAN, BELUM dikerjakan~~ → SUDAH MERGE `origin/develop` (2026-11-26)
 
-> **Sumber tunggal isi tugas:** [[Brief Pengembangan Real-Time Chat - Lost&Found]] (brief PM, disimpan user di `PBL/Plan/`). Plan ini hanya menautkannya; **jangan menduplikasi detail tugas di sini.** **Dikerjakan oleh tim user, bukan lewat bot Bob/Ajax.** Tidak ada yang berstatus selesai.
+> **Sumber tunggal isi tugas:** [[Brief Pengembangan Real-Time Chat - Lost&Found]] (brief PM, disimpan user di `PBL/Plan/`). Plan ini hanya menautkannya; **jangan menduplikasi detail tugas di sini.** **Pembaruan 2026-11-26 (`Dominic-261126-01`):** seluruh 8 tugas + PR integrasi/perbaikan pasca-merge telah **MERGE ke `origin/develop`** (backend `a75f697`: 429 tes / 2.057 assertion, 73 route / 38 API; mobile `ffca6ba`: 380 tes lulus / 4 skip / 0 gagal, `analyze` 0 error).
 
-| # | Tugas | Repo / branch | Prasyarat |
+| # | Tugas | Repo / branch / PR merge `develop` | Prasyarat / Catatan |
 |---|---|---|---|
-| 1 | Guard chat read-only — **`rejected`/`withdrawn` saja; `returned` tetap terbuka** (backend, HTTP 422 + `reason`, field `can_send`/`readonly_reason`) | backend `feature/chat/readonly-guard` | 4 asumsi §10 brief **sudah dikonfirmasi user 2026-11-12** → boleh mulai |
-| 2 | Tampilan chat read-only | mobile `feature/chat/readonly-ui` | Tugas 1 merge |
-| 3 | Read receipt: event `MessageRead` + `PATCH /api/conversations/{id}/read` | backend `feature/chat/read-receipt` | Tugas 1 merge |
-| 4 | Read receipt realtime | mobile `feature/chat/read-receipt-ui` | Tugas 2 + 3 merge |
-| 5 | Status kirim + optimistic UI | mobile `feature/chat/send-status` | Tugas 4 merge |
-| 6 | Quick reply verifikasi | mobile `feature/chat/quick-reply` | Tugas 5 merge |
-| 7 | Typing indicator (client event) | mobile `feature/chat/typing-indicator` | Tugas 6 merge + **Client Events Pusher aktif (manual user, belum)** |
-| 8 | Badge total unread di tab Chat | mobile `feature/chat/unread-badge` | independen |
+| 1 | Guard chat read-only — **`rejected`/`withdrawn` saja; `returned` tetap terbuka** (backend, HTTP 422 + `reason`, field `can_send`/`readonly_reason`) | backend `feature/chat/readonly-guard` → **PR #34 (`a3be6bc`, masuk `v0.2.0`)** | 4 asumsi §10 brief dikonfirmasi 2026-11-12; **SUDAH MERGE** |
+| 2 | Tampilan chat read-only | mobile `feature/chat/readonly-ui` (`720414d`) → **PR #30 (`d214766`)** | **SUDAH MERGE `develop`** (Merge Commit) |
+| 3 | Read receipt: event `MessageRead` + `PATCH /api/conversations/{id}/read` | backend `feature/chat/read-receipt` (`e95826c`) → **PR #35 (`7a1f31e`)** + fix atomik/best-effort **PR #38 (`a75f697` / `b7f50cb`)** | **SUDAH MERGE `develop`** |
+| 4 | Read receipt realtime | mobile `feature/chat/read-receipt-ui` (`2b33711` + `4108a07`) → **PR #31 (`95ef89f`)** + guard lifecycle/store **PR #36 (`ffca6ba`)** | **SUDAH MERGE `develop`** |
+| 5 | Status kirim + optimistic UI | mobile `feature/chat/send-status` (`a9a1e43` + `d37ac4f` + `346c3fc`) → **PR #32 (`972a6a4`)** + guard retry **PR #36 (`ffca6ba`)** | **SUDAH MERGE `develop`** |
+| 6 | Quick reply verifikasi | mobile `feature/chat/quick-reply` (`cbbc13f`) → **PR #33 (`9101a15`)** + wiring `ChatScreen` **PR #36 (`ffca6ba`)** | **SUDAH MERGE `develop`** |
+| 7 | Typing indicator (client event `client-typing`) | mobile `feature/chat/typing-indicator` (`9247fae`) → **PR #34 (`610b455`)** + wiring `ChatService`/`ChatScreen` **PR #36 (`ffca6ba`)** | **SUDAH MERGE `develop`** (fail-silent); **Client Events Pusher belum dikonfirmasi aktif** |
+| 8 | Badge total unread di tab Chat | mobile `feature/chat/unread-badge` (`c098a8c`) → **PR #35 (`c8999e5`)** + refresh pasca-PATCH **PR #36 (`ffca6ba`)** | **SUDAH MERGE `develop`** |
 
 **Batasan (dari brief, ringkas):** tanpa tabel/kolom/migration/dependensi baru — **tetap 7 tabel**; tanpa field user baru di payload; error berbahasa Indonesia; satu tugas = satu branch = satu PR squash ke `develop`.
 
@@ -560,7 +562,7 @@ Teks lama B/E/F di bawah dipertahankan sebagai riwayat, TIDAK BERLAKU. Acuan bar
 - [ ] **Fase 3 — Integrasi:** auto-create conversation by `claim_id` di `ClaimController::store()`; redirect ke chat setelah claim; FCM deep link → ChatScreen; ~~banner tips verifikasi~~ (**DIBATALKAN 2026-11-12** — user: tidak terlalu perlu; teks lama dipertahankan sebagai riwayat); test dua HP.
 	- [x] **Kartu konteks di ruang chat — SELESAI & merge `develop` (mobile), dikonfirmasi user 2026-11-12.** Backend field `report_context`; Flutter kartu `chat_report_reference.dart`. Hash/PR tidak diketahui. Tombol aksi di kartu tetap menunggu endpoint [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].
 - [ ] **Fase 4 — Evaluasi:** pantau usage Pusher free tier → tentukan timing migrasi Soketi.
-- [ ] **Fase 5 — Delapan tugas brief (2026-11-12) — DIJADWALKAN, BELUM dikerjakan.** Detail & langkah ada di [[Brief Pengembangan Real-Time Chat - Lost&Found]]; ringkasan + urutan ada di §"Brief 8 Tugas (2026-11-12)". Tugas 1 (read-only backend) + 2 (read-only Flutter) menggantikan open item (4); Tugas 3/4 menggantikan open item (3); Tugas 5/6/7/8 adalah usulan E + F yang kini dijadwalkan. **Prasyarat:** ~~konfirmasi 4 asumsi §10 brief~~ **sudah dikonfirmasi user 2026-11-12** → **Tugas 1 boleh dimulai, belum dikerjakan**. **Urutan 2026-11-12:** Tugas 1/3/8 boleh mulai sekarang; Tugas 2/4/5/6/7 menunggu WhatsApp D merge. Client Events Pusher **diputuskan diaktifkan tapi belum dilakukan** (prasyarat Tugas 7). **Dikerjakan tim user, bukan bot.**
+- [ ] **Fase 5 — Delapan tugas brief (2026-11-12) — SUDAH MERGE ke `origin/develop` (2026-11-26, `Dominic-261126-01`).** Detail & langkah ada di [[Brief Pengembangan Real-Time Chat - Lost&Found]]; ringkasan & PR ada di §"Brief 8 Tugas (2026-11-12)". Seluruh 8 tugas beserta PR perbaikan pasca-merge telah merge ke `origin/develop`: **backend (`a75f697`)** Tugas 1 PR #34 (`a3be6bc`), Tugas 3 PR #35 (`7a1f31e`), fix atomik/best-effort PR #38 (`a75f697` / `b7f50cb`, 429 tes / 2.057 assertion, 73 route / 38 API); **mobile (`ffca6ba`)** PR #30–#35 (Tugas 2/4/5/6/7/8) + PR #36 integrasi pasca-merge (`e04e3f1`, 380 tes lulus / 4 skip / 0 gagal, `analyze` 0 error; guard WhatsApp PR #28 utuh 12 tes lulus). **Belum selesai/belum diklaim (plan tetap `active`):** aktivasi Client Events Pusher di dashboard Pusher, uji manual 2 akun / 2 HP, deploy ulang Dokploy, dan merge `develop -> main` pasca-`v0.2.0`.
 
 > [!note] Usulan alur integrasi (disetujui user 2026-10-18)
 > Auto-create conversation di `ClaimController::store()` cukup mendukung `claim_id` dulu; penyesuaian peran pengaju/penerima (claim dua arah) dikerjakan di [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]].

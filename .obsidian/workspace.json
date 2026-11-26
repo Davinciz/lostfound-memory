@@ -20,8 +20,33 @@
               "icon": "lucide-file",
               "title": "Interview_Script (1)"
             }
+          },
+          {
+            "id": "b551337fda226d84",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "_Base/Interview_Script (1).md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Interview_Script (1)"
+            }
+          },
+          {
+            "id": "1cc2e295d0e416ef",
+            "type": "leaf",
+            "state": {
+              "type": "rho-network",
+              "state": {},
+              "icon": "globe",
+              "title": "Rho Network"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -92,6 +117,7 @@
       {
         "id": "25fd05019b8a10cf",
         "type": "tabs",
+        "dimension": 55.213903743315505,
         "children": [
           {
             "id": "8790e14afe18ceaf",
@@ -179,6 +205,7 @@
       {
         "id": "c4a69a0de2802d51",
         "type": "tabs",
+        "dimension": 44.786096256684495,
         "children": [
           {
             "id": "db4086e9b05ef42c",
@@ -196,7 +223,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "PBL/Documents/Lost&Found Progress.md",
+                "file": "_Base/Interview_Script (1).md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
@@ -223,13 +250,15 @@
       "bases:Create new base": true,
       "obsidian-kanban:Create new board": false,
       "graph:Open graph view": false,
-      "workspaces:Manage workspace layouts": false
+      "workspaces:Manage workspace layouts": false,
+      "rho-network:Open Rho Network": false
     }
   },
-  "active": "e04b699d74ce6242",
+  "active": "1cc2e295d0e416ef",
   "lastOpenFiles": [
-    "PBL/_Konteks.md",
     "_Base/Interview_Script (1).md",
+    "PBL/Attachments/lostfound-icon-adaptive-foreground.svg",
+    "PBL/_Konteks.md",
     "PBL/IDEA.md",
     "PBL/Inbox/reports/Dominic-261104-07-sinkron-dokumentasi-fcm.md",
     "Untitled Kanban 1.md",
@@ -264,7 +293,6 @@
     "PBL/Plan/Adopsi GitFlow-lite & Migrasi ke Gitea - Lost&Found.md",
     "PBL/Plan/Archive",
     "PBL/DailyChanges/2026-10-18.md",
-    "PBL/Plan/Real-Time Chat - Lost&Found.md",
     "_Base/Index.base",
     "Untitled 1.canvas",
     "Untitled.canvas",

@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-13
-summary: Brief PM berisi delapan tugas pengembangan chat untuk tim; tanpa tabel/dependensi baru; prasyarat WhatsApp D sudah merge 2026-11-13
+updated: 2026-11-26
+summary: Brief PM berisi delapan tugas pengembangan chat untuk tim; tanpa tabel/dependensi baru; seluruh 8 tugas & PR integrasi pasca-merge sudah merge ke origin/develop 2026-11-26 (belum main/Client Events/uji 2 HP)
 ---
 
 # Brief Pengembangan Real-Time Chat - Lost&Found
@@ -232,6 +232,11 @@ Setiap tugas dibuat PR kecil sendiri. Sebelum mulai tugas berikutnya, tugas sebe
 Koordinasi dengan pekerjaan WhatsApp (keputusan Daniel, 12 November 2026): tugas WhatsApp D (mobile, branch feature/claim/whatsapp-contact-button) dikerjakan orang lain secara paralel. Tugas 1, 3, dan 8 boleh dimulai kapan saja. Tugas 2, 4, 5, 6, dan 7 baru dimulai setelah tugas D ter-merge ke develop, karena D dan Tugas-tugas itu bisa mengubah file yang sama (chat_screen.dart, claim_actions.dart, lib/models/claim.dart, api_client.dart). Sebelum mulai Tugas 2, tarik develop terbaru dan baca ulang file-file itu. Jangan menyelesaikan konflik dengan rebase; bila ragu, berhenti dan tanya Daniel.
 
 Pembaruan 13 November 2026 (Dominic-261113-04): Tugas WhatsApp D sudah merge ke develop, jadi prasyarat di atas terpenuhi dan Tugas 2, 4, 5, 6, dan 7 sudah boleh dimulai, tetap berurutan seperti daftar di atas. Belum ada tugas chat yang dikerjakan. Client Events Pusher masih belum diaktifkan (prasyarat Tugas 7). Tugas 1, 3, dan 8 tidak berubah.
+
+Pembaruan 26 November 2026 (Dominic-261126-01): Seluruh 8 tugas pada brief ini beserta PR perbaikan integrasi pasca-merge telah selesai di kode dan **SUDAH MERGE ke `origin/develop`** di kedua repo (belum di-merge ke `origin/main` setelah `v0.2.0`):
+- **Backend (`lostfound-backend`, tip `origin/develop` = `a75f697`):** Tugas 1 sudah masuk sejak PR #34 (`a3be6bc`, ikut `v0.2.0`); Tugas 3 (`feature/chat/read-receipt`, `e95826c` oleh `anisaaulia7511`) merge via **PR #35** (`7a1f31e`); perbaikan atomisitas mark-read & best-effort broadcast (`Bob-261126-03`, `fix/chat/atomic-mark-read`, `b7f50cb`) merge via **PR #38** (`a75f697`). Baseline: PHPUnit **429 tes lulus / 2.057 assertion / 0 gagal** (`ConversationReadReceiptTest` 17 tes / 117 assertion), **73 route total (38 API)**, Pint & `git diff --check` lulus, tetap **7 tabel**.
+- **Mobile (`lostfound-mobile`, tip `origin/develop` = `ffca6ba`):** seluruh 6 PR tim merge via Merge Commit — **PR #30** (`d214766`, Tugas 2 `720414d`), **PR #31** (`95ef89f`, Tugas 4 `2b33711` + resolusi konflik `Ajax-261126-02` `4108a07`), **PR #32** (`972a6a4`, Tugas 5 `a9a1e43` + resolusi konflik/fix 422 `Ajax-261126-03` `d37ac4f`+`346c3fc`), **PR #33** (`9101a15`, Tugas 6 `cbbc13f`), **PR #34** (`610b455`, Tugas 7 `9247fae`), **PR #35** (`c8999e5`, Tugas 8 `c098a8c`) — ditambah **PR #36** (`ffca6ba`, integrasi pasca-merge `Ajax-261126-05` `fix/chat/post-merge-integration` `e04e3f1`: wiring `QuickReplyChips` & `TypingController` `client-typing`, lifecycle `subscribe` & debounce mark-read, proteksi `readAt`, guard `Coba lagi` saat read-only, refresh `UnreadBadgeNotifier` pasca-PATCH; guard WhatsApp PR #28 tetap utuh 12 tes lulus). Baseline: `flutter test` **380 tes lulus / 4 skip / 0 gagal**, `flutter analyze` **0 error** (4 warning + 2 info lama di file test baseline), tanpa dependensi baru.
+- **Belum diklaim:** aktivasi Client Events Pusher di dashboard Pusher, uji manual 2 akun / 2 perangkat HP, deploy ulang Dokploy ke `develop` terbaru, dan merge `develop -> main`.
 
 ## 7. Definisi selesai (setiap tugas)
 
