@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-26
-summary: Brief PM berisi delapan tugas pengembangan chat untuk tim; tanpa tabel/dependensi baru; seluruh 8 tugas & PR integrasi pasca-merge sudah merge ke origin/develop 2026-11-26 (belum main/Client Events/uji 2 HP)
+updated: 2026-11-27
+summary: Brief PM berisi delapan tugas pengembangan chat untuk tim (seluruh 8 tugas & PR perbaikan sudah merge ke origin/develop 2026-11-26); kirim foto di chat dijadwalkan terpisah di Kirim Foto di Chat - Lost&Found
 ---
 
 # Brief Pengembangan Real-Time Chat - Lost&Found
@@ -251,7 +251,7 @@ Setelah selesai, kirim laporan ke Daniel yang berisi: nama branch dan hash commi
 
 ## 9. Di luar lingkup (jangan dikerjakan)
 
-- Kirim foto atau lampiran di chat, presence/status online, edit atau hapus satu pesan, pesan sistem otomatis, lapor/blokir user dari chat.
+- ~~Kirim foto atau lampiran di chat~~ *(2026-11-27, Dominic-261127-01: dijadwalkan terpisah, lihat [[Kirim Foto di Chat - Lost&Found]])*, presence/status online, edit atau hapus satu pesan, pesan sistem otomatis, lapor/blokir user dari chat.
 - Banner tips verifikasi (dibatalkan).
 - Throttle kirim pesan (dicatat di dokumen keamanan, dikerjakan nanti).
 - Migrasi Pusher ke Soketi, perubahan skema, tabel atau dependensi baru.

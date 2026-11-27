@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-26
-summary: Real-time chat Pusher (MVP) → Soketi; seluruh 8 tugas brief + PR perbaikan pasca-merge (#38 backend, #36 mobile) SUDAH MERGE ke origin/develop 2026-11-26 (belum main pasca-v0.2.0); Client Events Pusher, uji 2 HP, & deploy Dokploy belum diklaim
+updated: 2026-11-27
+summary: Real-time chat Pusher (MVP) → Soketi; seluruh 8 tugas brief + PR perbaikan (#38 backend, #36 mobile) SUDAH MERGE ke origin/develop 2026-11-26; fitur kirim foto di chat dijadwalkan terpisah (2026-11-27)
 ---
 
 # Real-Time Chat - Lost&Found
@@ -421,7 +421,7 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 
 ## Open Questions
 
-1. **Attachment support?** — Kirim foto dalam chat? (Phase 2, need file upload flow)
+1. **Attachment support?** — ~~Kirim foto dalam chat? (Phase 2, need file upload flow)~~ → **DIJADWALKAN 2026-11-27 sebagai plan terpisah:** lihat [[Kirim Foto di Chat - Lost&Found]].
 2. **Online status?** — Presence channel untuk "User sedang online"? (Phase 2, Pusher presence channel)
 3. **Delete message?** — Soft delete atau hard delete? (Phase 2)
 4. **Chat history retention?** — Hapus message older than 30 hari? (Discuss dengan stakeholder)
@@ -648,6 +648,7 @@ Merujuk [[TechnicalReference]] §15.3:
 - **PRD:** [[PRD]]
 - **Technical Reference:** [[TechnicalReference]] — §15.3
 - **Brief 8 tugas chat (2026-11-12):** [[Brief Pengembangan Real-Time Chat - Lost&Found]] — sumber tunggal isi Tugas 1–8
+- **Kirim Foto di Chat:** [[Kirim Foto di Chat - Lost&Found]] (plan terpisah, dijadwalkan 2026-11-27)
 - **Claim Dua Arah:** [[Claim Dua Arah dan Serah Terima oleh Pengguna - Lost&Found]] (dependency)
 - **Push Notification:** [[Push Notification - Lost&Found]] (FCM pesan baru + deep link)
 - **Nomor WhatsApp Pengguna:** [[Nomor WhatsApp Pengguna - Lost&Found]]
