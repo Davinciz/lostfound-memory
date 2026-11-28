@@ -3,22 +3,22 @@ type: plan
 project: lost-found
 status: active
 priority: medium
-updated: 2026-11-27
-summary: Pengguna dapat mengirim satu foto dengan caption opsional di ruang chat untuk verifikasi kepemilikan.
+updated: 2026-11-28
+summary: Kirim satu foto privat + caption opsional di chat; backend PR #39 (448 tes) & mobile PR #37 (395 tes) sudah merge ke origin/develop; sisa uji manual 2 HP & deploy live.
 ---
 
 # Kirim Foto di Chat - Lost&Found
 
 **Tanggal:** 2026-11-27
 **Project:** [[PBL]] Lost&Found
-**Status:** Planning
+**Status:** In Progress
 **Priority:** Medium
 **Plan induk:** [[Real-Time Chat - Lost&Found]]
 
 ---
 
 > [!note] Sumber tunggal kontrak fitur
-> Dokumen ini mencatat keputusan fitur **Kirim Foto di Chat** yang disetujui Daniel pada **2026-11-27**, sebelum implementasi kode dimulai oleh Bob/Ajax. Dokumen kondisi kode saat ini (`ERD.md`, `schema.dbml`, `TechnicalReference.md`) sengaja belum diubah sampai backend di-merge ke `develop`.
+> Dokumen ini mencatat keputusan fitur **Kirim Foto di Chat** yang disetujui Daniel pada **2026-11-27**. ~~Dokumen kondisi kode saat ini (`ERD.md`, `schema.dbml`, `TechnicalReference.md`) sengaja belum diubah sampai backend di-merge ke `develop`.~~ **Diperbarui 2026-11-28 (`Dominic-261128-01`):** backend (`Bob-261127-01`, PR #39 `db705e6c36`) dan mobile (`Ajax-261127-01`, PR #37 `a37899b119`) sudah di-merge ke `origin/develop`, volume persisten Dokploy dikonfirmasi sudah ditambahkan Daniel, dan dokumen kondisi kode (`ERD.md`, `schema.dbml`, `TechnicalReference.md`) sudah disinkronkan.
 
 ## a. Tujuan
 
@@ -89,10 +89,12 @@ Pengguna dapat mengirim **satu foto** (dengan caption teks opsional) di ruang ch
 
 ## f. Status Checklist
 
-- [ ] `Dominic-261127-01`: Plan & penyelarasan dokumen awal (menunggu konfirmasi selesai).
-- [ ] `Bob-261127-01`: Backend `feature/chat/image-message-api` + merge ke `develop`.
-- [ ] `Ajax-261127-01`: Mobile `feature/chat/image-message-ui` + merge ke `develop`.
-- [ ] Sinkronisasi dokumentasi kode (`ERD.md`, `schema.dbml`, `TechnicalReference.md` §16/§17, `Lost&Found Progress.md`).
+- [x] `Dominic-261127-01`: Plan & penyelarasan dokumen awal (selesai).
+- [x] `Bob-261127-01`: Backend `feature/chat/image-message-api` (`2a0088aba8`) + merge ke `origin/develop` (**PR #39** `db705e6c36`, 448 tes / 2.175 assertion lulus, 74 route / 39 API).
+- [x] `Ajax-261127-01`: Mobile `feature/chat/image-message-ui` (`430932f271`) + merge ke `origin/develop` (**PR #37** `a37899b119`, 395 tes / 4 skip / 0 gagal, `flutter analyze` 0 error).
+- [x] `Dominic-261128-01`: Sinkronisasi dokumentasi kode (`ERD.md`, `schema.dbml`, `TechnicalReference.md` §13.2/§15.7/§16/§17, `Lost&Found Progress.md`, `DailyChanges/2026-11-28.md`).
+- [ ] Uji manual 2 akun / 2 perangkat HP (kamera/galeri fisik, Pusher realtime, viewer, retry setelah mode pesawat).
+- [ ] Verifikasi deploy kode terbaru, migrasi produksi, dan unduh foto live di Dokploy (volume persisten sudah ditambahkan Daniel 2026-11-28).
 
 ---
 

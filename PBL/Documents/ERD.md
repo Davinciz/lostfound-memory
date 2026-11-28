@@ -2,8 +2,8 @@
 type: technical
 project: lost-found
 status: active
-updated: 2026-11-01
-summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18; 2026-11-01 arsip & hapus chat 4 kolom timestamp nullable di conversations (migration 2026_11_01_103035, tetap 7 tabel). 2026-10-28: gambar ERD + tautan dbdesigner diperbarui (banner "gambar mungkin belum diperbarui" dihapus)
+updated: 2026-11-28
+summary: ERD 7 tabel Lost&Found; Google SSO, NIM opsional, password nullable; claims lost/found_report_id nullable + CHECK claims_target_report_check (migration 2026-10-23); accepted_at/closed_reason/closed_by ada; index chat partial unique 2026-10-18; 2026-11-01 arsip & hapus chat 4 kolom timestamp nullable di conversations (migration 2026_11_01_103035, tetap 7 tabel); 2026-11-28 kirim foto di chat (migration 2026_11_27_073045_add_image_path_to_messages_table: messages.image_path nullable + messages.message nullable, tetap 7 tabel). 2026-10-28: gambar ERD + tautan dbdesigner diperbarui (banner "gambar mungkin belum diperbarui" dihapus)
 ---
 # ERD Lost & Found
 
@@ -97,7 +97,7 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 
 - **PK:** `id` (UUID)
 - **FK:** `conversation_id` → conversations.id, `sender_id` → users.id
-- **Kolom:** message (text), read_at (null berarti belum dibaca)
+- **Kolom:** `message` (`text, nullable` sejak migration `2026_11_27_073045_add_image_path_to_messages_table`), `image_path` (`varchar(255) nullable`, path relatif foto chat di disk private `local` mis. `chat/{conversation_id}/{uuid}.jpg`; tidak dikirim ke klien, dilayani via `GET /api/messages/{id}/image`), `read_at` (null berarti belum dibaca)
 - **Index:** conversation_id, created_at, sender_id; **composite index** `(conversation_id, created_at)` untuk query urutan pesan (migration `2026_10_18_071626_add_conversation_indexes`)
 
 ## Ringkasan Relasi
@@ -155,3 +155,4 @@ Pesan individual di dalam percakapan (fitur real-time chat).
 - **2026-10-18:** Real-Time Chat Fase 1 backend merge ke `develop` (commit `fb256f9`). Migration `2026_10_18_071626_add_conversation_indexes` menambah partial unique index + composite index (lihat bagian Index chat). **Struktur kolom/tabel tidak berubah.**
 - **2026-10-23:** `claims.lost_report_id` & `claims.found_report_id` jadi **nullable** + CHECK `claims_target_report_check` (minimal satu terisi); kolom `accepted_at`, `closed_reason`, `closed_by` (disetujui 2026-10-14) ikut diterapkan. Migration `2026_10_23_000001_make_claim_reports_nullable`; merge ke `develop` PR #6 (commit squash `d1ef1eb`). Sumber tunggal: [[Claim Langsung ke Laporan Target - Lost&Found]].
 - **2026-11-01:** Fitur **Arsip & Hapus Chat** — migration `2026_11_01_103035_add_archive_delete_columns_to_conversations` menambah **4 kolom timestamp nullable** di `conversations`: `user1_archived_at`, `user2_archived_at`, `user1_deleted_at`, `user2_deleted_at`. **Tanpa tabel baru** (tetap 7 tabel), tanpa index baru. Chat cabang claim: `user1_id` = claimant/pengaju, `user2_id` = penerima (pelapor laporan target) — kolom per **slot** mengikuti `user1_id`/`user2_id`, bukan peran pelapor hilang/temuan. Sumber tunggal: [[Arsip dan Hapus Chat - Lost&Found]].
+- **2026-11-28:** Fitur **Kirim Foto di Chat** — migration `2026_11_27_073045_add_image_path_to_messages_table` (PR #39 `db705e6c36`) menambah kolom `messages.image_path` (`varchar(255) nullable`, path relatif di disk private `local` `chat/{conversation_id}/{uuid}.{ext}`, tidak dikirim ke klien, dilayani via `GET /api/messages/{id}/image`) dan mengubah `messages.message` menjadi `text nullable` (`down()` menghapus `image_path` dan mengembalikan `message` `NOT NULL` setelah mengisi baris null dengan `''`). **Tetap 7 tabel**, tanpa tabel/index baru. Sumber tunggal: [[Kirim Foto di Chat - Lost&Found]].

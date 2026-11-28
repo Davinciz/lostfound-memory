@@ -3,8 +3,8 @@ type: plan
 project: lost-found
 status: active
 priority: high
-updated: 2026-11-27
-summary: Real-time chat Pusher (MVP) → Soketi; seluruh 8 tugas brief + PR perbaikan (#38 backend, #36 mobile) SUDAH MERGE ke origin/develop 2026-11-26; fitur kirim foto di chat dijadwalkan terpisah (2026-11-27)
+updated: 2026-11-28
+summary: Real-time chat Pusher (MVP) → Soketi; 8 tugas brief + PR perbaikan (#38 backend, #36 mobile) & fitur Kirim Foto di Chat (PR #39 backend, PR #37 mobile) SUDAH MERGE ke origin/develop; sisa uji manual 2 HP & deploy live
 ---
 
 # Real-Time Chat - Lost&Found
@@ -85,7 +85,7 @@ User A (pemilik barang hilang) dan User B (penemu) bisa chat langsung dalam app 
 
 ### 2. Data Model
 
-> **Sudah ada** — tabel `conversations` & `messages` beserta model `Conversation` & `Message` sudah terpasang di DB/`app/Models` (lihat [[ERD]] / `schema.dbml`; diverifikasi user 2026-10-18). Skema di bawah adalah dokumentasi, **JANGAN diubah** di plan ini.
+> **Sudah ada** — tabel `conversations` & `messages` beserta model `Conversation` & `Message` sudah terpasang di DB/`app/Models` (lihat [[ERD]] / `schema.dbml`; diverifikasi user 2026-10-18). Skema di bawah adalah dokumentasi awal, **JANGAN diubah** langsung di blok SQL ini. **Catatan 2026-11-28 (`Dominic-261128-01`):** lewat [[Kirim Foto di Chat - Lost&Found]] (backend PR #39 `db705e6c36` & mobile PR #37 `a37899b119`, sudah merge ke `origin/develop`), tabel `messages` kini memiliki `image_path` (`varchar(255) nullable`) dan `message` (`text nullable`) via migration `2026_11_27_073045_add_image_path_to_messages_table` (tetap 7 tabel).
 
 **Tabel `conversations`:**
 ```sql
@@ -421,7 +421,7 @@ FirebaseMessaging.onMessageOpenedApp.listen((message) {
 
 ## Open Questions
 
-1. **Attachment support?** — ~~Kirim foto dalam chat? (Phase 2, need file upload flow)~~ → **DIJADWALKAN 2026-11-27 sebagai plan terpisah:** lihat [[Kirim Foto di Chat - Lost&Found]].
+1. **Attachment support?** — ~~Kirim foto dalam chat? (Phase 2, need file upload flow)~~ → **DIJADWALKAN 2026-11-27 sebagai plan terpisah:** lihat [[Kirim Foto di Chat - Lost&Found]] (**2026-11-28:** backend PR #39 `db705e6c36` & mobile PR #37 `a37899b119` sudah merge ke `origin/develop`, `messages.image_path` nullable + `messages.message` nullable, tetap 7 tabel; sisa uji manual 2 HP & deploy live).
 2. **Online status?** — Presence channel untuk "User sedang online"? (Phase 2, Pusher presence channel)
 3. **Delete message?** — Soft delete atau hard delete? (Phase 2)
 4. **Chat history retention?** — Hapus message older than 30 hari? (Discuss dengan stakeholder)
